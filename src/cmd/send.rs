@@ -1,6 +1,6 @@
-use crate::{arg, email_handler::Email, helper::format_green};
+use crate::{arg, cmd, email_handler::Email, helper::format_green};
 use anyhow::{anyhow, Result};
-use clap::{crate_name, Arg, ArgMatches};
+use clap::{Arg, ArgMatches};
 
 pub fn send_args() -> [Arg<'static, 'static>; 9] {
     [
@@ -84,7 +84,7 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     } else {
         Err(anyhow!(
             "Missing arguments. Check help for subcommand: '{} help send'",
-            crate_name!()
+            cmd::BIN
         ))
     }
 }
@@ -98,7 +98,7 @@ mod tests {
     #[test]
     fn test_send_subject_content_dry() {
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND,
             "albert@einstein.com",
             "marie@curie.com",
@@ -129,7 +129,7 @@ mod tests {
         let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
 
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND,
             &sender,
             &receiver,
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn test_send_message_file_dry() {
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND,
             "albert@einstein.com",
             "marie@curie.com",
@@ -184,7 +184,7 @@ mod tests {
         let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
 
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND,
             &sender,
             &receiver,

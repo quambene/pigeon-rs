@@ -14,6 +14,9 @@ pub use send::{send, send_args};
 pub use send_bulk::{send_bulk, send_bulk_args};
 pub use simple_query::{simple_query, simple_query_args};
 
+// Binary name
+pub const BIN: &str = "pigeon";
+
 // Available subcommands
 pub const INIT: &str = "init";
 pub const CONNECT: &str = "connect";

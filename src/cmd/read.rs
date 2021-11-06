@@ -37,11 +37,10 @@ pub fn read(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 mod tests {
     use super::*;
     use crate::{app, cmd};
-    use clap::crate_name;
 
     #[test]
     fn test_read() {
-        let args = vec![crate_name!(), cmd::READ, "./test_data/receiver.csv"];
+        let args = vec![cmd::BIN, cmd::READ, "./test_data/receiver.csv"];
 
         let app = app();
         let matches = app.get_matches_from(args);

@@ -1,6 +1,6 @@
 use crate::{arg, cmd, email_handler::BulkEmail, helper::format_green};
 use anyhow::{anyhow, Result};
-use clap::{crate_name, Arg, ArgMatches};
+use clap::{Arg, ArgMatches};
 
 pub fn send_bulk_args() -> [Arg<'static, 'static>; 10] {
     [
@@ -85,7 +85,7 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     } else {
         Err(anyhow!(
             "Invalid command. Check usage for '{send_bulk}' subcommand: {} help '{send_bulk}'",
-            crate_name!(),
+            cmd::BIN,
             send_bulk = cmd::SEND_BULK
         ))
     }
@@ -95,12 +95,11 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 mod tests {
     use super::*;
     use crate::{app, cmd};
-    use std::env;
 
     #[test]
     fn test_send_bulk_dry() {
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND_BULK,
             "albert@einstein.com",
             "--receiver-file",
@@ -126,7 +125,7 @@ mod tests {
     #[test]
     fn test_send_bulk_receiver_column_dry() {
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND_BULK,
             "albert@einstein.com",
             "--receiver-file",
@@ -154,7 +153,7 @@ mod tests {
     #[test]
     fn test_send_bulk_personalize_dry() {
         let args = vec![
-            crate_name!(),
+            cmd::BIN,
             cmd::SEND_BULK,
             "albert@einstein.com",
             "--receiver-file",
