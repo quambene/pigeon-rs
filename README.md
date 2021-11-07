@@ -6,6 +6,62 @@ For example, you can define a bash `alias` with your individual `pigeon` command
 
 You might also draft a static html with your favorite web development framework, and use pigeon to send this html template.
 
+- [Requirements](#requirements)
+- [Install Pigeon](#install-pigeon)
+  - [Install Pigeon from crates.io](#install-pigeon-from-crates-io)
+  - [Install Pigeon from github.com](#install-pigeon-form-github-com)
+- [Usage](#usage)
+  - [Send email to a single receiver](#send-email-to-a-single-receiver)
+  - [Send bulk email to multiple receivers](#send-bulk-email-to-multiple-receivers)
+  - [Personalize your emails](#personalize-your-emails)
+- [How to connect](#how-to-connect)
+  - [How to connect to email provider](#how-to-connect-to-email-provider)
+  - [How to connect to postgres database](#how-to-connect-to-postgres-database)
+- [Integrations](#integrations)
+  - [Email provider](#email-provider)
+  - [Data sources](#data-sources)
+- [Comparison with Mailchimp and Sendgrid](#comparison-with-mailchimp-and-sendgrid)
+
+## Requirements
+
+You need to have Rust installed on your system and nightly toolchain activated.
+
+## Install Pigeon
+
+### Install Pigeon from crates.io
+
+``` bash
+# Install nightly toolchain
+rustup toolchain install nightly
+
+# Switch to nightly toolchain
+rustup override set nightly
+
+# Build and install pigeon binary to ~/.cargo/bin
+cargo install pigeon-rs
+```
+
+### Install Pigeon from github.com
+
+1. Build and install Pigeon binary to `~/.cargo/bin`:
+
+    ``` bash
+    git clone git@github.com:quambene/pigeon-rs.git
+    cd pigeon-rs
+
+    # Activate rust nightly toolchain for current directory
+    echo "nightly" > rust-toolchain
+
+    # Build and install to ~/.cargo/bin
+    cargo install --path .
+    ```
+
+1. Add `$HOME/.cargo/bin` to your `PATH`:
+
+    ``` bash
+    export PATH="$HOME/.cargo/bin:$PATH"
+    ```
+
 ## Usage
 
 Check connection to your email provider with `pigeon connect`. For example, using AWS Simple Email Service (SES):
@@ -89,7 +145,7 @@ After double checking, you can submit the same command without `--dry-run`. Remo
 
 _Note:_ You can also send a bulk email to email adresses defined in a csv file instead of a query result. In this case, use option `--receiver-file` instead of `--receiver-query`. You can check the contents of a csv file via subcommand `read`, e.g. `pigeon read recipients.csv`.
 
-#### Personalize your emails
+### Personalize your emails
 
 If you need more individual emails, you can _personalize_ your emails with option `--personalize`. Again, let's start by checking the relevant query:
 
@@ -222,29 +278,6 @@ Source your environment again:
 set -a && source .env && set +a
 ```
 
-## Install pigeon
-
-### Install pigeon from source
-
-1. Build and install Pigeon binary to `~/.cargo/bin`:
-
-    ``` bash
-    git clone git@github.com:quambene/pigeon-rs.git
-    cd pigeon-rs
-
-    # Activate rust nightly toolchain
-    echo "nightly" > rust-toolchain
-
-    # Build and install to ~/.cargo/bin
-    cargo install --path .
-    ```
-
-1. Add `$HOME/.cargo/bin` to your `PATH`:
-
-    ``` bash
-    export PATH="$HOME/.cargo/bin:$PATH"
-    ```
-
 ## Integrations
 
 ### Email provider
@@ -273,7 +306,3 @@ provider | daily limit
 Pigeon+AWS | 50,000
 Mailchimp | equals monthly limit
 Sendgrid | equals monthly limit
-
-## Requirements
-
-You need to have Rust installed on your system and nightly toolchain activated.
