@@ -65,6 +65,8 @@ impl BulkEmail {
     }
 
     pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+        println!("Sending email to {} receivers ...", self.emails.len());
+
         if matches.is_present(arg::DRY_RUN) {
             // Setup client but do not send email
             let _client = email_provider::setup_ses_client(matches)?;
@@ -74,7 +76,6 @@ impl BulkEmail {
             }
 
             println!("All emails sent (dry run).");
-            Ok(())
         } else {
             let client = email_provider::setup_ses_client(matches)?;
 
@@ -85,8 +86,9 @@ impl BulkEmail {
             }
 
             println!("All emails sent.");
-            Ok(())
         }
+
+        Ok(())
     }
 
     pub fn confirm(&self) -> Result<Confirmed, anyhow::Error> {
