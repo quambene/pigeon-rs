@@ -1,0 +1,40 @@
+cargo-features = ["different-binary-name"]
+
+[package]
+name = "pigeon-rs"
+version = "0.1.0"
+authors = ["quambene <contact.quambene@gmail.com>"]
+description = "Command line tool for cheap and efficient email automation"
+edition = "2018"
+rust-version = "1.56"
+homepage = "https://github.com/quambene/pigeon-rs"
+repository = "https://github.com/quambene/pigeon-rs"
+keywords = ["mail", "email", "automatization", "automatisation", "automation", "cli"]
+categories = ["command-line-utilities", "cli", "email"]
+readme = "README.md"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.40"
+rusoto_sesv2 = "0.46.0"
+rusoto_core = "0.46.0"
+rusoto_credential = "0.46.0"
+yaml-rust = "0.4.5"
+serde = { version = "1.0.125", features = ["derive"] }
+serde_yaml = "0.8.17"
+whoami = "1.1.1"
+tokio = "1.12.0"
+csv = "1.1.6"
+clap = "2.33.3"
+chrono = "0.4.19"
+polars = "0.14.8"
+polars-core = "0.14.8"
+connectorx = { version = "0.2.0", features = ["src_postgres", "dst_polars"] }
+postgres = "0.19.2"
+
+[[bin]]
+name = "pigeon-rs"
+filename = "pigeon"
+path = "src/main.rs"
