@@ -5,10 +5,10 @@ message:
     # The subject of your email
     subject: "Test subject"
     # The plaintext version
-    text: "Dear {firstname} {lastname},
+    text: "Dear {first_name} {last_name},
           \nThis is a test message (plaintext)."
     # The html version
-    html: "Dear {firstname} {lastname},
+    html: "Dear {first_name} {last_name},
           <br>
           <br>
           This is a test message (html)."
