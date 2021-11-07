@@ -104,7 +104,10 @@ impl BulkEmail {
             email_count, receivers
         );
 
-        println!("Should an email be sent to all recipients? Yes (y) or no (n)");
+        println!(
+            "Should an email be sent to {} recipients? Yes (y) or no (n)",
+            email_count
+        );
         let confirmation = loop {
             io::stdin().read_line(&mut input).expect("Can't read input");
             match input.trim() {
