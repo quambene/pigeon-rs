@@ -1,5 +1,5 @@
-use crate::{arg, cmd, email_handler::BulkEmail, helper::format_green};
-use anyhow::{anyhow, Result};
+use crate::{arg, email_handler::BulkEmail, helper::format_green};
+use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
 pub fn send_bulk_args() -> [Arg<'static, 'static>; 10] {
@@ -59,36 +59,25 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    if matches.is_present(arg::SENDER)
-        && (matches.is_present(arg::RECEIVER_FILE) || matches.is_present(arg::RECEIVER_QUERY))
-        && matches.is_present(arg::MESSAGE_FILE)
-    {
-        let bulk_email = BulkEmail::new(matches)?;
+    let bulk_email = BulkEmail::new(matches)?;
 
-        if matches.is_present(arg::DISPLAY) {
-            println!("Display emails: {:#?}", bulk_email);
-        }
-
-        if matches.is_present(arg::DRY_RUN) {
-            println!("Dry run: {}", format_green("activated"));
-        }
-
-        if matches.is_present(arg::ASSUME_YES) {
-            bulk_email.send(matches)?;
-        } else {
-            bulk_email.confirm_and_send(matches)?;
-        }
-
-        bulk_email.archive(matches)?;
-
-        Ok(())
-    } else {
-        Err(anyhow!(
-            "Invalid command. Check usage for '{send_bulk}' subcommand: {} help '{send_bulk}'",
-            cmd::BIN,
-            send_bulk = cmd::SEND_BULK
-        ))
+    if matches.is_present(arg::DISPLAY) {
+        println!("Display emails: {:#?}", bulk_email);
     }
+
+    if matches.is_present(arg::DRY_RUN) {
+        println!("Dry run: {}", format_green("activated"));
+    }
+
+    if matches.is_present(arg::ASSUME_YES) {
+        bulk_email.send(matches)?;
+    } else {
+        bulk_email.confirm_and_send(matches)?;
+    }
+
+    bulk_email.archive(matches)?;
+
+    Ok(())
 }
 
 #[cfg(test)]

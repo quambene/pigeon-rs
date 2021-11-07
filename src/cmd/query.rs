@@ -41,7 +41,7 @@ pub fn query(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     if matches.is_present(cmd::QUERY) {
         match matches.value_of(cmd::QUERY) {
             Some(query) => {
-                let df_query_result = query_postgres(matches, query.to_string())?;
+                let df_query_result = query_postgres(matches, query)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display query result: {}", df_query_result);

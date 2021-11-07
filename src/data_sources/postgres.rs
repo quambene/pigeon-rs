@@ -75,7 +75,7 @@ impl ConnVars {
     }
 }
 
-pub fn query_postgres(matches: &ArgMatches<'_>, query: String) -> Result<DataFrame, anyhow::Error> {
+pub fn query_postgres(matches: &ArgMatches<'_>, query: &str) -> Result<DataFrame, anyhow::Error> {
     let conn_vars = ConnVars::from_env()?;
     let connection_url: String;
     let ssh_tunnel: Option<SshTunnel>;
