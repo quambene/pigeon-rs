@@ -22,7 +22,7 @@ impl Message {
                 "Missing arguments. Please provide {} and {} or {}",
                 arg::SUBJECT,
                 arg::CONTENT,
-                arg::MESSAGE_FILE
+                arg::MESSAGE_FILE,
             ))
         }
     }

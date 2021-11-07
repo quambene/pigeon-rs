@@ -1,9 +1,9 @@
 use crate::{
-    arg, cmd,
+    arg,
     email_handler::{Confirmed, Email},
     helper::format_green,
 };
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
 pub fn send_args() -> [Arg<'static, 'static>; 9] {
@@ -61,42 +61,31 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    if matches.is_present(arg::SENDER)
-        && matches.is_present(arg::RECEIVER)
-        && ((matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT))
-            || matches.is_present(arg::MESSAGE_FILE))
-    {
-        let email = Email::new(matches)?;
+    let email = Email::new(matches)?;
 
-        if matches.is_present(arg::DISPLAY) {
-            println!("Display email: {:#?}", email);
-        }
-
-        if matches.is_present(arg::DRY_RUN) {
-            println!("Dry run: {}", format_green("activated"));
-        }
-
-        if matches.is_present(arg::ASSUME_YES) {
-            email.send(matches)?;
-            email.archive(matches)?;
-        } else {
-            let confirmation = email.confirm(matches)?;
-            match confirmation {
-                Confirmed::Yes => {
-                    email.send(matches)?;
-                    email.archive(matches)?;
-                }
-                Confirmed::No => (),
-            }
-        }
-
-        Ok(())
-    } else {
-        Err(anyhow!(
-            "Missing arguments. Check help for subcommand: '{} help send'",
-            cmd::BIN
-        ))
+    if matches.is_present(arg::DISPLAY) {
+        println!("Display email: {:#?}", email);
     }
+
+    if matches.is_present(arg::DRY_RUN) {
+        println!("Dry run: {}", format_green("activated"));
+    }
+
+    if matches.is_present(arg::ASSUME_YES) {
+        email.send(matches)?;
+        email.archive(matches)?;
+    } else {
+        let confirmation = email.confirm(matches)?;
+        match confirmation {
+            Confirmed::Yes => {
+                email.send(matches)?;
+                email.archive(matches)?;
+            }
+            Confirmed::No => (),
+        }
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
