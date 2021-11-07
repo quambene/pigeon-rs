@@ -26,7 +26,7 @@ pub fn connect(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 
                 match client_res {
                     Ok(_) => {
-                        println!("Connected to {} client: {}", provider, format_green("Ok"));
+                        println!("Connected to {} client: {}", provider, format_green("ok"));
                         Ok(())
                     }
                     Err(err) => Err(anyhow!(
