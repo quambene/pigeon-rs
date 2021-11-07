@@ -12,7 +12,7 @@ repository = "https://github.com/quambene/pigeon-rs"
 keywords = ["mail", "email", "automatization", "automatisation", "automation", "cli"]
 categories = ["command-line-utilities", "cli", "email"]
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
