@@ -42,7 +42,9 @@ _Note:_ One of the advantages of a `--message-file` is that you can also draft t
 
 ### Send bulk email to multiple receivers
 
-For example, query relevant users which confirmed to receive your newsletter, and send an email to all of them. Let's check the query first via `pigeon query`:
+For example, query relevant users which confirmed to receive your newsletter, and send an email to all of them. 
+
+Let's check the query first via `pigeon query`:
 
 ``` bash
 pigeon query --display "select email from user where newsletter_confirmed = true"
@@ -253,3 +255,25 @@ set -a && source .env && set +a
 
 - PostgreSQL
 - CSV
+
+## Comparison with Mailchimp and Sendgrid
+
+These numbers may be outdated. Do your own research.
+
+emails/month | Pigeon+AWS* | Mailchimp Marketing* | Sendgrid API* | Sendgrid Marketing*
+--------- | --------- | --------- | --------- | ---------
+5,000 | $4 | $9.99 | $14.95 | $15
+10,000 | $4 | $20.99 | $14.95 | $15
+100,000 | $4 | $78.99 | $29.95 | $120
+
+*Price per month
+
+provider | daily limit
+--------- | ---------
+Pigeon+AWS | 50,000
+Mailchimp | equals monthly limit
+Sendgrid | equals monthly limit
+
+## Requirements
+
+You need to have Rust installed on your system and nightly toolchain activated.
