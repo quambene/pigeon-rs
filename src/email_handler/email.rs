@@ -1,6 +1,6 @@
 use crate::{
     arg,
-    email_handler::{Message, MessageTemplate},
+    email_handler::{Confirmed, Message, MessageTemplate},
     email_provider,
     helper::{check_send_status, format_green},
 };
@@ -61,7 +61,7 @@ impl Email {
         }
     }
 
-    pub fn confirm_and_send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+    pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {
         let mut input = String::new();
 
         match matches.value_of(arg::RECEIVER) {
@@ -70,24 +70,23 @@ impl Email {
         }
 
         println!("Should an email be sent to 1 recipient? Yes (y) or no (n)");
-        loop {
+        let confirmation = loop {
             io::stdin().read_line(&mut input).expect("Can't read input");
             match input.trim() {
                 "y" | "yes" | "Yes" => {
-                    self.send(matches)?;
-                    break;
+                    break Confirmed::Yes;
                 }
                 "n" | "no" | "No" => {
                     println!("Aborted ...");
-                    break;
+                    break Confirmed::No;
                 }
                 _ => {
                     println!("Choose yes (y) or no (n). Try again.");
                     continue;
                 }
             }
-        }
-        Ok(())
+        };
+        Ok(confirmation)
     }
 
     pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {

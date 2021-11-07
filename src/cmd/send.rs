@@ -1,4 +1,8 @@
-use crate::{arg, cmd, email_handler::Email, helper::format_green};
+use crate::{
+    arg, cmd,
+    email_handler::{Confirmed, Email},
+    helper::format_green,
+};
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
@@ -74,11 +78,17 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 
         if matches.is_present(arg::ASSUME_YES) {
             email.send(matches)?;
+            email.archive(matches)?;
         } else {
-            email.confirm_and_send(matches)?;
+            let confirmation = email.confirm(matches)?;
+            match confirmation {
+                Confirmed::Yes => {
+                    email.send(matches)?;
+                    email.archive(matches)?;
+                }
+                Confirmed::No => (),
+            }
         }
-
-        email.archive(matches)?;
 
         Ok(())
     } else {

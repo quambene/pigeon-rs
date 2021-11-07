@@ -1,7 +1,7 @@
 use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
-    email_handler::{Email, Message, MessageTemplate},
+    email_handler::{Confirmed, Email, Message, MessageTemplate},
     email_provider,
     helper::{check_send_status, format_green},
 };
@@ -13,11 +13,6 @@ use std::{io, path::PathBuf};
 #[derive(Debug)]
 pub struct BulkEmail {
     pub emails: Vec<Email>,
-}
-
-pub enum Confirmed {
-    Yes,
-    No,
 }
 
 impl BulkEmail {
