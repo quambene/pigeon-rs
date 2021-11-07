@@ -1,4 +1,8 @@
-use crate::{arg, email_handler::BulkEmail, helper::format_green};
+use crate::{
+    arg,
+    email_handler::{BulkEmail, Confirmed},
+    helper::format_green,
+};
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
@@ -71,11 +75,17 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 
     if matches.is_present(arg::ASSUME_YES) {
         bulk_email.send(matches)?;
+        bulk_email.archive(matches)?;
     } else {
-        bulk_email.confirm_and_send(matches)?;
+        let confirmation = bulk_email.confirm()?;
+        match confirmation {
+            Confirmed::Yes => {
+                bulk_email.send(matches)?;
+                bulk_email.archive(matches)?;
+            }
+            Confirmed::No => (),
+        }
     }
-
-    bulk_email.archive(matches)?;
 
     Ok(())
 }
