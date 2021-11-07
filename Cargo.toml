@@ -8,6 +8,7 @@ description = "Command line tool for cheap and efficient email automation"
 edition = "2018"
 homepage = "https://github.com/quambene/pigeon-rs"
 repository = "https://github.com/quambene/pigeon-rs"
+documentation = "https://github.com/quambene/pigeon-rs"
 keywords = ["mail", "email", "automatization", "automatisation", "automation", "cli"]
 categories = ["command-line-utilities", "cli", "email"]
 readme = "README.md"
