@@ -10,7 +10,7 @@ homepage = "https://github.com/quambene/pigeon-rs"
 repository = "https://github.com/quambene/pigeon-rs"
 documentation = "https://github.com/quambene/pigeon-rs"
 keywords = ["mail", "email", "automatization", "automation", "cli"]
-categories = ["command-line-utilities", "cli", "email"]
+categories = ["command-line-utilities", "email"]
 readme = "README.md"
 license = "Apache-2.0"
 
