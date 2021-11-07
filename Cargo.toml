@@ -6,7 +6,6 @@ version = "0.1.0"
 authors = ["quambene <contact.quambene@gmail.com>"]
 description = "Command line tool for cheap and efficient email automation"
 edition = "2018"
-rust-version = "1.56"
 homepage = "https://github.com/quambene/pigeon-rs"
 repository = "https://github.com/quambene/pigeon-rs"
 keywords = ["mail", "email", "automatization", "automatisation", "automation", "cli"]
