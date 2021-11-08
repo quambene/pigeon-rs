@@ -77,19 +77,17 @@ impl ConnVars {
 
 pub fn query_postgres(matches: &ArgMatches<'_>, query: &str) -> Result<DataFrame, anyhow::Error> {
     let conn_vars = ConnVars::from_env()?;
-    let connection_url: String;
-    let ssh_tunnel: Option<SshTunnel>;
 
-    if matches.is_present(arg::SSH_TUNNEL) {
-        ssh_tunnel = Some(SshTunnel::new(matches, &conn_vars)?);
+    let ssh_tunnel = if matches.is_present(arg::SSH_TUNNEL) {
+        Some(SshTunnel::new(matches, &conn_vars)?)
     } else {
-        ssh_tunnel = None;
-    }
+        None
+    };
 
-    match &ssh_tunnel {
-        Some(tunnel) => connection_url = tunnel.url.to_string(),
-        None => connection_url = conn_vars.connection_url(),
-    }
+    let connection_url = match &ssh_tunnel {
+        Some(tunnel) => tunnel.connection_url.to_string(),
+        None => conn_vars.connection_url(),
+    };
 
     let (config, _tls) = rewrite_tls_args(&connection_url)?;
     let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 10)?;

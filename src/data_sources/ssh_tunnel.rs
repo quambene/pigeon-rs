@@ -1,35 +1,51 @@
 use crate::{arg, data_sources::postgres::ConnVars};
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
-use std::process::{Child, Command};
+use std::{
+    env,
+    process::{Child, Command},
+};
 
 pub struct SshTunnel {
     process: Child,
-    pub url: String,
+    pub connection_url: String,
 }
 
 const LOCALHOST: &str = "127.0.0.1";
 
 impl SshTunnel {
     pub fn new(matches: &ArgMatches<'_>, conn_vars: &ConnVars) -> Result<Self, anyhow::Error> {
-        let local_port;
+        println!("Opening ssh tunnel ...");
 
-        match matches.value_of(arg::SSH_TUNNEL) {
-            Some(port) => local_port = port,
+        let server_host = env::var("SERVER_HOST")
+            .context("Missing environment variable 'SERVER_HOST'. Needed for ssh tunnel.")?;
+        let server_user = env::var("SERVER_USER")
+            .context("Missing environment variable 'SERVER_USER'. Needed for ssh tunnel.")?;
+
+        let local_port = match matches.value_of(arg::SSH_TUNNEL) {
+            Some(port) => port,
             None => return Err(anyhow!("Missing value for argument '{}'", arg::SSH_TUNNEL)),
         };
-
         let local_url = &(LOCALHOST.to_string() + ":" + local_port) as &str;
         let db_url = conn_vars.db_host.to_string() + ":" + &conn_vars.db_port;
+
         let port_fwd = local_url.to_string() + ":" + &db_url;
-        let ssh_conn = conn_vars.db_user.to_string() + "@" + &conn_vars.db_host;
+        let ssh_connection = server_user.to_string() + "@" + &server_host;
+
         let process = Command::new("ssh")
-            .args(&["-N", "-T", "-L", &port_fwd, &ssh_conn])
+            .args(&["-N", "-T", "-L", &port_fwd, &ssh_connection])
             .spawn()?;
+
+        let connection_url = SshTunnel::connection_url(conn_vars, local_url);
         let ssh_tunnel = SshTunnel {
             process,
-            url: local_url.to_string(),
+            connection_url,
         };
+
+        println!(
+            "Ssh tunnel openend: forwarding port from {} to {} for user {} on server {}",
+            local_url, db_url, server_user, server_host
+        );
         Ok(ssh_tunnel)
     }
 
@@ -45,7 +61,7 @@ impl SshTunnel {
                 ))?;
 
                 if exit_status.success() {
-                    println!("Closed ssh tunnel.");
+                    println!("Closing ssh tunnel ...");
                     Ok(())
                 } else {
                     Err(anyhow!(
@@ -59,5 +75,16 @@ impl SshTunnel {
                 pid
             ))),
         }
+    }
+
+    fn connection_url(conn_vars: &ConnVars, tunnel_url: &str) -> String {
+        String::from("postgresql://")
+            + &conn_vars.db_user
+            + ":"
+            + &conn_vars.db_password.0
+            + "@"
+            + tunnel_url
+            + "/"
+            + &conn_vars.db_name
     }
 }
