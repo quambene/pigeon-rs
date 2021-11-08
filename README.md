@@ -277,6 +277,14 @@ Source your environment again:
 set -a && source .env && set +a
 ```
 
+_CAUTION:_ Connecting via TLS is not supported yet. Forward a local port through a SSH tunnel instead, e.g.:
+
+``` bash
+pigeon query "select email from user where newsletter_confirmed = true" --display --ssh-tunnel 5437
+```
+
+In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` have to be set for the SSH connection (`ssh user@host`).
+
 ## Integrations
 
 ### Email provider
