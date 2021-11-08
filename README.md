@@ -43,24 +43,23 @@ cargo install pigeon-rs
 
 ### Install Pigeon from github.com
 
-1. Build and install Pigeon binary to `~/.cargo/bin`:
+``` bash
+# Clone repository
+git clone git@github.com:quambene/pigeon-rs.git
+cd pigeon-rs
 
-    ``` bash
-    git clone git@github.com:quambene/pigeon-rs.git
-    cd pigeon-rs
+# Activate rust nightly toolchain for current directory
+echo "nightly" > rust-toolchain
 
-    # Activate rust nightly toolchain for current directory
-    echo "nightly" > rust-toolchain
+# Build and install pigeon binary to ~/.cargo/bin
+cargo install --path .
+```
 
-    # Build and install to ~/.cargo/bin
-    cargo install --path .
-    ```
+_Note:_ Add `$HOME/.cargo/bin` to your `PATH` if it is missing:
 
-1. Add `$HOME/.cargo/bin` to your `PATH`:
-
-    ``` bash
-    export PATH="$HOME/.cargo/bin:$PATH"
-    ```
+``` bash
+export PATH="$HOME/.cargo/bin:$PATH"
+```
 
 ## Usage
 
