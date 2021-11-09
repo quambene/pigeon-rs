@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 10] {
+pub fn send_bulk_args() -> [Arg<'static, 'static>; 11] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -55,6 +55,11 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 10] {
             .long(arg::VERBOSE)
             .takes_value(false)
             .help("Shows what is going on for subcommand"),
+        Arg::with_name(arg::SSH_TUNNEL)
+            .long(arg::SSH_TUNNEL)
+            .value_name("port")
+            .takes_value(true)
+            .help("Query db through ssh tunnel"),
     ]
 }
 
