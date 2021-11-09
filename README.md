@@ -122,7 +122,7 @@ pigeon query --display "select email from user where newsletter_confirmed = true
 +------------------------------+
 ```
 
-See [how to connect](#how-to-connect) below to connect your database.
+See [how to connect](#how-to-connect) below to connect your database. If the table column name is different to "email" use `--receiver-column` to define a different column name.
 
 _Note:_ You can also `--save` your query as a csv file: `pigeon query --save <my-query>`.
 
