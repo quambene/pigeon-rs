@@ -300,13 +300,70 @@ In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` 
 
 These numbers may be outdated. Do your own research.
 
-emails/month | Pigeon+AWS* | Mailchimp Marketing* | Sendgrid API* | Sendgrid Marketing* | ConvertKit
----| --- | --- | --- | --- | ---
-5,000 | $4.50 | $9.99 | $14.95 | $15 | $66
-10,000 | $5 | $20.99 | $14.95 | $15 | $100
-100,000 | $14 | $78.99 | $29.95 | $120 | $516
+The following table compares the price per month for email provider and emails per month.
 
-*Price per month
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>5,000</th>
+            <th>10,000</th>
+            <th>100,000</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <strong>Pigeon+<a href="https://aws.amazon.com/ses/pricing/">AWS</a></strong>
+            </td>
+            <td>$4.50</td>
+            <td>$5</td>
+            <td>$14</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><a href="https://mailchimp.com/pricing/marketing/">Mailchimp Marketing</a></strong>
+            </td>
+            <td>$9.99</td>
+            <td>$20.99</td>
+            <td>$78.99</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><a href="https://mailchimp.com/pricing/transactional-email/">Mailchimp Transactional</a></strong>
+            </td>
+            <td>-</td>
+            <td>-</td>
+            <td>$80</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><a href="https://sendgrid.com/pricing/">Sendgrid Marketing</a></strong>
+            </td>
+            <td>$15</td>
+            <td>$15</td>
+            <td>$120</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><a href="https://sendgrid.com/pricing/">Sendgrid API</a></strong>
+            </td>
+            <td>$14.95</td>
+            <td>$14.95</td>
+            <td>$29.95</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><a href="https://convertkit.com/pricing">ConvertKit</a></strong>
+            </td>
+            <td>$66</td>
+            <td>$100</td>
+            <td>$516</td>
+        </tr>
+    </tbody>
+</table>
+
+The following table shows the daily limit for sent emails per provider.
 
 provider | daily limit
 --------- | ---------
