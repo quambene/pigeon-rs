@@ -300,11 +300,11 @@ In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` 
 
 These numbers may be outdated. Do your own research.
 
-emails/month | Pigeon+AWS* | Mailchimp Marketing* | Sendgrid API* | Sendgrid Marketing*
---------- | --------- | --------- | --------- | ---------
-5,000 | $4 | $9.99 | $14.95 | $15
-10,000 | $4 | $20.99 | $14.95 | $15
-100,000 | $4 | $78.99 | $29.95 | $120
+emails/month | Pigeon+AWS* | Mailchimp Marketing* | Sendgrid API* | Sendgrid Marketing* | ConvertKit
+---| --- | --- | --- | --- | ---
+5,000 | $4 | $9.99 | $14.95 | $15 | $66
+10,000 | $4 | $20.99 | $14.95 | $15 | $100
+100,000 | $4 | $78.99 | $29.95 | $120 | $516
 
 *Price per month
 
