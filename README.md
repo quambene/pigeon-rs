@@ -69,6 +69,7 @@ Check connection to your email provider with `pigeon connect`. For example, usin
 pigeon connect aws
 ```
 
+<!-- markdownlint-disable MD033 -->
 > Connected to aws client: <span style="color:MediumSeaGreen">ok</span>
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
@@ -97,7 +98,7 @@ _Note:_ One of the advantages of a `--message-file` is that you can also draft t
 
 ### Send bulk email to multiple receivers
 
-For example, query relevant users which confirmed to receive your newsletter, and send an email to all of them. 
+For example, query relevant users which confirmed to receive your newsletter, and send an email to all of them.
 
 Let's check the query first via `pigeon query`:
 
@@ -302,6 +303,7 @@ These numbers may be outdated. Do your own research.
 
 The following table compares the price per month for email provider and emails per month.
 
+<!-- markdownlint-disable MD033 -->
 <table>
     <thead>
         <tr>
