@@ -52,6 +52,10 @@ impl BulkEmail {
             }
         };
 
+        if matches.is_present(arg::DISPLAY) {
+            println!("Display query result: {}", df_receiver);
+        }
+
         let emails = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
                 Some(values) => create_personalized_emails(matches, sender, df_receiver, values)?,
