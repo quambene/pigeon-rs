@@ -296,15 +296,15 @@ In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` 
 - PostgreSQL
 - CSV
 
-## Comparison with Mailchimp and Sendgrid
+## Comparison with Mailchimp, Sendgrid, and ConvertKit
 
 These numbers may be outdated. Do your own research.
 
 emails/month | Pigeon+AWS* | Mailchimp Marketing* | Sendgrid API* | Sendgrid Marketing* | ConvertKit
 ---| --- | --- | --- | --- | ---
-5,000 | $4 | $9.99 | $14.95 | $15 | $66
-10,000 | $4 | $20.99 | $14.95 | $15 | $100
-100,000 | $4 | $78.99 | $29.95 | $120 | $516
+5,000 | $4.50 | $9.99 | $14.95 | $15 | $66
+10,000 | $5 | $20.99 | $14.95 | $15 | $100
+100,000 | $14 | $78.99 | $29.95 | $120 | $516
 
 *Price per month
 
