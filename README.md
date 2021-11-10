@@ -20,7 +20,7 @@ You might also draft a static html with your favorite web development framework,
 - [Integrations](#integrations)
   - [Email provider](#email-provider)
   - [Data sources](#data-sources)
-- [Comparison with Mailchimp and Sendgrid](#comparison-with-mailchimp-and-sendgrid)
+- [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
 
 ## Requirements
 
