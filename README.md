@@ -122,11 +122,11 @@ pigeon query --display "select email from user where newsletter_confirmed = true
 +------------------------------+
 ```
 
-See [how to connect](#how-to-connect) below to connect your database. If the table column name is different to "email" use `--receiver-column` to define a different column name.
+See [how to connect](#how-to-connect) below to connect your database.
 
 _Note:_ You can also `--save` your query as a csv file: `pigeon query --save <my-query>`.
 
-Now send your newsletter to the queried receivers. Let's try a `--dry-run` without confirmation `--assume-yes` first:
+Now send your newsletter to the queried receivers. If the table column name is different to "email" use `--receiver-column` to define a different column name. Let's try a `--dry-run` without confirmation `--assume-yes` first:
 
 ``` bash
 pigeon send-bulk albert@einstein.com --receiver-query "select email from user where newsletter_confirmed = true" --message-file "message.yaml" --assume-yes --dry-run
