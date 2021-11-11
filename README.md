@@ -41,6 +41,8 @@ rustup override set nightly
 cargo install pigeon-rs
 ```
 
+_Note:_ Run `cargo install pigeon-rs` again to update to the latest version. Uninstall the pigeon binary with `cargo uninstall pigeon-rs`.
+
 ### Install Pigeon from [github.com](https://github.com/quambene/pigeon-rs)
 
 ``` bash
