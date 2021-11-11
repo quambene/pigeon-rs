@@ -28,7 +28,7 @@ You need to have Rust installed on your system and nightly toolchain activated.
 
 ## Install Pigeon
 
-### Install Pigeon from crates.io
+### Install Pigeon from [crates.io](https://crates.io/crates/pigeon-rs)
 
 ``` bash
 # Install nightly toolchain
@@ -41,7 +41,7 @@ rustup override set nightly
 cargo install pigeon-rs
 ```
 
-### Install Pigeon from github.com
+### Install Pigeon from [github.com](https://github.com/quambene/pigeon-rs)
 
 ``` bash
 # Clone repository
@@ -60,6 +60,8 @@ _Note:_ Add `$HOME/.cargo/bin` to your `PATH` if it is missing:
 ``` bash
 export PATH="$HOME/.cargo/bin:$PATH"
 ```
+
+## Update pigeon
 
 ## Usage
 
