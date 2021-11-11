@@ -63,8 +63,6 @@ _Note:_ Add `$HOME/.cargo/bin` to your `PATH` if it is missing:
 export PATH="$HOME/.cargo/bin:$PATH"
 ```
 
-## Update pigeon
-
 ## Usage
 
 Check connection to your email provider with `pigeon connect`. For example, using AWS Simple Email Service (SES):
