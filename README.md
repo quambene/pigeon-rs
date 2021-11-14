@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # Pigeon
 
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
@@ -71,7 +73,6 @@ Check connection to your email provider with `pigeon connect`. For example, usin
 pigeon connect aws
 ```
 
-<!-- markdownlint-disable MD033 -->
 > Connected to aws client: <span style="color:MediumSeaGreen">ok</span>
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
@@ -305,67 +306,14 @@ These numbers may be outdated. Do your own research.
 
 The following table compares the price per month for email provider and emails per month.
 
-<!-- markdownlint-disable MD033 -->
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>5,000</th>
-            <th>10,000</th>
-            <th>100,000</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <strong>Pigeon+<a href="https://aws.amazon.com/ses/pricing/">AWS</a></strong>
-            </td>
-            <td>$4.50</td>
-            <td>$5</td>
-            <td>$14</td>
-        </tr>
-        <tr>
-            <td>
-                <strong><a href="https://mailchimp.com/pricing/marketing/">Mailchimp Marketing</a></strong>
-            </td>
-            <td>$9.99</td>
-            <td>$20.99</td>
-            <td>$78.99</td>
-        </tr>
-        <tr>
-            <td>
-                <strong><a href="https://mailchimp.com/pricing/transactional-email/">Mailchimp Transactional</a></strong>
-            </td>
-            <td>-</td>
-            <td>-</td>
-            <td>$80</td>
-        </tr>
-        <tr>
-            <td>
-                <strong><a href="https://sendgrid.com/pricing/">Sendgrid Marketing</a></strong>
-            </td>
-            <td>$15</td>
-            <td>$15</td>
-            <td>$120</td>
-        </tr>
-        <tr>
-            <td>
-                <strong><a href="https://sendgrid.com/pricing/">Sendgrid API</a></strong>
-            </td>
-            <td>$14.95</td>
-            <td>$14.95</td>
-            <td>$29.95</td>
-        </tr>
-        <tr>
-            <td>
-                <strong><a href="https://convertkit.com/pricing">ConvertKit</a></strong>
-            </td>
-            <td>$66</td>
-            <td>$100</td>
-            <td>$516</td>
-        </tr>
-    </tbody>
-</table>
+<!-- --> | 5,000 | 10,000 | 100,000
+--- | --- | --- | ---
+**Pigeon+**[**AWS**](https://aws.amazon.com/ses/pricing/) | $4.50 | $5 | $14
+[**Mailchimp Marketing**](https://mailchimp.com/pricing/marketing/) | $9.99 | $20.99 | $78.99
+[**Mailchimp Transactional**](https://mailchimp.com/pricing/transactional-email/) | - | - | $80
+[**Sendgrid Marketing**](https://sendgrid.com/pricing/) | $15 | $15 | $120
+[**Sendgrid API**](https://sendgrid.com/pricing/) | $14.95 | $14.95 | $29.95
+[**ConvertKit**](https://convertkit.com/pricing) | $66 | $100 | $516
 
 The following table shows the daily limit for sent emails per provider.
 
