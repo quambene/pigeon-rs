@@ -8,7 +8,7 @@
 ### v0.1.1
 
 - bug fix
-  - Fix connection through `--ssh-tunnel`
+  - Fix `--ssh-tunnel` for `query`
 
 ### v0.1.0
 
