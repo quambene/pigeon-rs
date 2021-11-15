@@ -4,9 +4,33 @@
 
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
 
-For example, you can define a bash `alias` with your individual `pigeon` command to send your weekly newsletter to your audience. You might want to automatize the send schedule by defining a systemd `.service`.  
+For example, query the subscribers of your newsletter and send an email to all of them:
 
-You might also draft a static html with your favorite web development framework, and use pigeon to send this html template.
+``` bash
+pigeon send-bulk sender@your-domain.com --receiver-query "select email from user where newsletter_confirmed = true" --message-file "message.yaml" --assume-yes
+```
+
+``` console
+> Display query result: shape: (4, 1)
++------------------------------+
+| email                        |
+| ---                          |
+| str                          |
++==============================+
+| "marie@curie.com"            |
++------------------------------+
+| "alexandre@grothendieck.com" |
++------------------------------+
+| "emmy@noether.com"           |
++------------------------------+
+| "elie@cartan.com"            |
++------------------------------+
+> Sending email to 4 receivers ...
+marie@curie.com ... ok
+alexandre@grothendieck.com ... ok
+emmy@noether.com ... ok
+elie@cartan.com ... ok
+```
 
 - [Requirements](#requirements)
 - [Install Pigeon](#install-pigeon)
