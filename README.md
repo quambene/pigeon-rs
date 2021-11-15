@@ -330,7 +330,7 @@ These numbers may be outdated. Do your own research.
 
 The following table compares the price per month for email provider and emails per month.
 
-<!-- --> | 5,000 | 10,000 | 100,000
+&nbsp; | 5,000 | 10,000 | 100,000
 --- | --- | --- | ---
 **Pigeon+**[**AWS**](https://aws.amazon.com/ses/pricing/) | $4.50 | $5 | $14
 [**Mailchimp Marketing**](https://mailchimp.com/pricing/marketing/) | $9.99 | $20.99 | $78.99
