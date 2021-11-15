@@ -14,8 +14,6 @@ categories = ["command-line-utilities", "email"]
 readme = "README.md"
 license = "Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 anyhow = "1.0.40"
 rusoto_sesv2 = "0.46.0"
