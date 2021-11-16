@@ -35,18 +35,17 @@ pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyho
     let subject = &email.message.subject;
     let text = &email.message.text;
     let html = &email.message.html;
-
     let message = SesMessage {
         subject: SesContent {
-            charset: None,
+            charset: Some(CHARSET.to_string()),
             data: subject.to_string(),
         },
         body: Body {
-            text: Some(SesContent {
+            text: text.as_ref().map(|text| SesContent {
                 data: text.to_string(),
                 charset: Some(CHARSET.to_string()),
             }),
-            html: Some(SesContent {
+            html: html.as_ref().map(|html| SesContent {
                 data: html.to_string(),
                 charset: Some(CHARSET.to_string()),
             }),

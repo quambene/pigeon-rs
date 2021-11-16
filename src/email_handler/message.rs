@@ -1,13 +1,12 @@
 use crate::{arg, email_handler::MessageTemplate};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
-use serde::Deserialize;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct Message {
     pub subject: String,
-    pub text: String,
-    pub html: String,
+    pub text: Option<String>,
+    pub html: Option<String>,
 }
 
 impl Message {
@@ -30,14 +29,16 @@ impl Message {
     pub fn default(message_template: &MessageTemplate) -> Result<Self, anyhow::Error> {
         let message = Message {
             subject: message_template.message.subject.to_string(),
-            text: message_template.message.text.to_string(),
-            html: "<html>
-                    <head></head>
-                    <body>"
-                .to_string()
-                + &message_template.message.html
-                + "</body>
-                    </html>",
+            text: match &message_template.message.text {
+                text if !text.is_empty() => Some(text.to_string()),
+                text if text.is_empty() => None,
+                _ => unreachable!(),
+            },
+            html: match &message_template.message.html {
+                html if !html.is_empty() => Some(html_template(html)),
+                html if html.is_empty() => None,
+                _ => unreachable!(),
+            },
         };
         Ok(message)
     }
@@ -50,14 +51,16 @@ impl Message {
             (Some(subject), Some(content)) => {
                 let message = Message {
                     subject: subject.to_string(),
-                    text: content.to_string(),
-                    html: "<html>
-                            <head></head>
-                            <body>"
-                        .to_string()
-                        + &content.to_string()
-                        + "</body>
-                            </html>",
+                    text: match content {
+                        text if !text.is_empty() => Some(text.to_string()),
+                        text if text.is_empty() => None,
+                        _ => unreachable!(),
+                    },
+                    html: match content {
+                        html if !html.is_empty() => Some(html_template(html)),
+                        html if html.is_empty() => None,
+                        _ => unreachable!(),
+                    },
                 };
                 Ok(message)
             }
@@ -76,10 +79,26 @@ impl Message {
             subject: self
                 .subject
                 .replace(&format!("{{{}}}", col_name), col_value),
-            text: self.text.replace(&format!("{{{}}}", col_name), col_value),
-            html: self.html.replace(&format!("{{{}}}", col_name), col_value),
+            text: match &self.text {
+                Some(text) => Some(text.replace(&format!("{{{}}}", col_name), col_value)),
+                None => None,
+            },
+            html: match &self.html {
+                Some(html) => Some(html.replace(&format!("{{{}}}", col_name), col_value)),
+                None => None,
+            },
         };
 
         Ok(message)
     }
+}
+
+fn html_template(content: &str) -> String {
+    "<html>
+    <head></head>
+    <body>"
+        .to_string()
+        + content
+        + "</body>
+    </html>"
 }
