@@ -1,17 +1,10 @@
-use crate::arg;
-use clap::ArgMatches;
 use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
 use std::{fs, path::PathBuf, time::SystemTime};
 
-pub fn read_csv(matches: &ArgMatches<'_>, csv_file: &PathBuf) -> Result<DataFrame, anyhow::Error> {
+pub fn read_csv(csv_file: &PathBuf) -> Result<DataFrame, anyhow::Error> {
     println!("Reading csv file '{}' ...", csv_file.display());
     let reader = CsvReader::from_path(csv_file)?.has_header(true);
     let df = reader.finish()?;
-
-    if matches.is_present(arg::DISPLAY) {
-        println!("Display csv file: {}", df);
-    }
-
     Ok(df)
 }
 
