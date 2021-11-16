@@ -52,10 +52,6 @@ impl BulkEmail {
             }
         };
 
-        if matches.is_present(arg::DISPLAY) {
-            println!("Display query result: {}", df_receiver);
-        }
-
         let emails = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
                 Some(values) => create_personalized_emails(matches, sender, df_receiver, values)?,
@@ -152,6 +148,11 @@ fn dataframe_from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::E
     };
 
     let df_receiver = query_postgres(matches, receiver_query)?;
+
+    if matches.is_present(arg::DISPLAY) {
+        println!("Display query result: {}", df_receiver);
+    }
+
     Ok(df_receiver)
 }
 
@@ -167,7 +168,11 @@ fn dataframe_from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Er
     };
 
     let path = PathBuf::from(receiver_file);
-    let df_receiver = read_csv(matches, &path)?;
+    let df_receiver = read_csv(&path)?;
+
+    if matches.is_present(arg::DISPLAY) {
+        println!("Display csv file: {}", df_receiver);
+    }
 
     Ok(df_receiver)
 }

@@ -1,4 +1,4 @@
-use crate::{arg, email_handler::Message};
+use crate::arg;
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use serde::Deserialize;
@@ -25,6 +25,13 @@ message:
 #[derive(Debug, Deserialize)]
 pub struct MessageTemplate {
     pub message: Message,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Message {
+    pub subject: String,
+    pub text: String,
+    pub html: String,
 }
 
 fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
