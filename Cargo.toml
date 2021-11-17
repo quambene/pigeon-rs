@@ -27,10 +27,14 @@ tokio = "1.12.0"
 csv = "1.1.6"
 clap = "2.33.3"
 chrono = "0.4.19"
-polars = "0.14.8"
-polars-core = "0.14.8"
-connectorx = { version = "0.2.0", features = ["src_postgres", "dst_polars"] }
+polars = "0.16"
+polars-core = "0.16"
+connectorx = { version = "0.2.2-alpha.5", features = ["src_postgres", "dst_arrow2"] }
 postgres = "0.19.2"
+url = "2.2.2"
+
+[patch.crates-io]
+connectorx = { path = "../connector-x/connectorx" }
 
 [[bin]]
 name = "pigeon-rs"

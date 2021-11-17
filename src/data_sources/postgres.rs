@@ -1,14 +1,15 @@
 use anyhow::{Context, Result};
 use clap::ArgMatches;
 use connectorx::{
-    destinations::arrow::ArrowDestination,
-    prelude::{Dispatcher, PostgresArrowTransport},
+    destinations::arrow2::Arrow2Destination,
+    prelude::{Dispatcher, PostgresArrow2Transport},
     sources::postgres::{rewrite_tls_args, BinaryProtocol, PostgresSource},
     sql::CXQuery,
 };
 use polars_core::frame::DataFrame;
 use postgres::NoTls;
 use std::{env, fmt};
+use url::Url;
 
 use crate::{arg, data_sources::SshTunnel};
 
@@ -85,18 +86,19 @@ pub fn query_postgres(matches: &ArgMatches<'_>, query: &str) -> Result<DataFrame
     };
 
     let connection_url = match &ssh_tunnel {
-        Some(tunnel) => tunnel.connection_url.to_string(),
-        None => conn_vars.connection_url(),
+        Some(tunnel) => Url::parse(&tunnel.connection_url)?,
+        None => Url::parse(&conn_vars.connection_url())?,
     };
 
     let (config, _tls) = rewrite_tls_args(&connection_url)?;
     let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 10)?;
-    let mut destination = ArrowDestination::new();
+    let mut destination = Arrow2Destination::new();
     let queries = &[CXQuery::naked(query)];
-    let dispatcher = Dispatcher::<_, _, PostgresArrowTransport<BinaryProtocol, NoTls>>::new(
+    let dispatcher = Dispatcher::<_, _, PostgresArrow2Transport<BinaryProtocol, NoTls>>::new(
         source,
         &mut destination,
         queries,
+        None,
     );
     dispatcher.run()?;
     let df = destination.polars();
