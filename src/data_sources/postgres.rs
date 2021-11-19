@@ -6,7 +6,7 @@ use connectorx::{
     sources::postgres::{rewrite_tls_args, BinaryProtocol, PostgresSource},
     sql::CXQuery,
 };
-use polars_core::frame::DataFrame;
+use polars::frame::DataFrame;
 use postgres::NoTls;
 use std::{env, fmt};
 use url::Url;
