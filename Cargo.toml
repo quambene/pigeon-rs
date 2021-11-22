@@ -28,7 +28,7 @@ csv = "1.1.6"
 clap = "2.33.3"
 chrono = "0.4.19"
 polars = { git = "https://github.com/pola-rs/polars", rev = "dd70f3167f53e4ba59a0fe9c2f8aca18cdbb6b0d", version = "0.17", features = ["dtype-u8"] }
-connectorx = { version = "0.2.2-alpha.5", features = ["src_postgres", "dst_arrow2"], git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43c53b87c6ab4049f85a8042ac62bed" }
+connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43c53b87c6ab4049f85a8042ac62bed", version = "0.2.2-alpha.5", features = ["src_postgres", "dst_arrow2"] }
 postgres = "0.19.2"
 url = "2.2.2"
 
