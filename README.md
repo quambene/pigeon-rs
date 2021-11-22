@@ -9,7 +9,8 @@ For example, query the subscribers of your newsletter, create a plaintext and ht
 ``` bash
 pigeon send-bulk \
     sender@your-domain.com \
-    --receiver-query "select email from user where newsletter_confirmed = true" \ --message-file "message.yaml" \
+    --receiver-query "select email from user where newsletter_confirmed = true" \
+    --message-file "message.yaml" \
     --display \
     --assume-yes
 ```
