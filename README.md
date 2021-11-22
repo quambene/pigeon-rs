@@ -4,10 +4,14 @@
 
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
 
-For example, query the subscribers of your newsletter and send an email to all of them:
+For example, query the subscribers of your newsletter, create a plaintext and html email from a template file, and send it to all of them:
 
 ``` bash
-pigeon send-bulk sender@your-domain.com --receiver-query "select email from user where newsletter_confirmed = true" --message-file "message.yaml" --display --assume-yes
+pigeon send-bulk \
+    sender@your-domain.com \
+    --receiver-query "select email from user where newsletter_confirmed = true" \ --message-file "message.yaml" \
+    --display \
+    --assume-yes
 ```
 
 ``` console
