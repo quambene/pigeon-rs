@@ -35,14 +35,15 @@ pub struct Message {
 }
 
 fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
-    let mut message_template = fs::File::create(path).expect("Unable to create message template.");
+    let mut message_template =
+        fs::File::create(path).context("Unable to create message template.")?;
     message_template.write_all(MESSAGE_TEMPLATE.as_bytes())?;
     Ok(())
 }
 
 impl MessageTemplate {
     pub fn create(_matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        let current_dir = env::current_dir().expect("Can't get current directory");
+        let current_dir = env::current_dir().context("Can't get current directory")?;
         let path_dir = current_dir;
 
         let file_name = TEMPLATE_FILE_NAME;
@@ -53,7 +54,9 @@ impl MessageTemplate {
                 let mut input = String::new();
                 println!("Message template already exists. Should this template be overwritten? Yes (y) or no (n)");
                 loop {
-                    io::stdin().read_line(&mut input).expect("Can't read input");
+                    io::stdin()
+                        .read_line(&mut input)
+                        .context("Can't read input")?;
                     match input.trim() {
                         "y" | "yes" | "Yes" => {
                             println!(

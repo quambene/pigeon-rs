@@ -4,7 +4,7 @@ use crate::{
     email_provider,
     helper::{check_send_status, format_green},
 };
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use std::io;
 
@@ -71,7 +71,9 @@ impl Email {
 
         println!("Should an email be sent to 1 recipient? Yes (y) or no (n)");
         let confirmation = loop {
-            io::stdin().read_line(&mut input).expect("Can't read input");
+            io::stdin()
+                .read_line(&mut input)
+                .context("Can't read input")?;
             match input.trim() {
                 "y" | "yes" | "Yes" => {
                     break Confirmed::Yes;
