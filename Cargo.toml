@@ -31,6 +31,7 @@ polars = { git = "https://github.com/pola-rs/polars", rev = "dd70f3167f53e4ba59a
 connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43c53b87c6ab4049f85a8042ac62bed", version = "0.2.2-alpha.5", features = ["src_postgres", "dst_arrow2"] }
 postgres = "0.19.2"
 url = "2.2.2"
+uuid = { version = "0.8.2", features = ["v4"] }
 
 [[bin]]
 name = "pigeon-rs"

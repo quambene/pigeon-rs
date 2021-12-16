@@ -7,6 +7,7 @@ use std::{
     io::Write,
     path::PathBuf,
 };
+use uuid::Uuid;
 
 pub fn write_image(
     matches: &ArgMatches<'_>,
@@ -59,7 +60,10 @@ pub fn write_image(
 
         let image_name = match image_name {
             Some(image_name) => image_name,
-            None => String::from("NULL"),
+            None => {
+                // Indicate the missing image name by a UUID
+                Uuid::new_v4().to_hyphenated().to_string()
+            }
         };
 
         let target_file = image_name + "." + file_type;
