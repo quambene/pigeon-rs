@@ -16,4 +16,6 @@ pub const ASSUME_YES: &str = "assume-yes";
 pub const PERSONALIZE: &str = "personalize";
 pub const SAVE: &str = "save";
 pub const FILE_TYPE: &str = "file-type";
+pub const IMAGE_COLUMN: &str = "image-column";
+pub const IMAGE_NAME: &str = "image-name";
 pub const SSH_TUNNEL: &str = "ssh-tunnel";
