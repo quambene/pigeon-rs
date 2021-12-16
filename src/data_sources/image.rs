@@ -35,6 +35,7 @@ pub fn write_image(
     };
 
     for i in 0..df.height() {
+        // TODO: Converting AnyValue to string leads to additional quotation marks (https://github.com/pola-rs/polars/issues/2055)
         let image_name = df
             .column(name_col)
             .context("Can't find column for image name")?
