@@ -32,9 +32,6 @@ connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43
 postgres = "0.19.2"
 url = "2.2.2"
 
-# [patch.crates-io]
-# connectorx = { path = "../connector-x/connectorx" }
-
 [[bin]]
 name = "pigeon-rs"
 filename = "pigeon"
