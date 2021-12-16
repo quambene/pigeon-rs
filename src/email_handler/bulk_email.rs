@@ -109,7 +109,9 @@ impl BulkEmail {
             email_count
         );
         let confirmation = loop {
-            io::stdin().read_line(&mut input).expect("Can't read input");
+            io::stdin()
+                .read_line(&mut input)
+                .context("Can't read input")?;
             match input.trim() {
                 "y" | "yes" | "Yes" => {
                     break Confirmed::Yes;
@@ -182,11 +184,9 @@ fn create_emails(
     sender: &str,
     df_receiver: DataFrame,
 ) -> Result<Vec<Email>, anyhow::Error> {
-    let receiver_col: &str;
-
     // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
-    match matches.value_of(arg::RECEIVER_COLUMN) {
-        Some(col_name) => receiver_col = col_name,
+    let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
+        Some(col_name) => col_name,
         None => {
             return Err(anyhow!(
                 "Missing value for argument '{}'",
