@@ -6,7 +6,7 @@ use crate::{
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
-pub fn query_args() -> [Arg<'static, 'static>; 8] {
+pub fn query_args() -> [Arg<'static, 'static>; 9] {
     [
         Arg::with_name(cmd::QUERY)
             .index(1)
@@ -24,10 +24,15 @@ pub fn query_args() -> [Arg<'static, 'static>; 8] {
             .help("Save query result"),
         Arg::with_name(arg::FILE_TYPE)
             .long(arg::FILE_TYPE)
-            .takes_value(false)
+            .takes_value(true)
             .default_value("csv")
             .possible_values(&["csv", "jpg", "png"])
-            .help("Specifies file type for saved query"),
+            .help("Specifies the file type for saved query"),
+        Arg::with_name(arg::OUTPUT_DIR)
+            .long(arg::OUTPUT_DIR)
+            .takes_value(true)
+            .default_value("./output")
+            .help("Specifies the output directory for saved query"),
         Arg::with_name(arg::IMAGE_COLUMN)
             .long(arg::IMAGE_COLUMN)
             .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
@@ -37,7 +42,7 @@ pub fn query_args() -> [Arg<'static, 'static>; 8] {
             .long(arg::IMAGE_NAME)
             .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
             .takes_value(true)
-            .help("Specifies column used for the image name"),
+            .help("Specifies the column used for the image name"),
         Arg::with_name(arg::DISPLAY)
             .long(arg::DISPLAY)
             .takes_value(false)
@@ -67,7 +72,7 @@ pub fn query(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
                     // If argument 'FILE_TYPE' is not present the default value 'csv' will be used
                     match matches.value_of(arg::FILE_TYPE) {
                         Some(file_type) => match file_type {
-                            x if x == "csv" => write_csv(df_query_result)?,
+                            x if x == "csv" => write_csv(matches, df_query_result)?,
                             x if x == "jpg" => write_image(matches, df_query_result, x)?,
                             x if x == "png" => write_image(matches, df_query_result, x)?,
                             _ => {

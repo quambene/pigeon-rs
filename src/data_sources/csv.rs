@@ -1,6 +1,9 @@
-use anyhow::Context;
+use anyhow::{anyhow, Context};
+use clap::ArgMatches;
 use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
 use std::{fs, path::PathBuf, time::SystemTime};
+
+use crate::arg;
 
 pub fn read_csv(csv_file: &PathBuf) -> Result<DataFrame, anyhow::Error> {
     println!("Reading csv file '{}' ...", csv_file.display());
@@ -9,17 +12,20 @@ pub fn read_csv(csv_file: &PathBuf) -> Result<DataFrame, anyhow::Error> {
     Ok(df)
 }
 
-pub fn write_csv(df: DataFrame) -> Result<(), anyhow::Error> {
+pub fn write_csv(matches: &ArgMatches<'_>, df: DataFrame) -> Result<(), anyhow::Error> {
     let now = SystemTime::now();
     let now_utc: chrono::DateTime<chrono::Utc> = now.into();
     let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
 
-    let target_dir = &PathBuf::from("./output");
+    let target_dir = match matches.value_of(arg::OUTPUT_DIR) {
+        Some(output_dir) => PathBuf::from(output_dir),
+        None => return Err(anyhow!("Missing value for argument '{}'", arg::OUTPUT_DIR)),
+    };
     let target_file = "query_".to_string() + &current_time + ".csv";
 
     match target_dir.exists() {
         true => (),
-        false => fs::create_dir(target_dir).context("Can't create output directory")?,
+        false => fs::create_dir(&target_dir).context("Can't create output directory")?,
     }
 
     let target_path = target_dir.join(target_file);

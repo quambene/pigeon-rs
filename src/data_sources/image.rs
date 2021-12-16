@@ -14,11 +14,14 @@ pub fn write_image(
     df: DataFrame,
     file_type: &str,
 ) -> Result<(), anyhow::Error> {
-    let target_dir = &PathBuf::from("./output");
+    let target_dir = match matches.value_of(arg::OUTPUT_DIR) {
+        Some(output_dir) => PathBuf::from(output_dir),
+        None => return Err(anyhow!("Missing value for argument '{}'", arg::OUTPUT_DIR)),
+    };
 
     match target_dir.exists() {
         true => (),
-        false => fs::create_dir(target_dir).context("Can't create output directory")?,
+        false => fs::create_dir(&target_dir).context("Can't create output directory")?,
     }
 
     let image_col = match matches.value_of(arg::IMAGE_COLUMN) {
