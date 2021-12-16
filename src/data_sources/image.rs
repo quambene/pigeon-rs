@@ -1,7 +1,7 @@
 use crate::arg;
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
-use polars::prelude::{DataFrame, TakeRandom};
+use polars::prelude::{DataFrame, DataType, TakeRandom};
 use std::{
     fs::{self, File},
     io::Write,
@@ -35,17 +35,37 @@ pub fn write_image(
     };
 
     for i in 0..df.height() {
-        // TODO: Converting AnyValue to string leads to additional quotation marks (https://github.com/pola-rs/polars/issues/2055)
-        let image_name = df
+        let data_type = df
             .column(name_col)
             .context("Can't find column for image name")?
-            .get(i)
-            .to_string();
+            .dtype();
+
+        let image_name = match data_type {
+            DataType::Utf8 => df
+                .column(name_col)
+                .context("Can't find column for image name")?
+                .utf8()
+                .context("Can't convert series to chunked array")?
+                .get(i)
+                .map(|str| str.to_string()),
+            DataType::Null => None,
+            _ => Some(
+                df.column(name_col)
+                    .context("Can't find column for image name")?
+                    .get(i)
+                    .to_string(),
+            ),
+        };
+
+        let image_name = match image_name {
+            Some(image_name) => image_name,
+            None => String::from("NULL"),
+        };
 
         let target_file = image_name + "." + file_type;
         let target_path = target_dir.join(target_file);
 
-        let image_opt = df
+        let image = df
             .column(image_col)
             .context("Can't find column for images")?
             .list()
@@ -54,7 +74,7 @@ pub fn write_image(
 
         println!("Save query result to file: {}", target_path.display());
 
-        match image_opt {
+        match image {
             Some(image) => {
                 let bytes: Vec<u8> = image
                     .u8()
