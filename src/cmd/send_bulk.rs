@@ -30,7 +30,7 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 11] {
             .help("Path of the message file"),
         Arg::with_name(arg::RECEIVER_COLUMN)
             .long(arg::RECEIVER_COLUMN)
-            .takes_value(false)
+            .takes_value(true)
             .default_value("email")
             .help("Specifies the column in which to look for email addresses"),
         Arg::with_name(arg::PERSONALIZE)
