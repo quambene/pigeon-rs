@@ -1,12 +1,12 @@
 use crate::{
     arg::{self},
     cmd,
-    data_sources::{query_postgres, write_csv},
+    data_sources::{query_postgres, write_csv, write_image},
 };
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
-pub fn query_args() -> [Arg<'static, 'static>; 5] {
+pub fn query_args() -> [Arg<'static, 'static>; 8] {
     [
         Arg::with_name(cmd::QUERY)
             .index(1)
@@ -21,7 +21,23 @@ pub fn query_args() -> [Arg<'static, 'static>; 5] {
         Arg::with_name(arg::SAVE)
             .long(arg::SAVE)
             .takes_value(false)
-            .help("Save query result as csv file"),
+            .help("Save query result"),
+        Arg::with_name(arg::FILE_TYPE)
+            .long(arg::FILE_TYPE)
+            .takes_value(false)
+            .default_value("csv")
+            .possible_values(&["csv", "jpg", "png"])
+            .help("Specifies file type for saved query"),
+        Arg::with_name(arg::IMAGE_COLUMN)
+            .long(arg::IMAGE_COLUMN)
+            .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
+            .takes_value(true)
+            .help("Specifies the column in which to look for images"),
+        Arg::with_name(arg::IMAGE_NAME)
+            .long(arg::IMAGE_NAME)
+            .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
+            .takes_value(true)
+            .help("Specifies column used for the image name"),
         Arg::with_name(arg::DISPLAY)
             .long(arg::DISPLAY)
             .takes_value(false)
@@ -48,7 +64,24 @@ pub fn query(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
                 }
 
                 if matches.is_present(arg::SAVE) {
-                    write_csv(df_query_result)?;
+                    // If argument 'FILE_TYPE' is not present the default value 'csv' will be used
+                    match matches.value_of(arg::FILE_TYPE) {
+                        Some(file_type) => match file_type {
+                            x if x == "csv" => write_csv(df_query_result)?,
+                            x if x == "jpg" => write_image(matches, df_query_result, x)?,
+                            x if x == "png" => write_image(matches, df_query_result, x)?,
+                            _ => {
+                                return Err(anyhow!(
+                                    "Value '{}' not supported for argument '{}'",
+                                    file_type,
+                                    arg::FILE_TYPE
+                                ))
+                            }
+                        },
+                        None => {
+                            return Err(anyhow!("Missing value for argument '{}'", arg::FILE_TYPE))
+                        }
+                    };
                 }
 
                 Ok(())

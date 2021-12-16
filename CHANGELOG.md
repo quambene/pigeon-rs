@@ -1,5 +1,10 @@
 <!-- markdownlint-disable MD041 -->
 
+### v0.2.0
+
+- bug fix
+  - Support for `bytea` type in postgres
+
 ### v0.1.3
 
 - bug fix

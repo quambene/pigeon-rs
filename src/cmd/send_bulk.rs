@@ -32,7 +32,7 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 11] {
             .long(arg::RECEIVER_COLUMN)
             .takes_value(false)
             .default_value("email")
-            .help("Defines the column name in which to look for email addresses"),
+            .help("Specifies the column in which to look for email addresses"),
         Arg::with_name(arg::PERSONALIZE)
             .long(arg::PERSONALIZE)
             .takes_value(true)
