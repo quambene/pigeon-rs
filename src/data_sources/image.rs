@@ -25,7 +25,7 @@ pub fn write_image(df: DataFrame, file_type: &str) -> Result<(), anyhow::Error> 
                 let now = SystemTime::now();
                 let now_utc: chrono::DateTime<chrono::Utc> = now.into();
                 let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Nanos, true);
-                let target_file = "query_".to_string() + &current_time + file_type;
+                let target_file = "query_".to_string() + &current_time + "." + file_type;
                 let target_path = target_dir.join(target_file);
                 println!("Save query result to file: {}", target_path.display());
 
