@@ -1,3 +1,4 @@
+use anyhow::Context;
 use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
 use std::{fs, path::PathBuf, time::SystemTime};
 
@@ -18,7 +19,7 @@ pub fn write_csv(df: DataFrame) -> Result<(), anyhow::Error> {
 
     match target_dir.exists() {
         true => (),
-        false => fs::create_dir(target_dir).expect("Can't create output directory"),
+        false => fs::create_dir(target_dir).context("Can't create output directory")?,
     }
 
     let target_path = target_dir.join(target_file);

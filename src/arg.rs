@@ -15,4 +15,5 @@ pub const RECEIVER_COLUMN: &str = "receiver-column";
 pub const ASSUME_YES: &str = "assume-yes";
 pub const PERSONALIZE: &str = "personalize";
 pub const SAVE: &str = "save";
+pub const FILE_TYPE: &str = "file-type";
 pub const SSH_TUNNEL: &str = "ssh-tunnel";
