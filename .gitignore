@@ -17,8 +17,10 @@ rust-toolchain
 # Environment
 **/.env
 
-### Data sources
+### Data
 **/*.csv
+**/*.jpg
+**/*.png
 
 ### Keys
 **/*.jks
