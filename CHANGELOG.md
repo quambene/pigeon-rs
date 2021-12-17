@@ -2,22 +2,22 @@
 
 ### v0.2.0
 
-- bug fix
-  - Support for `bytea` type in postgres
+- features
+  - Support `bytea` type in postgres
 
 ### v0.1.3
 
-- bug fix
+- bugfixes
   - Fix empty text message or html message
 
 ### v0.1.2
 
-- bug fix
+- bugfixes
   - Fix `--ssh-tunnel` for `send-bulk`
 
 ### v0.1.1
 
-- bug fix
+- bugfixes
   - Fix `--ssh-tunnel` for `query`
 
 ### v0.1.0
