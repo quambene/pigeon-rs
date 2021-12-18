@@ -4,6 +4,7 @@
 
 - features
   - Support `bytea` type in postgres
+  - Implement `--file-type`, `--image-column`, `--image-name`, and `--output-dir` for `query`
 
 ### v0.1.3
 
