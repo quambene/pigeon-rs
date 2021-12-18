@@ -97,7 +97,7 @@ impl BulkEmail {
         let receivers: Vec<String> = self
             .emails
             .iter()
-            .map(|el| el.receiver.to_string())
+            .map(|email| email.receiver.to_string())
             .collect();
         println!(
             "Preparing to send an email to {} recipients: {:#?}",

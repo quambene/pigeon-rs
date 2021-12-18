@@ -87,7 +87,7 @@ pub fn write_image(
                     .u8()
                     .context("Can't convert series to chunked array")?
                     .into_iter()
-                    .map(|el| el.expect("Can't convert series to bytes"))
+                    .map(|byte| byte.expect("Can't convert series to bytes"))
                     .collect();
 
                 let mut file = File::create(target_path).context("Unable to create file")?;
