@@ -3,6 +3,7 @@
 ### v0.2.0
 
 - features
+  - Support for arrow2
   - Support `bytea` type in postgres
   - Implement `--file-type`, `--image-column`, `--image-name`, and `--output-dir` for `query`
   - Implement `--archive-dir` for `send` and `send-bulk`
