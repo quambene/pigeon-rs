@@ -18,6 +18,9 @@ rust-toolchain
 **/.env
 
 ### Data
+archived_messages
+my-archive-dir
+output
 **/*.csv
 **/*.jpg
 **/*.png
