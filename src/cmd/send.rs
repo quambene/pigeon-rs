@@ -133,8 +133,9 @@ mod tests {
     #[test]
     #[ignore]
     fn test_send_subject_content() {
-        let sender = env::var("TEST_SENDER").expect("Missing env var");
-        let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
 
         let args = vec![
             cmd::BIN,
@@ -242,8 +243,9 @@ mod tests {
     #[test]
     #[ignore]
     fn test_send_message_file() {
-        let sender = env::var("TEST_SENDER").expect("Missing env var");
-        let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
 
         let args = vec![
             cmd::BIN,
