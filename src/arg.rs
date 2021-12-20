@@ -8,6 +8,7 @@ pub const SUBJECT: &str = "subject";
 pub const CONTENT: &str = "content";
 pub const DRY_RUN: &str = "dry-run";
 pub const DISPLAY: &str = "display";
+pub const ARCHIVE_DIR: &str = "archive-dir";
 pub const MESSAGE_FILE: &str = "message-file";
 pub const RECEIVER_FILE: &str = "receiver-file";
 pub const RECEIVER_QUERY: &str = "receiver-query";

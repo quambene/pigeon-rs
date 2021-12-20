@@ -132,20 +132,20 @@ impl MessageTemplate {
             }
         }
 
-        let target_dir = PathBuf::from("./archived_templates");
-        let target_file: String;
-
-        if matches.is_present(arg::DRY_RUN) {
-            target_file = String::from("message_") + &current_time + "_dry-run" + ".yaml";
+        let target_dir = match matches.value_of(arg::ARCHIVE_DIR) {
+            Some(archive_dir) => PathBuf::from(archive_dir),
+            None => return Err(anyhow!("Missing value for argument '{}'", arg::ARCHIVE_DIR)),
+        };
+        let target_file = if matches.is_present(arg::DRY_RUN) {
+            String::from("message_") + &current_time + "_dry-run" + ".yaml"
         } else {
-            target_file = String::from("message_") + &current_time + ".yaml";
-        }
-
+            String::from("message_") + &current_time + ".yaml"
+        };
         let target_path = target_dir.join(target_file);
 
         if target_dir.exists() {
-            println!("Archiving template file ...");
-            fs::copy(source_path, target_path).context("Unable to archive mail.")?;
+            println!("Archiving message template ...");
+            fs::copy(source_path, target_path).context("Unable to archive message template.")?;
         } else {
             println!(
                 "Creating directory for archived templates: {:#?}",
@@ -153,8 +153,8 @@ impl MessageTemplate {
             );
             fs::create_dir(target_dir)
                 .context("Unable to create directory for archived templates.")?;
-            println!("Archiving template file ...");
-            fs::copy(source_path, target_path).context("Unable to archive mail.")?;
+            println!("Archiving message template ...");
+            fs::copy(source_path, target_path).context("Unable to archive message template.")?;
         }
 
         Ok(())
