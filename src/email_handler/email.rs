@@ -92,7 +92,7 @@ impl Email {
     }
 
     pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::MESSAGE_FILE) {
+        if matches.is_present(arg::ARCHIVE) {
             MessageTemplate::archive(matches)?;
         }
 

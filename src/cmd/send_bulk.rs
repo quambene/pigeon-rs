@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 12] {
+pub fn send_bulk_args() -> [Arg<'static, 'static>; 13] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -28,6 +28,10 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 12] {
             .required(true)
             .takes_value(true)
             .help("Path of the message file"),
+        Arg::with_name(arg::ARCHIVE)
+            .long(arg::ARCHIVE)
+            .takes_value(false)
+            .help("Archive sent message"),
         Arg::with_name(arg::ARCHIVE_DIR)
             .long(arg::ARCHIVE_DIR)
             .takes_value(true)

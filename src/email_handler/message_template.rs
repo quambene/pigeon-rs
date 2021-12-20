@@ -118,19 +118,15 @@ impl MessageTemplate {
         let now = SystemTime::now();
         let now_utc: chrono::DateTime<chrono::Utc> = now.into();
         let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
-        let source_path: &str;
-
-        match matches.value_of(arg::MESSAGE_FILE) {
-            Some(message_file) => {
-                source_path = message_file;
-            }
+        let source_path = match matches.value_of(arg::MESSAGE_FILE) {
+            Some(message_file) => message_file,
             None => {
                 return Err(anyhow!(
                     "Missing value for argument '{}'",
                     arg::MESSAGE_FILE
                 ));
             }
-        }
+        };
 
         let target_dir = match matches.value_of(arg::ARCHIVE_DIR) {
             Some(archive_dir) => PathBuf::from(archive_dir),
