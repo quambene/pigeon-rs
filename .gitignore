@@ -19,7 +19,7 @@ rust-toolchain
 
 ### Data
 archived_messages
-my-archive-dir
+my-archived-messages
 saved_queries
 my-saved-queries
 **/*.csv

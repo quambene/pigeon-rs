@@ -234,7 +234,7 @@ mod tests {
             "--assume-yes",
             "--archive",
             "--archive-dir",
-            "./my-archive-dir",
+            "./my-archived-messages",
         ];
 
         let app = app();
