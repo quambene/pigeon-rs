@@ -5,9 +5,8 @@ use lettre::{
     message::{header, MultiPart, SinglePart},
     FileTransport, Message, Transport,
 };
-use std::{path::PathBuf, str};
+use std::{fmt, path::PathBuf, str};
 
-#[derive(Debug)]
 pub struct Mime {
     pub message: Message,
 }
@@ -60,13 +59,14 @@ impl Mime {
 
         Ok(())
     }
+}
 
-    pub fn display(&self) -> Result<(), anyhow::Error> {
-        println!(
-            "Display MIME formatted email:\n{}",
-            str::from_utf8(&self.message.formatted())?
-        );
-
-        Ok(())
+impl fmt::Debug for Mime {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            str::from_utf8(&self.message.formatted()).expect("Can't convert from utf8")
+        )
     }
 }
