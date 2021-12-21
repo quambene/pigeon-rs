@@ -1,4 +1,4 @@
-use crate::{arg, email_handler::Email};
+use crate::{arg, email_builder::Email};
 use anyhow::Result;
 use clap::ArgMatches;
 use rusoto_core::{HttpClient, Region};

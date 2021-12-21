@@ -1,7 +1,7 @@
 use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
-    email_handler::{Confirmed, Email, Message, MessageTemplate},
+    email_builder::{Confirmed, Email, Message, MessageTemplate},
     email_provider,
     helper::{check_send_status, format_green},
 };

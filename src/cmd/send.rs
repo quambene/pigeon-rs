@@ -1,6 +1,6 @@
 use crate::{
     arg,
-    email_handler::{Confirmed, Email},
+    email_builder::{Confirmed, Email},
     helper::format_green,
 };
 use anyhow::Result;

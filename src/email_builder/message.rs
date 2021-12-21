@@ -1,4 +1,4 @@
-use crate::{arg, email_handler::MessageTemplate};
+use crate::{arg, email_builder::MessageTemplate};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 

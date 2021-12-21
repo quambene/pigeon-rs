@@ -1,6 +1,6 @@
 use crate::{
     arg,
-    email_handler::{Confirmed, Message, MessageTemplate},
+    email_builder::{Confirmed, Message, MessageTemplate},
     email_provider,
     helper::{check_send_status, format_green},
 };

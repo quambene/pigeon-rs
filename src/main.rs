@@ -3,7 +3,7 @@
 mod arg;
 mod cmd;
 mod data_sources;
-mod email_handler;
+mod email_builder;
 mod email_provider;
 mod helper;
 

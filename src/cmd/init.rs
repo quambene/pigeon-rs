@@ -1,4 +1,4 @@
-use crate::{arg, email_handler::MessageTemplate};
+use crate::{arg, email_builder::MessageTemplate};
 use clap::{Arg, ArgMatches};
 
 pub fn init_args() -> [Arg<'static, 'static>; 1] {
