@@ -1,4 +1,4 @@
-use crate::arg;
+use crate::{arg, email_builder};
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
 use lettre::{
@@ -15,34 +15,20 @@ impl Mime {
     pub fn new(
         sender: &str,
         receiver: &str,
-        message: &super::Message,
+        message: &email_builder::Message,
     ) -> Result<Self, anyhow::Error> {
-        let text: &str = match &message.text {
-            Some(text) => text,
-            None => Default::default(),
-        };
-        let html: &str = match &message.html {
-            Some(text) => text,
-            None => Default::default(),
-        };
-        let message = Message::builder()
+        let message_builder = Message::builder()
             .from(sender.parse().context("Can't parse sender")?)
             .to(receiver.parse().context("Can't parse receiver")?)
-            .subject(&message.subject)
-            .multipart(
-                MultiPart::alternative()
-                    .singlepart(
-                        SinglePart::builder()
-                            .header(header::ContentType::TEXT_PLAIN)
-                            .body(text.to_string()),
-                    )
-                    .singlepart(
-                        SinglePart::builder()
-                            .header(header::ContentType::TEXT_HTML)
-                            .body(html.to_string()),
-                    ),
-            )
-            .context("Can't create email")?;
+            .subject(&message.subject);
+
+        let message = match (&message.text, &message.html) {
+            (Some(text), Some(html)) => message_builder.multipart(Mime::alternative(text, html)),
+            (Some(text), None) => message_builder.singlepart(Mime::text_plain(text)),
+            (None, Some(html)) => message_builder.singlepart(Mime::text_html(html)),
+            (_, _) => return Err(anyhow!("Missing email body")),
+        }
+        .context("Can't create MIME formatted email")?;
 
         Ok(Self { message })
     }
@@ -58,6 +44,43 @@ impl Mime {
             .context("Can't save email in .eml format")?;
 
         Ok(())
+    }
+
+    fn text_plain(text: &str) -> SinglePart {
+        SinglePart::builder()
+            .header(header::ContentType::TEXT_PLAIN)
+            .body(text.to_string())
+    }
+
+    fn text_html(text: &str) -> SinglePart {
+        SinglePart::builder()
+            .header(header::ContentType::TEXT_HTML)
+            .body(text.to_string())
+    }
+
+    fn attachment(file_type: &str, file_name: &str) -> Result<SinglePart, anyhow::Error> {
+        Ok(SinglePart::builder()
+            .header(header::ContentType::parse("application/pdf")?)
+            .header(header::ContentDisposition::attachment(file_name))
+            .body(Vec::<u8>::default()))
+    }
+
+    fn alternative(text: &str, html: &str) -> MultiPart {
+        MultiPart::alternative()
+            .singlepart(Mime::text_plain(text))
+            .singlepart(Mime::text_plain(html))
+    }
+
+    fn mixed(
+        text: &str,
+        html: &str,
+        file_type: &str,
+        file_name: &str,
+    ) -> Result<MultiPart, anyhow::Error> {
+        Ok(MultiPart::mixed()
+            .singlepart(Mime::text_plain(text))
+            .singlepart(Mime::text_plain(html))
+            .singlepart(Mime::attachment(file_type, file_name)?))
     }
 }
 
