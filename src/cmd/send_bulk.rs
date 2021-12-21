@@ -31,12 +31,12 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 13] {
         Arg::with_name(arg::ARCHIVE)
             .long(arg::ARCHIVE)
             .takes_value(false)
-            .help("Archive sent message"),
+            .help("Archive sent emails"),
         Arg::with_name(arg::ARCHIVE_DIR)
             .long(arg::ARCHIVE_DIR)
             .takes_value(true)
-            .default_value("./archived_messages")
-            .help("Path of archived messages"),
+            .default_value("./sent_emails")
+            .help("Path of sent emails"),
         Arg::with_name(arg::RECEIVER_COLUMN)
             .long(arg::RECEIVER_COLUMN)
             .takes_value(true)
@@ -237,7 +237,7 @@ mod tests {
             "--assume-yes",
             "--archive",
             "--archive-dir",
-            "./my-archived-messages",
+            "./my-sent-emails",
         ];
 
         let app = app();

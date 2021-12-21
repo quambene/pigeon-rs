@@ -40,12 +40,12 @@ pub fn send_args() -> [Arg<'static, 'static>; 11] {
         Arg::with_name(arg::ARCHIVE)
             .long(arg::ARCHIVE)
             .takes_value(false)
-            .help("Archive sent message"),
+            .help("Archive sent emails"),
         Arg::with_name(arg::ARCHIVE_DIR)
             .long(arg::ARCHIVE_DIR)
             .takes_value(true)
-            .default_value("./archived_messages")
-            .help("Path of archived messages"),
+            .default_value("./sent_emails")
+            .help("Path of sent emails"),
         Arg::with_name(arg::DISPLAY)
             .long(arg::DISPLAY)
             .takes_value(false)
@@ -227,7 +227,7 @@ mod tests {
             "--assume-yes",
             "--archive",
             "--archive-dir",
-            "./my-archived-messages",
+            "./my-sent-emails",
         ];
 
         let app = app();
