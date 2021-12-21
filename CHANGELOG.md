@@ -7,6 +7,7 @@
   - Support `bytea` type in postgres
   - Implement `--file-type`, `--image-column`, `--image-name`, and `--save-dir` for `query`
   - Implement `--archive-dir` for `send` and `send-bulk`
+  - Implement MIME format
 
 ### v0.1.3
 

@@ -32,6 +32,7 @@ connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43
 postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }
+lettre = { version = "0.10.0-rc.4", features = ["file-transport"] }
 
 [[bin]]
 name = "pigeon-rs"

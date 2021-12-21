@@ -1,3 +1,4 @@
+use super::Mime;
 use crate::{
     arg,
     email_builder::{Confirmed, Message, MessageTemplate},
@@ -13,6 +14,7 @@ pub struct Email {
     pub sender: String,
     pub receiver: String,
     pub message: Message,
+    pub mime: Mime,
 }
 
 impl Email {
@@ -23,10 +25,12 @@ impl Email {
         ) {
             (Some(sender), Some(receiver)) => {
                 let message = Message::new(matches)?;
+                let mime = Mime::new(sender, receiver, &message)?;
                 let email = Email {
                     sender: sender.to_string(),
                     receiver: receiver.to_string(),
                     message,
+                    mime,
                 };
                 Ok(email)
             }
@@ -94,6 +98,7 @@ impl Email {
     pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         if matches.is_present(arg::ARCHIVE) {
             MessageTemplate::archive(matches)?;
+            self.mime.archive(matches)?;
         }
 
         Ok(())

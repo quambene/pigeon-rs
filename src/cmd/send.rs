@@ -74,6 +74,7 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display email: {:#?}", email);
+        email.mime.display()?;
     }
 
     if matches.is_present(arg::DRY_RUN) {

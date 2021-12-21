@@ -1,3 +1,4 @@
+use super::Mime;
 use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
@@ -199,18 +200,20 @@ fn create_emails(
     let message = &Message::default(&message_template)?;
 
     let mut emails: Vec<Email> = vec![];
-    let email_series = df_receiver.column(receiver_col)?;
-    let chunked_array = email_series
+    let receiver_series = df_receiver.column(receiver_col)?;
+    let receivers = receiver_series
         .utf8()
         .context("Can't convert series to chunked array")?;
 
-    for email_opt in chunked_array {
-        match email_opt {
-            Some(email) => {
+    for receiver in receivers {
+        match receiver {
+            Some(receiver) => {
+                let mime = Mime::new(sender, receiver, &message)?;
                 emails.push(Email {
                     sender: sender.to_string(),
-                    receiver: email.to_string(),
+                    receiver: receiver.to_string(),
                     message: message.clone(),
+                    mime,
                 });
             }
             None => continue,
@@ -248,11 +251,9 @@ fn create_personalized_emails(
             };
         }
 
-        let receiver_col: &str;
-
         // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
-        match matches.value_of(arg::RECEIVER_COLUMN) {
-            Some(col_name) => receiver_col = col_name,
+        let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
+            Some(receiver_col) => receiver_col,
             None => {
                 return Err(anyhow!(
                     "Missing value for argument '{}'",
@@ -260,7 +261,6 @@ fn create_personalized_emails(
                 ))
             }
         };
-
         let receiver = df_receiver
             .column(receiver_col)
             .context(format!(
@@ -271,11 +271,13 @@ fn create_personalized_emails(
             .get(i)
             .unwrap()
             .to_string();
+        let mime = Mime::new(sender, &receiver, &message)?;
 
         emails.push(Email {
             sender: sender.to_string(),
             receiver,
             message,
+            mime,
         });
     }
 

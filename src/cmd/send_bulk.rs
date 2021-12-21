@@ -81,6 +81,9 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);
+        for email in &bulk_email.emails {
+            email.mime.display()?;
+        }
     }
 
     if matches.is_present(arg::DRY_RUN) {
