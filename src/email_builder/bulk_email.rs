@@ -269,7 +269,7 @@ fn create_personalized_emails(
             ))?
             .utf8()?
             .get(i)
-            .unwrap()
+            .context("Can't get value of chunked array")?
             .to_string();
         let mime = Mime::new(sender, &receiver, &message)?;
 
