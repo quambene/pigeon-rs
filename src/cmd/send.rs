@@ -256,9 +256,9 @@ mod tests {
             "--dry-run",
             "--display",
             "--assume-yes",
+            "--archive",
             "--attachment",
             "./test_data/test.pdf",
-            "--archive",
         ];
 
         let app = app();
@@ -284,9 +284,9 @@ mod tests {
             "--dry-run",
             "--display",
             "--assume-yes",
+            "--archive",
             "--attachment",
             "./test_data/test.png",
-            "--archive",
         ];
 
         let app = app();
@@ -312,9 +312,9 @@ mod tests {
             "--dry-run",
             "--display",
             "--assume-yes",
+            "--archive",
             "--attachment",
             "./test_data/test.odt",
-            "--archive",
         ];
 
         let app = app();
