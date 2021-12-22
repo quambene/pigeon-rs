@@ -33,6 +33,8 @@ my-saved-queries
 **/*.csv
 **/*.jpg
 **/*.png
+**/*.pdf
+**/*.odt
 
 ### Allow test data
 !test_data/*
