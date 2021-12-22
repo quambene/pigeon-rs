@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 13] {
+pub fn send_bulk_args() -> [Arg<'static, 'static>; 14] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -28,6 +28,10 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 13] {
             .required(true)
             .takes_value(true)
             .help("Path of the message file"),
+        Arg::with_name(arg::ATTACHMENT)
+            .long(arg::ATTACHMENT)
+            .takes_value(true)
+            .help("Path of attachment"),
         Arg::with_name(arg::ARCHIVE)
             .long(arg::ARCHIVE)
             .takes_value(false)
@@ -235,6 +239,93 @@ mod tests {
             "--archive",
             "--archive-dir",
             "./my-sent-emails",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_pdf_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.pdf",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_png_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.png",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_odt_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.odt",
         ];
 
         let app = app();
