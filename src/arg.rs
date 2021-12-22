@@ -16,6 +16,7 @@ pub const RECEIVER_QUERY: &str = "receiver-query";
 pub const RECEIVER_COLUMN: &str = "receiver-column";
 pub const ASSUME_YES: &str = "assume-yes";
 pub const PERSONALIZE: &str = "personalize";
+pub const ATTACHMENT: &str = "attachment";
 pub const SAVE: &str = "save";
 pub const SAVE_DIR: &str = "save-dir";
 pub const FILE_TYPE: &str = "file-type";

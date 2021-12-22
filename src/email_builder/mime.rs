@@ -5,7 +5,11 @@ use lettre::{
     message::{header, MultiPart, SinglePart},
     FileTransport, Message, Transport,
 };
-use std::{fmt, path::PathBuf, str};
+use std::{
+    fmt, fs,
+    path::{Path, PathBuf},
+    str,
+};
 
 pub struct Mime {
     pub message: Message,
@@ -13,6 +17,7 @@ pub struct Mime {
 
 impl Mime {
     pub fn new(
+        matches: &ArgMatches<'_>,
         sender: &str,
         receiver: &str,
         message: &email_builder::Message,
@@ -22,11 +27,35 @@ impl Mime {
             .to(receiver.parse().context("Can't parse receiver")?)
             .subject(&message.subject);
 
-        let message = match (&message.text, &message.html) {
-            (Some(text), Some(html)) => message_builder.multipart(Mime::alternative(text, html)),
-            (Some(text), None) => message_builder.singlepart(Mime::text_plain(text)),
-            (None, Some(html)) => message_builder.singlepart(Mime::text_html(html)),
-            (_, _) => return Err(anyhow!("Missing email body")),
+        let message = match (
+            &message.text,
+            &message.html,
+            matches.value_of(arg::ATTACHMENT),
+        ) {
+            (Some(text), Some(html), Some(attachment)) => message_builder.multipart(
+                MultiPart::mixed()
+                    .multipart(Mime::alternative(text, html))
+                    .singlepart(Mime::attachment(attachment)?),
+            ),
+            (Some(text), Some(html), None) => {
+                message_builder.multipart(Mime::alternative(text, html))
+            }
+            (Some(text), None, Some(attachment)) => message_builder.multipart(
+                MultiPart::mixed()
+                    .singlepart(Mime::text_plain(text))
+                    .singlepart(Mime::attachment(attachment)?),
+            ),
+            (None, Some(html), Some(attachment)) => message_builder.multipart(
+                MultiPart::mixed()
+                    .singlepart(Mime::text_html(html))
+                    .singlepart(Mime::attachment(attachment)?),
+            ),
+            (Some(text), None, None) => message_builder.singlepart(Mime::text_plain(text)),
+            (None, Some(html), None) => message_builder.singlepart(Mime::text_html(html)),
+            (None, None, Some(attachment)) => {
+                message_builder.singlepart(Mime::attachment(attachment)?)
+            }
+            (None, None, None) => return Err(anyhow!("Missing email body")),
         }
         .context("Can't create MIME formatted email")?;
 
@@ -58,29 +87,39 @@ impl Mime {
             .body(text.to_string())
     }
 
-    fn attachment(file_type: &str, file_name: &str) -> Result<SinglePart, anyhow::Error> {
+    fn attachment(file: &str) -> Result<SinglePart, anyhow::Error> {
+        let path = Path::new(file);
+        let file_name = match path.file_name() {
+            Some(file_name) => match file_name.to_str() {
+                Some(file_name) => file_name,
+                None => {
+                    return Err(anyhow!(
+                        "Email attachment error: Invalid characters in file name"
+                    ))
+                }
+            },
+            None => return Err(anyhow!("Can't find attachment")),
+        };
+        let bytes = fs::read(path).context("Can't read attachment")?;
+        let content_type = match infer::get(&bytes) {
+            Some(file_type) => file_type.mime_type(),
+            // Compare internet standard RFC-2046, RFC-7231, and https://stackoverflow.com/questions/1176022/unknown-file-type-mime
+            None => "application/octet-stream",
+        };
+
         Ok(SinglePart::builder()
-            .header(header::ContentType::parse("application/pdf")?)
+            .header(header::ContentType::parse(content_type).context(format!(
+                "File type '{}' not supported: {}",
+                content_type, file_name
+            ))?)
             .header(header::ContentDisposition::attachment(file_name))
-            .body(Vec::<u8>::default()))
+            .body(bytes))
     }
 
     fn alternative(text: &str, html: &str) -> MultiPart {
         MultiPart::alternative()
             .singlepart(Mime::text_plain(text))
-            .singlepart(Mime::text_plain(html))
-    }
-
-    fn mixed(
-        text: &str,
-        html: &str,
-        file_type: &str,
-        file_name: &str,
-    ) -> Result<MultiPart, anyhow::Error> {
-        Ok(MultiPart::mixed()
-            .singlepart(Mime::text_plain(text))
-            .singlepart(Mime::text_plain(html))
-            .singlepart(Mime::attachment(file_type, file_name)?))
+            .singlepart(Mime::text_html(html))
     }
 }
 

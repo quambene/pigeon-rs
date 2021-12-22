@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_args() -> [Arg<'static, 'static>; 11] {
+pub fn send_args() -> [Arg<'static, 'static>; 12] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -37,6 +37,10 @@ pub fn send_args() -> [Arg<'static, 'static>; 11] {
             .takes_value(true)
             .required_unless_one(&[arg::SUBJECT, arg::CONTENT])
             .help("Path of the message file"),
+        Arg::with_name(arg::ATTACHMENT)
+            .long(arg::ATTACHMENT)
+            .takes_value(true)
+            .help("Path of attachment"),
         Arg::with_name(arg::ARCHIVE)
             .long(arg::ARCHIVE)
             .takes_value(false)
@@ -227,6 +231,90 @@ mod tests {
             "--archive",
             "--archive-dir",
             "./my-sent-emails",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_pdf_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--attachment",
+            "./test_data/test.pdf",
+            "--archive",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_png_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--attachment",
+            "./test_data/test.png",
+            "--archive",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_odt_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--attachment",
+            "./test_data/test.odt",
+            "--archive",
         ];
 
         let app = app();

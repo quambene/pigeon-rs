@@ -25,7 +25,7 @@ impl Email {
         ) {
             (Some(sender), Some(receiver)) => {
                 let message = Message::new(matches)?;
-                let mime = Mime::new(sender, receiver, &message)?;
+                let mime = Mime::new(matches, sender, receiver, &message)?;
                 let email = Email {
                     sender: sender.to_string(),
                     receiver: receiver.to_string(),

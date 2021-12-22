@@ -208,7 +208,7 @@ fn create_emails(
     for receiver in receivers {
         match receiver {
             Some(receiver) => {
-                let mime = Mime::new(sender, receiver, &message)?;
+                let mime = Mime::new(matches, sender, receiver, &message)?;
                 emails.push(Email {
                     sender: sender.to_string(),
                     receiver: receiver.to_string(),
@@ -271,7 +271,7 @@ fn create_personalized_emails(
             .get(i)
             .context("Can't get value of chunked array")?
             .to_string();
-        let mime = Mime::new(sender, &receiver, &message)?;
+        let mime = Mime::new(matches, sender, &receiver, &message)?;
 
         emails.push(Email {
             sender: sender.to_string(),

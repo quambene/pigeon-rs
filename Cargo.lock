@@ -169,6 +169,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22a9137b95ea06864e018375b72adfb7db6e6f68cfc8df5a04d00288050485ee"
 
 [[package]]
+name = "cfb"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca453e8624711b2f0f4eb47076a318feda166252a827ee25d067b43de83dcba0"
+dependencies = [
+ "byteorder",
+ "uuid",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -795,6 +805,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "infer"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ea70330449622910e0edebab230734569516269fb32342fb0a8956340fa48c6c"
+dependencies = [
+ "cfb",
+]
+
+[[package]]
 name = "instant"
 version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1291,6 +1310,7 @@ dependencies = [
  "clap",
  "connectorx",
  "csv",
+ "infer",
  "lettre",
  "polars",
  "postgres",

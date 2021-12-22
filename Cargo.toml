@@ -33,6 +33,7 @@ postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }
 lettre = { version = "0.10.0-rc.4", features = ["file-transport"] }
+infer = "0.5.0"
 
 [[bin]]
 name = "pigeon-rs"
