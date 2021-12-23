@@ -22,7 +22,6 @@ rusoto_credential = "0.46.0"
 yaml-rust = "0.4.5"
 serde = { version = "1.0.125", features = ["derive"] }
 serde_yaml = "0.8.17"
-whoami = "1.1.1"
 tokio = "1.12.0"
 csv = "1.1.6"
 clap = "2.33.3"
@@ -32,6 +31,9 @@ connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43
 postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }
+lettre = { version = "0.10.0-rc.4", features = ["file-transport"] }
+infer = "0.5.0"
+bytes = "1.1.0"
 
 [[bin]]
 name = "pigeon-rs"

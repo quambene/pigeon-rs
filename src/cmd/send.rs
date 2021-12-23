@@ -1,12 +1,12 @@
 use crate::{
     arg,
-    email_handler::{Confirmed, Email},
+    email_builder::{Confirmed, Email},
     helper::format_green,
 };
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_args() -> [Arg<'static, 'static>; 9] {
+pub fn send_args() -> [Arg<'static, 'static>; 12] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -37,6 +37,19 @@ pub fn send_args() -> [Arg<'static, 'static>; 9] {
             .takes_value(true)
             .required_unless_one(&[arg::SUBJECT, arg::CONTENT])
             .help("Path of the message file"),
+        Arg::with_name(arg::ATTACHMENT)
+            .long(arg::ATTACHMENT)
+            .takes_value(true)
+            .help("Path of attachment"),
+        Arg::with_name(arg::ARCHIVE)
+            .long(arg::ARCHIVE)
+            .takes_value(false)
+            .help("Archive sent emails"),
+        Arg::with_name(arg::ARCHIVE_DIR)
+            .long(arg::ARCHIVE_DIR)
+            .takes_value(true)
+            .default_value("./sent_emails")
+            .help("Path of sent emails"),
         Arg::with_name(arg::DISPLAY)
             .long(arg::DISPLAY)
             .takes_value(false)
@@ -71,6 +84,8 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
+    println!("Sending email to 1 recipient ...");
+
     if matches.is_present(arg::ASSUME_YES) {
         email.send(matches)?;
         email.archive(matches)?;
@@ -83,6 +98,12 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
             }
             Confirmed::No => (),
         }
+    }
+
+    if matches.is_present(arg::DRY_RUN) {
+        println!("Email sent (dry run).");
+    } else {
+        println!("Email sent.");
     }
 
     Ok(())
@@ -124,8 +145,9 @@ mod tests {
     #[test]
     #[ignore]
     fn test_send_subject_content() {
-        let sender = env::var("TEST_SENDER").expect("Missing env var");
-        let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
 
         let args = vec![
             cmd::BIN,
@@ -177,10 +199,149 @@ mod tests {
     }
 
     #[test]
+    fn test_archive_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_archive_dir_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--archive-dir",
+            "./my-sent-emails",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_pdf_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.pdf",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_png_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.png",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_odt_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.odt",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
     #[ignore]
     fn test_send_message_file() {
-        let sender = env::var("TEST_SENDER").expect("Missing env var");
-        let receiver = env::var("TEST_RECEIVER").expect("Missing env var");
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
 
         let args = vec![
             cmd::BIN,
@@ -191,6 +352,38 @@ mod tests {
             "./test_data/message.yaml",
             "--display",
             "--assume-yes",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    #[ignore]
+    fn test_attachment_pdf() {
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            &sender,
+            &receiver,
+            "--message-file",
+            "./test_data/message.yaml",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.pdf",
         ];
 
         let app = app();

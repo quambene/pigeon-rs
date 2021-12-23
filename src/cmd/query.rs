@@ -22,17 +22,17 @@ pub fn query_args() -> [Arg<'static, 'static>; 9] {
             .long(arg::SAVE)
             .takes_value(false)
             .help("Save query result"),
+        Arg::with_name(arg::SAVE_DIR)
+            .long(arg::SAVE_DIR)
+            .takes_value(true)
+            .default_value("./saved_queries")
+            .help("Specifies the output directory for saved query"),
         Arg::with_name(arg::FILE_TYPE)
             .long(arg::FILE_TYPE)
             .takes_value(true)
             .default_value("csv")
             .possible_values(&["csv", "jpg", "png"])
             .help("Specifies the file type for saved query"),
-        Arg::with_name(arg::OUTPUT_DIR)
-            .long(arg::OUTPUT_DIR)
-            .takes_value(true)
-            .default_value("./output")
-            .help("Specifies the output directory for saved query"),
         Arg::with_name(arg::IMAGE_COLUMN)
             .long(arg::IMAGE_COLUMN)
             .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
@@ -95,5 +95,77 @@ pub fn query(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         }
     } else {
         Err(anyhow!("Missing argument '{}'", cmd::QUERY))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{app, cmd};
+    use std::env;
+
+    #[test]
+    #[ignore]
+    fn test_display_query() {
+        let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
+        let args = vec![cmd::BIN, cmd::QUERY, test_query.as_str(), "--display"];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = query(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    #[ignore]
+    fn test_save_query() {
+        let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
+        let args = vec![
+            cmd::BIN,
+            cmd::QUERY,
+            test_query.as_str(),
+            "--display",
+            "--save",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = query(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    #[ignore]
+    fn test_save_dir() {
+        let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
+        let args = vec![
+            cmd::BIN,
+            cmd::QUERY,
+            test_query.as_str(),
+            "--display",
+            "--save",
+            "--save-dir",
+            "./my-saved-queries",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = query(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
     }
 }

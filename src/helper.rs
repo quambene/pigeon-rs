@@ -16,7 +16,7 @@ pub fn check_send_status(res: Result<(), anyhow::Error>) -> String {
     let status: String;
     match res {
         Ok(_) => status = format_green("ok"),
-        Err(err) => status = format!("{}: {}", format_red("failed"), err),
+        Err(err) => status = format!("{}: {}", format_red("FAILED"), err),
     }
     status
 }

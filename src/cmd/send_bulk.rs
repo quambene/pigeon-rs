@@ -1,12 +1,12 @@
 use crate::{
     arg,
-    email_handler::{BulkEmail, Confirmed},
+    email_builder::{BulkEmail, Confirmed},
     helper::format_green,
 };
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 11] {
+pub fn send_bulk_args() -> [Arg<'static, 'static>; 14] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -28,6 +28,19 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 11] {
             .required(true)
             .takes_value(true)
             .help("Path of the message file"),
+        Arg::with_name(arg::ATTACHMENT)
+            .long(arg::ATTACHMENT)
+            .takes_value(true)
+            .help("Path of attachment"),
+        Arg::with_name(arg::ARCHIVE)
+            .long(arg::ARCHIVE)
+            .takes_value(false)
+            .help("Archive sent emails"),
+        Arg::with_name(arg::ARCHIVE_DIR)
+            .long(arg::ARCHIVE_DIR)
+            .takes_value(true)
+            .default_value("./sent_emails")
+            .help("Path of sent emails"),
         Arg::with_name(arg::RECEIVER_COLUMN)
             .long(arg::RECEIVER_COLUMN)
             .takes_value(true)
@@ -79,14 +92,12 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     }
 
     if matches.is_present(arg::ASSUME_YES) {
-        bulk_email.send(matches)?;
-        bulk_email.archive(matches)?;
+        bulk_email.process(matches)?;
     } else {
         let confirmation = bulk_email.confirm()?;
         match confirmation {
             Confirmed::Yes => {
-                bulk_email.send(matches)?;
-                bulk_email.archive(matches)?;
+                bulk_email.process(matches)?;
             }
             Confirmed::No => (),
         }
@@ -170,6 +181,149 @@ mod tests {
             "--dry-run",
             "--display",
             "--assume-yes",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_archive_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_archive_dir_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--archive-dir",
+            "./my-sent-emails",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_pdf_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.pdf",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_png_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.png",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_attachment_odt_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.odt",
         ];
 
         let app = app();

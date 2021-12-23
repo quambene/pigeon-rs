@@ -17,11 +17,6 @@ rust-toolchain
 # Environment
 **/.env
 
-### Data
-**/*.csv
-**/*.jpg
-**/*.png
-
 ### Keys
 **/*.jks
 **/*.p8
@@ -29,6 +24,17 @@ rust-toolchain
 
 ### Config files
 **/*.yaml
+
+### Data
+sent_emails
+my-sent-emails
+saved_queries
+my-saved-queries
+**/*.csv
+**/*.jpg
+**/*.png
+**/*.pdf
+**/*.odt
 
 ### Allow test data
 !test_data/*

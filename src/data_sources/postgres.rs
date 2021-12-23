@@ -91,7 +91,7 @@ pub fn query_postgres(matches: &ArgMatches<'_>, query: &str) -> Result<DataFrame
     };
 
     let (config, _tls) = rewrite_tls_args(&connection_url)?;
-    let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 10)?;
+    let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 3)?;
     let mut destination = Arrow2Destination::new();
     let queries = &[CXQuery::naked(query)];
     let dispatcher = Dispatcher::<_, _, PostgresArrow2Transport<BinaryProtocol, NoTls>>::new(

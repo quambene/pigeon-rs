@@ -1,4 +1,4 @@
-use crate::{arg, email_handler::MessageTemplate};
+use crate::{arg, email_builder::MessageTemplate};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 
@@ -94,11 +94,11 @@ impl Message {
 }
 
 fn html_template(content: &str) -> String {
-    "<html>
-    <head></head>
-    <body>"
-        .to_string()
-        + content
-        + "</body>
-    </html>"
+    format!(
+        "<html>
+        <head></head>
+        <body>{}</body>
+        </html>",
+        content
+    )
 }
