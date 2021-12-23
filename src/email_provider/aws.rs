@@ -1,11 +1,12 @@
 use crate::{arg, email_builder::Email};
 use anyhow::Result;
+use bytes::Bytes;
 use clap::ArgMatches;
 use rusoto_core::{HttpClient, Region};
 use rusoto_credential::{EnvironmentProvider, ProvideAwsCredentials};
 use rusoto_sesv2::{
     Body, Content as SesContent, Destination, EmailContent as SesEmailContent,
-    Message as SesMessage, SendEmailRequest, SesV2, SesV2Client,
+    Message as SesMessage, RawMessage, SendEmailRequest, SesV2, SesV2Client,
 };
 
 pub const CHARSET: &str = "UTF-8";
@@ -30,6 +31,7 @@ pub fn setup_ses_client(matches: &ArgMatches<'_>) -> Result<SesV2Client, anyhow:
     Ok(client)
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
     let subject = &email.message.subject;
@@ -62,6 +64,43 @@ pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyho
             raw: None,
             template: None,
             simple: Some(message),
+        },
+        configuration_set_name: None,
+        email_tags: None,
+        feedback_forwarding_email_address: None,
+        reply_to_addresses: None,
+        feedback_forwarding_email_address_identity_arn: None,
+        from_email_address_identity_arn: None,
+        list_management_options: None,
+    };
+
+    let _response = client.send_email(request).await?;
+
+    Ok(())
+}
+
+#[tokio::main]
+pub async fn send_raw_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
+    let message = RawMessage {
+        data: Bytes::from(email.mime.message.formatted()),
+    };
+    let request = SendEmailRequest {
+        /* TODO: The field 'from_email_address' should be
+        'None' for MIME formatted (raw) emails, but leading
+        to error: Missing required header 'From' */
+        from_email_address: Some(email.sender.to_string()),
+        destination: Some(Destination {
+            /* TODO: The field 'to_addresses' should be
+            'None' for MIME formatted (raw) emails, but leading
+            to error: Missing required header 'From' */
+            to_addresses: Some(vec![email.receiver.to_string()]),
+            bcc_addresses: None,
+            cc_addresses: None,
+        }),
+        content: SesEmailContent {
+            raw: Some(message),
+            template: None,
+            simple: None,
         },
         configuration_set_name: None,
         email_tags: None,

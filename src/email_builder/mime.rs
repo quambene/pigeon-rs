@@ -78,12 +78,16 @@ impl Mime {
     fn text_plain(text: &str) -> SinglePart {
         SinglePart::builder()
             .header(header::ContentType::TEXT_PLAIN)
+            // base64 encoding is needed for AWS SES
+            .header(header::ContentTransferEncoding::Base64)
             .body(text.to_string())
     }
 
     fn text_html(text: &str) -> SinglePart {
         SinglePart::builder()
             .header(header::ContentType::TEXT_HTML)
+            // base64 encoding is needed for AWS SES
+            .header(header::ContentTransferEncoding::Base64)
             .body(text.to_string())
     }
 
@@ -103,7 +107,7 @@ impl Mime {
         let bytes = fs::read(path).context("Can't read attachment")?;
         let content_type = match infer::get(&bytes) {
             Some(file_type) => file_type.mime_type(),
-            // Compare internet standard RFC-2046, RFC-7231, and https://stackoverflow.com/questions/1176022/unknown-file-type-mime
+            // Handle 'None': Compare internet standard RFC-2046, RFC-7231, and https://stackoverflow.com/questions/1176022/unknown-file-type-mime
             None => "application/octet-stream",
         };
 

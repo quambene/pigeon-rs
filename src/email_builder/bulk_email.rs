@@ -81,7 +81,7 @@ impl BulkEmail {
             let client = email_provider::setup_ses_client(matches)?;
 
             for email in &self.emails {
-                let res = email_provider::send_email(&email, &client);
+                let res = email_provider::send_raw_email(&email, &client);
                 let status = check_send_status(res);
                 println!("{:#?} ... {}", email.receiver, status);
             }

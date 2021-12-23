@@ -56,7 +56,7 @@ impl Email {
             }
             false => {
                 let client = email_provider::setup_ses_client(matches)?;
-                let res = email_provider::send_email(self, &client);
+                let res = email_provider::send_raw_email(self, &client);
                 let status = check_send_status(res);
                 println!("{:#?} ... {}", self.receiver, status);
                 println!("All emails sent.");
