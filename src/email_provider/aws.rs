@@ -18,7 +18,7 @@ async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::E
 }
 
 pub fn setup_ses_client(matches: &ArgMatches<'_>) -> Result<SesV2Client, anyhow::Error> {
-    println!("Setting up email client...");
+    println!("Setting up email client ...");
     let http = HttpClient::new()?;
     let provider = EnvironmentProvider::default();
 

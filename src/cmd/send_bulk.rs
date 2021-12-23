@@ -92,14 +92,12 @@ pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     }
 
     if matches.is_present(arg::ASSUME_YES) {
-        bulk_email.send(matches)?;
-        bulk_email.archive(matches)?;
+        bulk_email.process(matches)?;
     } else {
         let confirmation = bulk_email.confirm()?;
         match confirmation {
             Confirmed::Yes => {
-                bulk_email.send(matches)?;
-                bulk_email.archive(matches)?;
+                bulk_email.process(matches)?;
             }
             Confirmed::No => (),
         }

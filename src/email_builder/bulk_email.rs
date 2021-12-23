@@ -3,8 +3,6 @@ use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
     email_builder::{Confirmed, Email, Message, MessageTemplate},
-    email_provider,
-    helper::{check_send_status, format_green},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::{ArgMatches, Values};
@@ -65,27 +63,17 @@ impl BulkEmail {
         Ok(BulkEmail { emails })
     }
 
-    pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+    pub fn process(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("Sending email to {} receivers ...", self.emails.len());
 
+        for email in &self.emails {
+            email.send(matches)?;
+            email.archive(matches)?;
+        }
+
         if matches.is_present(arg::DRY_RUN) {
-            // Setup client but do not send email
-            let _client = email_provider::setup_ses_client(matches)?;
-
-            for email in &self.emails {
-                println!("{} ... {}", email.receiver, format_green("dry run"));
-            }
-
             println!("All emails sent (dry run).");
         } else {
-            let client = email_provider::setup_ses_client(matches)?;
-
-            for email in &self.emails {
-                let res = email_provider::send_raw_email(&email, &client);
-                let status = check_send_status(res);
-                println!("{:#?} ... {}", email.receiver, status);
-            }
-
             println!("All emails sent.");
         }
 
@@ -128,14 +116,6 @@ impl BulkEmail {
             }
         };
         Ok(confirmation)
-    }
-
-    pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::MESSAGE_FILE) {
-            MessageTemplate::archive(matches)?;
-        }
-
-        Ok(())
     }
 }
 

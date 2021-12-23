@@ -84,6 +84,8 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
+    println!("Sending email to 1 recipient ...");
+
     if matches.is_present(arg::ASSUME_YES) {
         email.send(matches)?;
         email.archive(matches)?;
@@ -96,6 +98,12 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
             }
             Confirmed::No => (),
         }
+    }
+
+    if matches.is_present(arg::DRY_RUN) {
+        println!("Email sent (dry run).");
+    } else {
+        println!("Email sent.");
     }
 
     Ok(())

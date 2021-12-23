@@ -6,7 +6,6 @@ use std::{
     env, fs,
     io::{self, Write},
     path::PathBuf,
-    time::SystemTime,
 };
 
 const TEMPLATE_FILE_NAME: &str = "message.yaml";
@@ -112,47 +111,5 @@ impl MessageTemplate {
         } else {
             Err(anyhow!("Missing argument '{}'", arg::MESSAGE_FILE))
         }
-    }
-
-    pub fn archive(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        let now = SystemTime::now();
-        let now_utc: chrono::DateTime<chrono::Utc> = now.into();
-        let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
-        let source_path = match matches.value_of(arg::MESSAGE_FILE) {
-            Some(message_file) => message_file,
-            None => {
-                return Err(anyhow!(
-                    "Missing value for argument '{}'",
-                    arg::MESSAGE_FILE
-                ));
-            }
-        };
-
-        let target_dir = match matches.value_of(arg::ARCHIVE_DIR) {
-            Some(archive_dir) => PathBuf::from(archive_dir),
-            None => return Err(anyhow!("Missing value for argument '{}'", arg::ARCHIVE_DIR)),
-        };
-        let target_file = if matches.is_present(arg::DRY_RUN) {
-            String::from("message_") + &current_time + "_dry-run" + ".yaml"
-        } else {
-            String::from("message_") + &current_time + ".yaml"
-        };
-        let target_path = target_dir.join(target_file);
-
-        if target_dir.exists() {
-            println!("Archiving message template ...");
-            fs::copy(source_path, target_path).context("Unable to archive message template.")?;
-        } else {
-            println!(
-                "Creating directory for archived templates: {:#?}",
-                target_dir
-            );
-            fs::create_dir(target_dir)
-                .context("Unable to create directory for archived templates.")?;
-            println!("Archiving message template ...");
-            fs::copy(source_path, target_path).context("Unable to archive message template.")?;
-        }
-
-        Ok(())
     }
 }

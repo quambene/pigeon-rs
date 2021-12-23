@@ -1,7 +1,7 @@
 use super::Mime;
 use crate::{
     arg,
-    email_builder::{Confirmed, Message, MessageTemplate},
+    email_builder::{Confirmed, Message},
     email_provider,
     helper::{check_send_status, format_green},
 };
@@ -45,23 +45,17 @@ impl Email {
     }
 
     pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        println!("Sending email to 1 recipient ...");
-        match matches.is_present(arg::DRY_RUN) {
-            true => {
-                // Setup client but do not send email
-                let _client = email_provider::setup_ses_client(matches)?;
-                println!("{:#?} ... {}", self.receiver, format_green("dry run"));
-                println!("All emails sent (dry run).");
-                Ok(())
-            }
-            false => {
-                let client = email_provider::setup_ses_client(matches)?;
-                let res = email_provider::send_raw_email(self, &client);
-                let status = check_send_status(res);
-                println!("{:#?} ... {}", self.receiver, status);
-                println!("All emails sent.");
-                Ok(())
-            }
+        if matches.is_present(arg::DRY_RUN) {
+            // Setup client but do not send email
+            let _client = email_provider::setup_ses_client(matches)?;
+            println!("{:#?} ... {}", self.receiver, format_green("dry run"));
+            Ok(())
+        } else {
+            let client = email_provider::setup_ses_client(matches)?;
+            let res = email_provider::send_raw_email(self, &client);
+            let status = check_send_status(res);
+            println!("{:#?} ... {}", self.receiver, status);
+            Ok(())
         }
     }
 
@@ -97,7 +91,6 @@ impl Email {
 
     pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         if matches.is_present(arg::ARCHIVE) {
-            MessageTemplate::archive(matches)?;
             self.mime.archive(matches)?;
         }
 
