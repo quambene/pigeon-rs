@@ -8,6 +8,7 @@
   - Implement `--file-type`, `--image-column`, `--image-name`, and `--save-dir` for `query`
   - Implement `--archive-dir` for `send` and `send-bulk`
   - Implement MIME format
+  - Implement `--attachment` for `send` and `send-bulk`
 
 ### v0.1.3
 
