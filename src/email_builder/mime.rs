@@ -78,16 +78,12 @@ impl Mime {
     fn text_plain(text: &str) -> SinglePart {
         SinglePart::builder()
             .header(header::ContentType::TEXT_PLAIN)
-            // base64 encoding is needed for AWS SES
-            .header(header::ContentTransferEncoding::Base64)
             .body(text.to_string())
     }
 
     fn text_html(text: &str) -> SinglePart {
         SinglePart::builder()
             .header(header::ContentType::TEXT_HTML)
-            // base64 encoding is needed for AWS SES
-            .header(header::ContentTransferEncoding::Base64)
             .body(text.to_string())
     }
 
