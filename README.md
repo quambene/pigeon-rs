@@ -126,7 +126,7 @@ The message template `message.yaml` is created with subcommand `init`:
 pigeon init
 ```
 
-_Note:_ One of the advantages of a `--message-file` is that you can also draft the html version of your email. In contrast, with the options `--subject` and `--object` the same format will be sent as plaintext and html email.
+_Note:_ One of the advantages of a `--message-file` is that you can also draft the html version of your email. In contrast, with the options `--subject` and `--content` the same format will be sent as plaintext and html email.
 
 ### Send bulk email to multiple receivers
 
