@@ -56,11 +56,7 @@ impl Message {
                         text if text.is_empty() => None,
                         _ => unreachable!(),
                     },
-                    html: match content {
-                        html if !html.is_empty() => Some(html_template(html)),
-                        html if html.is_empty() => None,
-                        _ => unreachable!(),
-                    },
+                    html: None,
                 };
                 Ok(message)
             }
