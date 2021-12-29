@@ -12,10 +12,10 @@ pub fn format_red(text: &str) -> String {
     red_text
 }
 
-pub fn check_send_status(res: Result<(), anyhow::Error>) -> String {
+pub fn check_send_status(res: Result<String, anyhow::Error>) -> String {
     let status: String;
     match res {
-        Ok(_) => status = format_green("ok"),
+        Ok(ok) => status = format_green(&ok),
         Err(err) => status = format!("{}: {}", format_red("FAILED"), err),
     }
     status

@@ -5,6 +5,7 @@ mod cmd;
 mod data_sources;
 mod email_builder;
 mod email_provider;
+mod email_transmission;
 mod helper;
 
 use anyhow::anyhow;

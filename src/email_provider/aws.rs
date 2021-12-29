@@ -11,12 +11,14 @@ use rusoto_sesv2::{
 
 pub const CHARSET: &str = "UTF-8";
 
+#[allow(dead_code)]
 #[tokio::main]
 async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
     let _credentials = provider.credentials().await?;
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn setup_ses_client(matches: &ArgMatches<'_>) -> Result<SesV2Client, anyhow::Error> {
     println!("Setting up email client ...");
     let http = HttpClient::new()?;
@@ -79,6 +81,7 @@ pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyho
     Ok(())
 }
 
+#[allow(dead_code)]
 #[tokio::main]
 pub async fn send_raw_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
     let message = RawMessage {

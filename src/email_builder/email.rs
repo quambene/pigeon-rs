@@ -2,7 +2,7 @@ use super::Mime;
 use crate::{
     arg,
     email_builder::{Confirmed, Message},
-    email_provider,
+    email_transmission::Mailer,
     helper::{check_send_status, format_green},
 };
 use anyhow::{anyhow, Context, Result};
@@ -46,13 +46,13 @@ impl Email {
 
     pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         if matches.is_present(arg::DRY_RUN) {
-            // Setup client but do not send email
-            let _client = email_provider::setup_ses_client(matches)?;
+            // Setup mailer but do not send email
+            let _mailer = Mailer::new()?;
             println!("{:#?} ... {}", self.receiver, format_green("dry run"));
             Ok(())
         } else {
-            let client = email_provider::setup_ses_client(matches)?;
-            let res = email_provider::send_raw_email(self, &client);
+            let mailer = Mailer::new()?;
+            let res = mailer.send(&self);
             let status = check_send_status(res);
             println!("{:#?} ... {}", self.receiver, status);
             Ok(())
