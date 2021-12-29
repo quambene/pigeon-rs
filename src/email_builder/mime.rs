@@ -12,11 +12,11 @@ use std::{
 };
 
 #[derive(Clone)]
-pub struct Mime {
+pub struct MimeFormat {
     pub message: Message,
 }
 
-impl Mime {
+impl MimeFormat {
     pub fn new(
         matches: &ArgMatches<'_>,
         sender: &str,
@@ -35,26 +35,26 @@ impl Mime {
         ) {
             (Some(text), Some(html), Some(attachment)) => message_builder.multipart(
                 MultiPart::mixed()
-                    .multipart(Mime::alternative(text, html))
-                    .singlepart(Mime::attachment(attachment)?),
+                    .multipart(Self::alternative(text, html))
+                    .singlepart(Self::attachment(attachment)?),
             ),
             (Some(text), Some(html), None) => {
-                message_builder.multipart(Mime::alternative(text, html))
+                message_builder.multipart(Self::alternative(text, html))
             }
             (Some(text), None, Some(attachment)) => message_builder.multipart(
                 MultiPart::mixed()
-                    .singlepart(Mime::text_plain(text))
-                    .singlepart(Mime::attachment(attachment)?),
+                    .singlepart(Self::text_plain(text))
+                    .singlepart(Self::attachment(attachment)?),
             ),
             (None, Some(html), Some(attachment)) => message_builder.multipart(
                 MultiPart::mixed()
-                    .singlepart(Mime::text_html(html))
-                    .singlepart(Mime::attachment(attachment)?),
+                    .singlepart(Self::text_html(html))
+                    .singlepart(Self::attachment(attachment)?),
             ),
-            (Some(text), None, None) => message_builder.singlepart(Mime::text_plain(text)),
-            (None, Some(html), None) => message_builder.singlepart(Mime::text_html(html)),
+            (Some(text), None, None) => message_builder.singlepart(Self::text_plain(text)),
+            (None, Some(html), None) => message_builder.singlepart(Self::text_html(html)),
             (None, None, Some(attachment)) => {
-                message_builder.singlepart(Mime::attachment(attachment)?)
+                message_builder.singlepart(Self::attachment(attachment)?)
             }
             (None, None, None) => return Err(anyhow!("Missing email body")),
         }
@@ -132,12 +132,12 @@ impl Mime {
 
     fn alternative(text: &str, html: &str) -> MultiPart {
         MultiPart::alternative()
-            .singlepart(Mime::text_plain(text))
-            .singlepart(Mime::text_html(html))
+            .singlepart(Self::text_plain(text))
+            .singlepart(Self::text_html(html))
     }
 }
 
-impl fmt::Debug for Mime {
+impl fmt::Debug for MimeFormat {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

@@ -39,7 +39,7 @@ impl Client {
         } else {
             let response = self
                 .transport
-                .send(&email.mime.message)
+                .send(&email.mime_format.message)
                 .context("Can't sent email via SMTP");
             let status = match response {
                 Ok(response) => Status::Sent(response.message().collect()),

@@ -85,7 +85,7 @@ pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyho
 #[tokio::main]
 pub async fn send_raw_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
     let message = RawMessage {
-        data: Bytes::from(email.mime.message.formatted()),
+        data: Bytes::from(email.mime_format.message.formatted()),
     };
     let request = SendEmailRequest {
         /* TODO: The field 'from_email_address' should be

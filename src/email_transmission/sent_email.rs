@@ -25,7 +25,7 @@ impl SentEmail {
 
     pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         if matches.is_present(arg::ARCHIVE) {
-            self.email.mime.archive(matches)?;
+            self.email.mime_format.archive(matches)?;
         }
 
         Ok(())

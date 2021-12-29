@@ -1,4 +1,4 @@
-use super::Mime;
+use super::MimeFormat;
 use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
@@ -192,12 +192,12 @@ fn create_emails(
     for receiver in receivers {
         match receiver {
             Some(receiver) => {
-                let mime = Mime::new(matches, sender, receiver, &message)?;
+                let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
                 emails.push(Email {
                     sender: sender.to_string(),
                     receiver: receiver.to_string(),
                     message: message.clone(),
-                    mime,
+                    mime_format,
                 });
             }
             None => continue,
@@ -255,13 +255,13 @@ fn create_personalized_emails(
             .get(i)
             .context("Can't get value of chunked array")?
             .to_string();
-        let mime = Mime::new(matches, sender, &receiver, &message)?;
+        let mime_format = MimeFormat::new(matches, sender, &receiver, &message)?;
 
         emails.push(Email {
             sender: sender.to_string(),
             receiver,
             message,
-            mime,
+            mime_format,
         });
     }
 

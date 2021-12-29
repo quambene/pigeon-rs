@@ -1,4 +1,4 @@
-use super::Mime;
+use super::MimeFormat;
 use crate::{
     arg,
     email_builder::{Confirmed, Message},
@@ -12,7 +12,7 @@ pub struct Email {
     pub sender: String,
     pub receiver: String,
     pub message: Message,
-    pub mime: Mime,
+    pub mime_format: MimeFormat,
 }
 
 impl Email {
@@ -23,12 +23,12 @@ impl Email {
         ) {
             (Some(sender), Some(receiver)) => {
                 let message = Message::new(matches)?;
-                let mime = Mime::new(matches, sender, receiver, &message)?;
+                let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
                 let email = Email {
                     sender: sender.to_string(),
                     receiver: receiver.to_string(),
                     message,
-                    mime,
+                    mime_format,
                 };
                 Ok(email)
             }
