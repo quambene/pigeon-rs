@@ -292,6 +292,24 @@ For AWS SES, define environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_AC
 set -a && source .env && set +a
 ```
 
+### How to connect to SMTP server
+
+Instead of using the API of a specific email provider, you can send emails via SMTP as well. To connect to a SMTP server, define environment variables `SMTP_SERVER`, `SMTP_USERNAME`, and `SMTP_PASSWORD`. For example, using AWS SES:
+
+``` bash
+SMTP_SERVER=email-smtp.eu-west-1.amazonaws.com
+SMTP_USERNAME=...
+SMTP_PASSWORD=...
+```
+
+where `SMTP_SERVER` depends on the specified region for your AWS SES account.
+
+Source your environment again:
+
+``` bash
+set -a && source .env && set +a
+```
+
 ### How to connect to postgres database
 
 For postgres, the database url is constructed as follows: `postgresql://db_user:db_password@db_host:db_port/db_name`.
@@ -319,6 +337,11 @@ pigeon query "select email from user where newsletter_confirmed = true" --displa
 In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` have to be set for the SSH connection (`ssh user@host`).
 
 ## Integrations
+
+### Email protocols
+
+- MIME
+- SMTP
 
 ### Email provider
 
