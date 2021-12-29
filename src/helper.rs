@@ -5,6 +5,7 @@ pub fn format_green(text: &str) -> String {
     green_text
 }
 
+#[allow(dead_code)]
 pub fn format_red(text: &str) -> String {
     const RED: &str = "\x1b[31m";
     const END: &str = "\x1b[0m";
@@ -12,6 +13,7 @@ pub fn format_red(text: &str) -> String {
     red_text
 }
 
+#[allow(dead_code)]
 pub fn check_send_status(res: Result<String, anyhow::Error>) -> String {
     let status: String;
     match res {

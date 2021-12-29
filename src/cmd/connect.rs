@@ -1,4 +1,4 @@
-use crate::{arg, cmd, email_transmission::Mailer, helper::format_green};
+use crate::{arg, cmd, email_transmission::Client, helper::format_green};
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
@@ -25,16 +25,16 @@ pub fn connect(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         match matches.value_of(cmd::CONNECT) {
             Some(provider) => match provider {
                 x if x == "smtp" => {
-                    let mailer = Mailer::new();
+                    let client = Client::new();
 
-                    match mailer {
+                    match client {
                         Ok(_) => {
-                            println!("Connected to {} client: {}", provider, format_green("ok"));
+                            println!("Connected to {} server: {}", x, format_green("ok"));
                             Ok(())
                         }
                         Err(err) => Err(anyhow!(
-                            "Can't establish connection to {}: {:#?}",
-                            provider,
+                            "Can't establish connection to {} server: {:#?}",
+                            x,
                             err
                         )),
                     }

@@ -1,6 +1,7 @@
 use crate::{
     arg,
     email_builder::{Confirmed, Email},
+    email_transmission::Client,
     helper::format_green,
 };
 use anyhow::Result;
@@ -84,16 +85,28 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
+    let client = Client::new()?;
+
     println!("Sending email to 1 recipient ...");
 
     if matches.is_present(arg::ASSUME_YES) {
-        email.send(matches)?;
+        client.send(matches, &email)?;
+        println!(
+            "{:#?} ... {:#?}",
+            email.receiver,
+            email.status.try_borrow()?
+        );
         email.archive(matches)?;
     } else {
         let confirmation = email.confirm(matches)?;
         match confirmation {
             Confirmed::Yes => {
-                email.send(matches)?;
+                client.send(matches, &email)?;
+                println!(
+                    "{:#?} ... {:#?}",
+                    email.receiver,
+                    email.status.try_borrow()?
+                );
                 email.archive(matches)?;
             }
             Confirmed::No => (),

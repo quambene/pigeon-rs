@@ -1,13 +1,11 @@
-use super::Mime;
+use super::{Mime, Status};
 use crate::{
     arg,
     email_builder::{Confirmed, Message},
-    email_transmission::Mailer,
-    helper::{check_send_status, format_green},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
-use std::io;
+use std::{cell::RefCell, io};
 
 #[derive(Debug)]
 pub struct Email {
@@ -15,6 +13,7 @@ pub struct Email {
     pub receiver: String,
     pub message: Message,
     pub mime: Mime,
+    pub status: RefCell<Status>,
 }
 
 impl Email {
@@ -31,6 +30,7 @@ impl Email {
                     receiver: receiver.to_string(),
                     message,
                     mime,
+                    status: RefCell::new(Status::NotSent),
                 };
                 Ok(email)
             }
@@ -44,19 +44,8 @@ impl Email {
         }
     }
 
-    pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::DRY_RUN) {
-            // Setup mailer but do not send email
-            let _mailer = Mailer::new()?;
-            println!("{:#?} ... {}", self.receiver, format_green("dry run"));
-            Ok(())
-        } else {
-            let mailer = Mailer::new()?;
-            let res = mailer.send(&self);
-            let status = check_send_status(res);
-            println!("{:#?} ... {}", self.receiver, status);
-            Ok(())
-        }
+    pub fn update_status(&self, status: Status) {
+        self.status.replace(status);
     }
 
     pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {

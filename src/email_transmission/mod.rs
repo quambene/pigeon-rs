@@ -1,2 +1,2 @@
 mod smtp;
-pub use smtp::Mailer;
+pub use smtp::Client;
