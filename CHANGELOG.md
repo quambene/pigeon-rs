@@ -9,6 +9,7 @@
   - Implement `--archive-dir` for `send` and `send-bulk`
   - Implement MIME format
   - Implement `--attachment` for `send` and `send-bulk`
+  - Implement transmission via SMTP
 
 ### v0.1.3
 
