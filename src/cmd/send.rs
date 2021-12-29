@@ -125,7 +125,7 @@ mod tests {
             "--subject",
             "Test Subject",
             "--content",
-            "This is a test content.",
+            "This is a test message (plaintext).",
             "--dry-run",
             "--display",
             "--assume-yes",
@@ -157,7 +157,7 @@ mod tests {
             "--subject",
             "Test Subject",
             "--content",
-            "This is a test content.",
+            "This is a test message (plaintext).",
             "--display",
             "--assume-yes",
         ];
