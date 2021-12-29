@@ -11,6 +11,7 @@ use std::{
     str,
 };
 
+#[derive(Clone)]
 pub struct Mime {
     pub message: Message,
 }

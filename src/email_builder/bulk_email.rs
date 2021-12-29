@@ -1,4 +1,4 @@
-use super::{Mime, Status};
+use super::Mime;
 use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
@@ -8,7 +8,7 @@ use crate::{
 use anyhow::{anyhow, Context, Result};
 use clap::{ArgMatches, Values};
 use polars::prelude::{DataFrame, TakeRandom};
-use std::{cell::RefCell, io, path::PathBuf};
+use std::{io, path::PathBuf};
 
 #[derive(Debug)]
 pub struct BulkEmail {
@@ -70,13 +70,9 @@ impl BulkEmail {
         println!("Sending email to {} receivers ...", self.emails.len());
 
         for email in &self.emails {
-            client.send(matches, email)?;
-            println!(
-                "{:#?} ... {:#?}",
-                email.receiver,
-                email.status.try_borrow()?
-            );
-            email.archive(matches)?;
+            let sent_email = client.send(matches, email)?;
+            sent_email.display_status();
+            sent_email.archive(matches)?;
         }
 
         if matches.is_present(arg::DRY_RUN) {
@@ -202,7 +198,6 @@ fn create_emails(
                     receiver: receiver.to_string(),
                     message: message.clone(),
                     mime,
-                    status: RefCell::new(Status::NotSent),
                 });
             }
             None => continue,
@@ -267,7 +262,6 @@ fn create_personalized_emails(
             receiver,
             message,
             mime,
-            status: RefCell::new(Status::NotSent),
         });
     }
 

@@ -90,24 +90,16 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     println!("Sending email to 1 recipient ...");
 
     if matches.is_present(arg::ASSUME_YES) {
-        client.send(matches, &email)?;
-        println!(
-            "{:#?} ... {:#?}",
-            email.receiver,
-            email.status.try_borrow()?
-        );
-        email.archive(matches)?;
+        let sent_email = client.send(matches, &email)?;
+        sent_email.display_status();
+        sent_email.archive(matches)?;
     } else {
         let confirmation = email.confirm(matches)?;
         match confirmation {
             Confirmed::Yes => {
-                client.send(matches, &email)?;
-                println!(
-                    "{:#?} ... {:#?}",
-                    email.receiver,
-                    email.status.try_borrow()?
-                );
-                email.archive(matches)?;
+                let sent_email = client.send(matches, &email)?;
+                sent_email.display_status();
+                sent_email.archive(matches)?;
             }
             Confirmed::No => (),
         }

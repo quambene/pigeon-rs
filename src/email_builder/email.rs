@@ -1,19 +1,18 @@
-use super::{Mime, Status};
+use super::Mime;
 use crate::{
     arg,
     email_builder::{Confirmed, Message},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
-use std::{cell::RefCell, io};
+use std::io;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Email {
     pub sender: String,
     pub receiver: String,
     pub message: Message,
     pub mime: Mime,
-    pub status: RefCell<Status>,
 }
 
 impl Email {
@@ -30,7 +29,6 @@ impl Email {
                     receiver: receiver.to_string(),
                     message,
                     mime,
-                    status: RefCell::new(Status::NotSent),
                 };
                 Ok(email)
             }
@@ -42,10 +40,6 @@ impl Email {
                 arg::RECEIVER
             )),
         }
-    }
-
-    pub fn update_status(&self, status: Status) {
-        self.status.replace(status);
     }
 
     pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {
@@ -76,13 +70,5 @@ impl Email {
             }
         };
         Ok(confirmation)
-    }
-
-    pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::ARCHIVE) {
-            self.mime.archive(matches)?;
-        }
-
-        Ok(())
     }
 }

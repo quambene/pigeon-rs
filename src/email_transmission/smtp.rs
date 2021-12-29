@@ -1,3 +1,4 @@
+use super::SentEmail;
 use crate::{
     arg,
     email_builder::{Email, Status},
@@ -27,20 +28,26 @@ impl Client {
         Ok(Self { transport })
     }
 
-    pub fn send(&self, matches: &ArgMatches<'_>, email: &Email) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::DRY_RUN) {
-            email.update_status(Status::DryRun);
+    pub fn send(
+        &self,
+        matches: &ArgMatches<'_>,
+        email: &Email,
+    ) -> Result<SentEmail, anyhow::Error> {
+        let sent_email = if matches.is_present(arg::DRY_RUN) {
+            let status = Status::DryRun;
+            SentEmail::new(email, status)
         } else {
             let response = self
                 .transport
                 .send(&email.mime.message)
                 .context("Can't sent email via SMTP");
-            match response {
-                Ok(response) => email.update_status(Status::Sent(response.message().collect())),
-                Err(err) => email.update_status(Status::SentError(err.to_string())),
+            let status = match response {
+                Ok(response) => Status::Sent(response.message().collect()),
+                Err(err) => Status::SentError(err.to_string()),
             };
-        }
+            SentEmail::new(email, status)
+        };
 
-        Ok(())
+        Ok(sent_email)
     }
 }
