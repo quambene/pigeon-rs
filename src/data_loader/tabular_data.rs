@@ -1,12 +1,44 @@
+use std::path::PathBuf;
+
 use anyhow::{anyhow, Context};
+use clap::ArgMatches;
 use polars::{
     chunked_array::ChunkedArray,
     prelude::{DataFrame, TakeRandom, Utf8Type},
 };
 
+use crate::{
+    arg,
+    data_sources::{query_postgres, read_csv},
+    email_builder::Receiver,
+};
+
 pub struct TabularData;
 
 impl TabularData {
+    pub fn from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+        let receiver_query = Receiver::query(matches)?;
+        let df_receiver = query_postgres(matches, receiver_query)?;
+
+        if matches.is_present(arg::DISPLAY) {
+            println!("Display query result: {}", df_receiver);
+        }
+
+        Ok(df_receiver)
+    }
+
+    pub fn from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+        let receiver_file = Receiver::file_name(matches)?;
+        let path = PathBuf::from(receiver_file);
+        let df_receiver = read_csv(&path)?;
+
+        if matches.is_present(arg::DISPLAY) {
+            println!("Display csv file: {}", df_receiver);
+        }
+
+        Ok(df_receiver)
+    }
+
     pub fn row<'a>(
         index: usize,
         column_name: &str,

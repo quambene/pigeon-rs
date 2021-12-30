@@ -1,4 +1,4 @@
-use super::MimeFormat;
+use super::{MimeFormat, Receiver, Sender};
 use crate::{
     arg,
     email_builder::{Confirmed, Message},
@@ -17,29 +17,17 @@ pub struct Email<'a> {
 
 impl<'a> Email<'a> {
     pub fn new(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
-        match (
-            matches.value_of(arg::SENDER),
-            matches.value_of(arg::RECEIVER),
-        ) {
-            (Some(sender), Some(receiver)) => {
-                let message = Message::new(matches)?;
-                let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
-                let email = Email {
-                    sender,
-                    receiver: receiver.to_string(),
-                    message,
-                    mime_format,
-                };
-                Ok(email)
-            }
-            (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::RECEIVER)),
-            (None, Some(_)) => Err(anyhow!("Missing value for argument '{}'", arg::SENDER)),
-            (None, None) => Err(anyhow!(
-                "Missing values for arguments '{}' and '{}'",
-                arg::SENDER,
-                arg::RECEIVER
-            )),
-        }
+        let sender = Sender::new(matches)?;
+        let receiver = Receiver::new(matches)?;
+        let message = Message::new(matches)?;
+        let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+        let email = Email {
+            sender,
+            receiver: receiver.to_string(),
+            message,
+            mime_format,
+        };
+        Ok(email)
     }
 
     pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {
