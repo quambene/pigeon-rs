@@ -1,6 +1,7 @@
-use super::MimeFormat;
+use super::{MimeFormat, Receiver};
 use crate::{
     arg, cmd,
+    data_loader::TabularData,
     data_sources::{query_postgres, read_csv},
     email_builder::{Confirmed, Email, Message, MessageTemplate},
     email_formatter::EmlFormatter,
@@ -8,7 +9,7 @@ use crate::{
 };
 use anyhow::{anyhow, Context, Result};
 use clap::{ArgMatches, Values};
-use polars::prelude::{DataFrame, TakeRandom};
+use polars::prelude::DataFrame;
 use std::{io, path::PathBuf};
 
 #[derive(Debug)]
@@ -137,16 +138,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     fn dataframe_from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
-        let receiver_query = match matches.value_of(arg::RECEIVER_QUERY) {
-            Some(receiver_query) => receiver_query,
-            None => {
-                return Err(anyhow!(
-                    "Missing value for argument '{}'",
-                    arg::RECEIVER_QUERY
-                ))
-            }
-        };
-
+        let receiver_query = Receiver::query(matches)?;
         let df_receiver = query_postgres(matches, receiver_query)?;
 
         if matches.is_present(arg::DISPLAY) {
@@ -157,16 +149,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     fn dataframe_from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
-        let receiver_file = match matches.value_of(arg::RECEIVER_FILE) {
-            Some(receiver_file) => receiver_file,
-            None => {
-                return Err(anyhow!(
-                    "Missing value for argument '{}'",
-                    arg::RECEIVER_FILE
-                ))
-            }
-        };
-
+        let receiver_file = Receiver::file_name(matches)?;
         let path = PathBuf::from(receiver_file);
         let df_receiver = read_csv(&path)?;
 
@@ -183,22 +166,9 @@ impl<'a> BulkEmail<'a> {
         df_receiver: DataFrame,
         message: &Message,
     ) -> Result<Vec<Email<'a>>, anyhow::Error> {
-        // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
-        let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
-            Some(col_name) => col_name,
-            None => {
-                return Err(anyhow!(
-                    "Missing value for argument '{}'",
-                    arg::RECEIVER_COLUMN
-                ))
-            }
-        };
-
         let mut emails: Vec<Email> = vec![];
-        let receiver_series = df_receiver.column(receiver_col)?;
-        let receivers = receiver_series
-            .utf8()
-            .context("Can't convert series to chunked array")?;
+        let receiver_column_name = Receiver::column_name(matches)?;
+        let receivers = TabularData::column(receiver_column_name, &df_receiver)?;
 
         for receiver in receivers {
             match receiver {
@@ -227,42 +197,17 @@ impl<'a> BulkEmail<'a> {
     ) -> Result<Vec<Email<'a>>, anyhow::Error> {
         let mut emails: Vec<Email> = vec![];
         let columns: Vec<&str> = personalized_columns.collect();
+        let receiver_column_name = Receiver::column_name(matches)?;
 
         for i in 0..df_receiver.height() {
             let mut message = default_message.clone();
 
             for &col_name in columns.iter() {
-                match df_receiver.column(col_name)?.utf8()?.get(i) {
-                    Some(col_value) => message = message.personalize(col_name, col_value)?,
-                    None => {
-                        return Err(anyhow!(
-                            "Missing value for column '{}' in row {}",
-                            col_name,
-                            i
-                        ))
-                    }
-                };
+                let col_value = TabularData::row(i, col_name, &df_receiver)?;
+                message = message.personalize(col_name, col_value)?;
             }
 
-            // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
-            let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
-                Some(receiver_col) => receiver_col,
-                None => {
-                    return Err(anyhow!(
-                        "Missing value for argument '{}'",
-                        arg::RECEIVER_COLUMN
-                    ))
-                }
-            };
-            let receiver = df_receiver
-                .column(receiver_col)
-                .context(format!(
-                    "Invalid value for argument '{}'",
-                    arg::RECEIVER_COLUMN
-                ))?
-                .utf8()?
-                .get(i)
-                .context("Can't get value of chunked array")?;
+            let receiver = TabularData::row(i, receiver_column_name, &df_receiver)?;
             let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
 
             emails.push(Email {
