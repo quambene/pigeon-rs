@@ -1,8 +1,5 @@
-use super::SentEmail;
-use crate::{
-    arg,
-    email_builder::{Email, Status},
-};
+use super::{SentEmail, Status};
+use crate::{arg, email_builder::Email};
 use anyhow::Context;
 use clap::ArgMatches;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};
