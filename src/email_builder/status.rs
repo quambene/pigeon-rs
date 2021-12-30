@@ -1,6 +1,6 @@
 #[derive(Debug, Clone)]
 pub enum Status {
     DryRun,
-    Sent(String),
+    SentOk(String),
     SentError(String),
 }

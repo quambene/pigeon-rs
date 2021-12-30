@@ -42,7 +42,7 @@ impl Client {
                 .send(&email.mime_format.message)
                 .context("Can't sent email via SMTP");
             let status = match response {
-                Ok(response) => Status::Sent(response.message().collect()),
+                Ok(response) => Status::SentOk(response.message().collect()),
                 Err(err) => Status::SentError(err.to_string()),
             };
             SentEmail::new(email, status)
