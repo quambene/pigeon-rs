@@ -16,16 +16,21 @@ pub struct Email<'a> {
 }
 
 impl<'a> Email<'a> {
-    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
+    pub fn build(matches: &'a ArgMatches) -> Result<Self, anyhow::Error> {
         let sender = Sender::new(matches)?;
         let receiver = Receiver::new(matches)?;
         let message = Message::new(matches)?;
         let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+        let email = Email::new(sender, receiver, &message, &mime_format)?;
+        Ok(email)
+    }
+
+    fn new(sender: &'a str, receiver: &str, message: &Message, mime_format: &MimeFormat) -> Result<Self, anyhow::Error> {
         let email = Email {
             sender,
             receiver: receiver.to_string(),
-            message,
-            mime_format,
+            message: message.to_owned(),
+            mime_format: mime_format.to_owned(),
         };
         Ok(email)
     }

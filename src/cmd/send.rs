@@ -71,12 +71,14 @@ pub fn send_args() -> [Arg<'static, 'static>; 12] {
     ]
 }
 
-pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    let email = Email::new(matches)?;
+    let email = Email::build(matches)?;
+    let client = Client::new()?;
+    let eml_formatter = EmlFormatter::new(matches)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display email: {:#?}", email);
@@ -85,9 +87,6 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::DRY_RUN) {
         println!("Dry run: {}", format_green("activated"));
     }
-
-    let client = Client::new()?;
-    let eml_formatter = EmlFormatter::new(matches)?;
 
     println!("Sending email to 1 recipient ...");
 
