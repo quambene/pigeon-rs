@@ -1,4 +1,5 @@
-use crate::email_builder::{Email, Message, Status};
+use super::Status;
+use crate::email_builder::{Email, Message};
 
 #[derive(Debug)]
 pub struct SentEmail<'a> {
