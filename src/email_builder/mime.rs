@@ -3,13 +3,9 @@ use anyhow::{anyhow, Context};
 use clap::ArgMatches;
 use lettre::{
     message::{header, MultiPart, SinglePart},
-    FileTransport, Message, Transport,
+    Message,
 };
-use std::{
-    fmt, fs,
-    path::{Path, PathBuf},
-    str,
-};
+use std::{fmt, fs, path::Path, str};
 
 #[derive(Clone)]
 pub struct MimeFormat {
@@ -61,32 +57,6 @@ impl MimeFormat {
         .context("Can't create MIME formatted email")?;
 
         Ok(Self { message })
-    }
-
-    pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        let target_dir = match matches.value_of(arg::ARCHIVE_DIR) {
-            Some(archive_dir) => Path::new(archive_dir),
-            None => return Err(anyhow!("Missing value for argument '{}'", arg::ARCHIVE_DIR)),
-        };
-
-        if !target_dir.exists() {
-            fs::create_dir(target_dir).context("Unable to create directory for archived emails")?;
-        }
-
-        let mailer = FileTransport::new(target_dir);
-        let message_id = mailer
-            .send(&self.message)
-            .context("Can't save email in .eml format")?;
-
-        let old_path = old_path(message_id.as_str(), target_dir);
-        let new_path = new_path(matches, message_id.as_str(), target_dir);
-
-        println!("Archiving '{}' ...", new_path.display());
-
-        // TODO: renaming file is required because of issue/discussion https://github.com/lettre/lettre/discussions/711
-        fs::rename(old_path, new_path).context("Can't rename archived email")?;
-
-        Ok(())
     }
 
     fn text_plain(text: &str) -> SinglePart {
@@ -145,23 +115,4 @@ impl fmt::Debug for MimeFormat {
             str::from_utf8(&self.message.formatted()).expect("Can't convert from utf8")
         )
     }
-}
-
-fn old_path(message_id: &str, target_dir: &Path) -> PathBuf {
-    let old_file_name = format!("{}.eml", message_id);
-    target_dir.join(old_file_name)
-}
-
-fn new_path(matches: &ArgMatches<'_>, message_id: &str, target_dir: &Path) -> PathBuf {
-    let now = std::time::SystemTime::now();
-    let now_utc: chrono::DateTime<chrono::Utc> = now.into();
-    let timestamp = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
-
-    let new_file_name = if matches.is_present(arg::DRY_RUN) {
-        format!("{}_{}_dry-run.eml", timestamp, message_id)
-    } else {
-        format!("{}_{}.eml", timestamp, message_id)
-    };
-
-    target_dir.join(new_file_name)
 }

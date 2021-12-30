@@ -1,9 +1,4 @@
-use clap::ArgMatches;
-
-use crate::{
-    arg,
-    email_builder::{Email, Status},
-};
+use crate::email_builder::{Email, Status};
 
 #[derive(Debug)]
 pub struct SentEmail {
@@ -21,13 +16,5 @@ impl SentEmail {
 
     pub fn display_status(&self) {
         println!("{:#?} ... {:#?}", self.email.receiver, self.status);
-    }
-
-    pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::ARCHIVE) {
-            self.email.mime_format.archive(matches)?;
-        }
-
-        Ok(())
     }
 }

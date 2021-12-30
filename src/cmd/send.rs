@@ -1,6 +1,7 @@
 use crate::{
     arg,
     email_builder::{Confirmed, Email},
+    email_formatter::EmlFormatter,
     email_transmission::Client,
     helper::format_green,
 };
@@ -86,20 +87,21 @@ pub fn send(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
     }
 
     let client = Client::new()?;
+    let eml_formatter = EmlFormatter::new(matches)?;
 
     println!("Sending email to 1 recipient ...");
 
     if matches.is_present(arg::ASSUME_YES) {
         let sent_email = client.send(matches, &email)?;
         sent_email.display_status();
-        sent_email.archive(matches)?;
+        eml_formatter.archive(matches, &email)?;
     } else {
         let confirmation = email.confirm(matches)?;
         match confirmation {
             Confirmed::Yes => {
                 let sent_email = client.send(matches, &email)?;
                 sent_email.display_status();
-                sent_email.archive(matches)?;
+                eml_formatter.archive(matches, &email)?;
             }
             Confirmed::No => (),
         }

@@ -3,6 +3,7 @@ use crate::{
     arg, cmd,
     data_sources::{query_postgres, read_csv},
     email_builder::{Confirmed, Email, Message, MessageTemplate},
+    email_formatter::EmlFormatter,
     email_transmission::Client,
 };
 use anyhow::{anyhow, Context, Result};
@@ -66,13 +67,14 @@ impl BulkEmail {
 
     pub fn process(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
         let client = Client::new()?;
+        let eml_formatter = EmlFormatter::new(matches)?;
 
         println!("Sending email to {} receivers ...", self.emails.len());
 
         for email in &self.emails {
             let sent_email = client.send(matches, email)?;
             sent_email.display_status();
-            sent_email.archive(matches)?;
+            eml_formatter.archive(matches, email)?;
         }
 
         if matches.is_present(arg::DRY_RUN) {
