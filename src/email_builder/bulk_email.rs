@@ -12,12 +12,12 @@ use polars::prelude::{DataFrame, TakeRandom};
 use std::{io, path::PathBuf};
 
 #[derive(Debug)]
-pub struct BulkEmail {
-    pub emails: Vec<Email>,
+pub struct BulkEmail<'a> {
+    pub emails: Vec<Email<'a>>,
 }
 
-impl BulkEmail {
-    pub fn new(matches: &ArgMatches<'_>) -> Result<Self, anyhow::Error> {
+impl<'a> BulkEmail<'a> {
+    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
         let sender = if matches.is_present(arg::SENDER) {
             match matches.value_of(arg::SENDER) {
                 Some(sender) => sender,
@@ -31,8 +31,8 @@ impl BulkEmail {
             matches.is_present(arg::RECEIVER_QUERY),
             matches.is_present(arg::RECEIVER_FILE),
         ) {
-            (true, false) => dataframe_from_query(matches)?,
-            (false, true) => dataframe_from_file(matches)?,
+            (true, false) => Self::dataframe_from_query(matches)?,
+            (false, true) => Self::dataframe_from_file(matches)?,
             (true, true) => {
                 return Err(anyhow!(
                     "Argument conflict: arguments {} and {} are not allowed at the same time. Check usage via '{} help {}'",
@@ -55,11 +55,11 @@ impl BulkEmail {
 
         let emails = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
-                Some(values) => create_personalized_emails(matches, sender, df_receiver, values)?,
+                Some(values) => Self::create_personalized_emails(matches, sender, df_receiver, values)?,
                 None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
             }
         } else {
-            create_emails(matches, sender, df_receiver)?
+            Self::create_emails(matches, sender, df_receiver)?
         };
 
         Ok(BulkEmail { emails })
@@ -123,123 +123,56 @@ impl BulkEmail {
         };
         Ok(confirmation)
     }
-}
 
-fn dataframe_from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
-    let receiver_query = match matches.value_of(arg::RECEIVER_QUERY) {
-        Some(receiver_query) => receiver_query,
-        None => {
-            return Err(anyhow!(
-                "Missing value for argument '{}'",
-                arg::RECEIVER_QUERY
-            ))
-        }
-    };
-
-    let df_receiver = query_postgres(matches, receiver_query)?;
-
-    if matches.is_present(arg::DISPLAY) {
-        println!("Display query result: {}", df_receiver);
-    }
-
-    Ok(df_receiver)
-}
-
-fn dataframe_from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
-    let receiver_file = match matches.value_of(arg::RECEIVER_FILE) {
-        Some(receiver_file) => receiver_file,
-        None => {
-            return Err(anyhow!(
-                "Missing value for argument '{}'",
-                arg::RECEIVER_FILE
-            ))
-        }
-    };
-
-    let path = PathBuf::from(receiver_file);
-    let df_receiver = read_csv(&path)?;
-
-    if matches.is_present(arg::DISPLAY) {
-        println!("Display csv file: {}", df_receiver);
-    }
-
-    Ok(df_receiver)
-}
-
-fn create_emails(
-    matches: &ArgMatches<'_>,
-    sender: &str,
-    df_receiver: DataFrame,
-) -> Result<Vec<Email>, anyhow::Error> {
-    // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
-    let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
-        Some(col_name) => col_name,
-        None => {
-            return Err(anyhow!(
-                "Missing value for argument '{}'",
-                arg::RECEIVER_COLUMN
-            ))
-        }
-    };
-
-    let message_template = MessageTemplate::read(matches)?;
-    let message = &Message::default(&message_template)?;
-
-    let mut emails: Vec<Email> = vec![];
-    let receiver_series = df_receiver.column(receiver_col)?;
-    let receivers = receiver_series
-        .utf8()
-        .context("Can't convert series to chunked array")?;
-
-    for receiver in receivers {
-        match receiver {
-            Some(receiver) => {
-                let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
-                emails.push(Email {
-                    sender: sender.to_string(),
-                    receiver: receiver.to_string(),
-                    message: message.clone(),
-                    mime_format,
-                });
+    fn dataframe_from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+        let receiver_query = match matches.value_of(arg::RECEIVER_QUERY) {
+            Some(receiver_query) => receiver_query,
+            None => {
+                return Err(anyhow!(
+                    "Missing value for argument '{}'",
+                    arg::RECEIVER_QUERY
+                ))
             }
-            None => continue,
+        };
+    
+        let df_receiver = query_postgres(matches, receiver_query)?;
+    
+        if matches.is_present(arg::DISPLAY) {
+            println!("Display query result: {}", df_receiver);
         }
+    
+        Ok(df_receiver)
     }
-
-    Ok(emails)
-}
-
-fn create_personalized_emails(
-    matches: &ArgMatches<'_>,
-    sender: &str,
-    df_receiver: DataFrame,
-    values: Values,
-) -> Result<Vec<Email>, anyhow::Error> {
-    let message_template = MessageTemplate::read(matches)?;
-    let default_message = &Message::default(&message_template)?;
-
-    let mut emails: Vec<Email> = vec![];
-
-    for i in 0..df_receiver.height() {
-        let mut message = default_message.clone();
-        let personalized_columns = values.clone();
-
-        for col_name in personalized_columns {
-            match df_receiver.column(col_name)?.utf8()?.get(i) {
-                Some(col_value) => message = message.personalize(col_name, col_value)?,
-                None => {
-                    return Err(anyhow!(
-                        "Missing value for column '{}' in row {}",
-                        col_name,
-                        i
-                    ))
-                }
-            };
+    
+    fn dataframe_from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+        let receiver_file = match matches.value_of(arg::RECEIVER_FILE) {
+            Some(receiver_file) => receiver_file,
+            None => {
+                return Err(anyhow!(
+                    "Missing value for argument '{}'",
+                    arg::RECEIVER_FILE
+                ))
+            }
+        };
+    
+        let path = PathBuf::from(receiver_file);
+        let df_receiver = read_csv(&path)?;
+    
+        if matches.is_present(arg::DISPLAY) {
+            println!("Display csv file: {}", df_receiver);
         }
-
+    
+        Ok(df_receiver)
+    }
+    
+    fn create_emails(
+        matches: &ArgMatches<'_>,
+        sender: &'a str,
+        df_receiver: DataFrame,
+    ) -> Result<Vec<Email<'a>>, anyhow::Error> {
         // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
         let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
-            Some(receiver_col) => receiver_col,
+            Some(col_name) => col_name,
             None => {
                 return Err(anyhow!(
                     "Missing value for argument '{}'",
@@ -247,25 +180,91 @@ fn create_personalized_emails(
                 ))
             }
         };
-        let receiver = df_receiver
-            .column(receiver_col)
-            .context(format!(
-                "Invalid value for argument '{}'",
-                arg::RECEIVER_COLUMN
-            ))?
-            .utf8()?
-            .get(i)
-            .context("Can't get value of chunked array")?
-            .to_string();
-        let mime_format = MimeFormat::new(matches, sender, &receiver, &message)?;
-
-        emails.push(Email {
-            sender: sender.to_string(),
-            receiver,
-            message,
-            mime_format,
-        });
+    
+        let message_template = MessageTemplate::read(matches)?;
+        let message = &Message::default(&message_template)?;
+    
+        let mut emails: Vec<Email> = vec![];
+        let receiver_series = df_receiver.column(receiver_col)?;
+        let receivers = receiver_series
+            .utf8()
+            .context("Can't convert series to chunked array")?;
+    
+        for receiver in receivers {
+            match receiver {
+                Some(receiver) => {
+                    let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+                    emails.push(Email {
+                        sender,
+                        receiver: receiver.to_string(),
+                        message: message.clone(),
+                        mime_format,
+                    });
+                }
+                None => continue,
+            }
+        }
+    
+        Ok(emails)
     }
-
-    Ok(emails)
+    
+    fn create_personalized_emails(
+        matches: &ArgMatches<'_>,
+        sender: &'a str,
+        df_receiver: DataFrame,
+        values: Values,
+    ) -> Result<Vec<Email<'a>>, anyhow::Error> {
+        let message_template = MessageTemplate::read(matches)?;
+        let default_message = &Message::default(&message_template)?;
+    
+        let mut emails: Vec<Email> = vec![];
+    
+        for i in 0..df_receiver.height() {
+            let mut message = default_message.clone();
+            let personalized_columns = values.clone();
+    
+            for col_name in personalized_columns {
+                match df_receiver.column(col_name)?.utf8()?.get(i) {
+                    Some(col_value) => message = message.personalize(col_name, col_value)?,
+                    None => {
+                        return Err(anyhow!(
+                            "Missing value for column '{}' in row {}",
+                            col_name,
+                            i
+                        ))
+                    }
+                };
+            }
+    
+            // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
+            let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
+                Some(receiver_col) => receiver_col,
+                None => {
+                    return Err(anyhow!(
+                        "Missing value for argument '{}'",
+                        arg::RECEIVER_COLUMN
+                    ))
+                }
+            };
+            let receiver = df_receiver
+                .column(receiver_col)
+                .context(format!(
+                    "Invalid value for argument '{}'",
+                    arg::RECEIVER_COLUMN
+                ))?
+                .utf8()?
+                .get(i)
+                .context("Can't get value of chunked array")?;
+            let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+    
+            emails.push(Email {
+                sender,
+                receiver: receiver.to_string(),
+                message,
+                mime_format,
+            });
+        }
+    
+        Ok(emails)
+    }
 }

@@ -28,11 +28,11 @@ impl Client {
         Ok(Self { transport })
     }
 
-    pub fn send(
+    pub fn send<'a>(
         &self,
         matches: &ArgMatches<'_>,
-        email: &Email,
-    ) -> Result<SentEmail, anyhow::Error> {
+        email: &Email<'a>,
+    ) -> Result<SentEmail<'a>, anyhow::Error> {
         let sent_email = if matches.is_present(arg::DRY_RUN) {
             let status = Status::DryRun;
             SentEmail::new(email, status)

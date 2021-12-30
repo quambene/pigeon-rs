@@ -8,15 +8,15 @@ use clap::ArgMatches;
 use std::io;
 
 #[derive(Debug, Clone)]
-pub struct Email {
-    pub sender: String,
+pub struct Email<'a> {
+    pub sender: &'a str,
     pub receiver: String,
     pub message: Message,
     pub mime_format: MimeFormat,
 }
 
-impl Email {
-    pub fn new(matches: &ArgMatches<'_>) -> Result<Self, anyhow::Error> {
+impl<'a> Email<'a> {
+    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
         match (
             matches.value_of(arg::SENDER),
             matches.value_of(arg::RECEIVER),
@@ -25,7 +25,7 @@ impl Email {
                 let message = Message::new(matches)?;
                 let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
                 let email = Email {
-                    sender: sender.to_string(),
+                    sender,
                     receiver: receiver.to_string(),
                     message,
                     mime_format,
