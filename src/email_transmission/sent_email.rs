@@ -4,17 +4,17 @@ use crate::email_builder::{Email, Message};
 #[derive(Debug)]
 pub struct SentEmail<'a> {
     pub sender: &'a str,
-    pub receiver: String,
-    pub message: Message,
+    pub receiver: &'a str,
+    pub message: &'a Message,
     pub status: Status,
 }
 
 impl<'a> SentEmail<'a> {
-    pub fn new(email: &Email<'a>, status: Status) -> Self {
+    pub fn new(email: &'a Email<'a>, status: Status) -> Self {
         Self {
             sender: email.sender,
-            receiver: email.receiver.to_string(),
-            message: email.message.clone(),
+            receiver: &email.receiver,
+            message: &email.message,
             status,
         }
     }
