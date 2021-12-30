@@ -55,13 +55,23 @@ impl<'a> BulkEmail<'a> {
 
         let emails = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
-                Some(values) => {
-                    Self::create_personalized_emails(matches, sender, df_receiver, values)?
+                Some(personalized_columns) => {
+                    let message_template = MessageTemplate::read(matches)?;
+                    let default_message = Message::default(&message_template)?;
+                    Self::create_personalized_emails(
+                        matches,
+                        sender,
+                        df_receiver,
+                        personalized_columns,
+                        &default_message,
+                    )?
                 }
                 None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
             }
         } else {
-            Self::create_emails(matches, sender, df_receiver)?
+            let message_template = MessageTemplate::read(matches)?;
+            let message = Message::default(&message_template)?;
+            Self::create_emails(matches, sender, df_receiver, &message)?
         };
 
         Ok(BulkEmail { emails })
@@ -171,6 +181,7 @@ impl<'a> BulkEmail<'a> {
         matches: &ArgMatches<'_>,
         sender: &'a str,
         df_receiver: DataFrame,
+        message: &Message,
     ) -> Result<Vec<Email<'a>>, anyhow::Error> {
         // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
         let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
@@ -182,9 +193,6 @@ impl<'a> BulkEmail<'a> {
                 ))
             }
         };
-
-        let message_template = MessageTemplate::read(matches)?;
-        let message = &Message::default(&message_template)?;
 
         let mut emails: Vec<Email> = vec![];
         let receiver_series = df_receiver.column(receiver_col)?;
@@ -199,7 +207,7 @@ impl<'a> BulkEmail<'a> {
                     emails.push(Email {
                         sender,
                         receiver: receiver.to_string(),
-                        message: message.clone(),
+                        message: message.to_owned(),
                         mime_format,
                     });
                 }
@@ -214,18 +222,16 @@ impl<'a> BulkEmail<'a> {
         matches: &ArgMatches<'_>,
         sender: &'a str,
         df_receiver: DataFrame,
-        values: Values,
+        personalized_columns: Values,
+        default_message: &Message,
     ) -> Result<Vec<Email<'a>>, anyhow::Error> {
-        let message_template = MessageTemplate::read(matches)?;
-        let default_message = &Message::default(&message_template)?;
-
         let mut emails: Vec<Email> = vec![];
+        let columns: Vec<&str> = personalized_columns.collect();
 
         for i in 0..df_receiver.height() {
             let mut message = default_message.clone();
-            let personalized_columns = values.clone();
 
-            for col_name in personalized_columns {
+            for &col_name in columns.iter() {
                 match df_receiver.column(col_name)?.utf8()?.get(i) {
                     Some(col_value) => message = message.personalize(col_name, col_value)?,
                     None => {
