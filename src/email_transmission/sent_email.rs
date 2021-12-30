@@ -19,6 +19,6 @@ impl<'a> SentEmail<'a> {
     }
 
     pub fn display_status(&self) {
-        println!("{:#?} ... {:#?}", self.receiver, self.status);
+        println!("{} ... {}", self.receiver, self.status);
     }
 }
