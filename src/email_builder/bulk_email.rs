@@ -55,7 +55,9 @@ impl<'a> BulkEmail<'a> {
 
         let emails = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
-                Some(values) => Self::create_personalized_emails(matches, sender, df_receiver, values)?,
+                Some(values) => {
+                    Self::create_personalized_emails(matches, sender, df_receiver, values)?
+                }
                 None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
             }
         } else {
@@ -134,16 +136,16 @@ impl<'a> BulkEmail<'a> {
                 ))
             }
         };
-    
+
         let df_receiver = query_postgres(matches, receiver_query)?;
-    
+
         if matches.is_present(arg::DISPLAY) {
             println!("Display query result: {}", df_receiver);
         }
-    
+
         Ok(df_receiver)
     }
-    
+
     fn dataframe_from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
         let receiver_file = match matches.value_of(arg::RECEIVER_FILE) {
             Some(receiver_file) => receiver_file,
@@ -154,17 +156,17 @@ impl<'a> BulkEmail<'a> {
                 ))
             }
         };
-    
+
         let path = PathBuf::from(receiver_file);
         let df_receiver = read_csv(&path)?;
-    
+
         if matches.is_present(arg::DISPLAY) {
             println!("Display csv file: {}", df_receiver);
         }
-    
+
         Ok(df_receiver)
     }
-    
+
     fn create_emails(
         matches: &ArgMatches<'_>,
         sender: &'a str,
@@ -180,16 +182,16 @@ impl<'a> BulkEmail<'a> {
                 ))
             }
         };
-    
+
         let message_template = MessageTemplate::read(matches)?;
         let message = &Message::default(&message_template)?;
-    
+
         let mut emails: Vec<Email> = vec![];
         let receiver_series = df_receiver.column(receiver_col)?;
         let receivers = receiver_series
             .utf8()
             .context("Can't convert series to chunked array")?;
-    
+
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
@@ -204,10 +206,10 @@ impl<'a> BulkEmail<'a> {
                 None => continue,
             }
         }
-    
+
         Ok(emails)
     }
-    
+
     fn create_personalized_emails(
         matches: &ArgMatches<'_>,
         sender: &'a str,
@@ -216,13 +218,13 @@ impl<'a> BulkEmail<'a> {
     ) -> Result<Vec<Email<'a>>, anyhow::Error> {
         let message_template = MessageTemplate::read(matches)?;
         let default_message = &Message::default(&message_template)?;
-    
+
         let mut emails: Vec<Email> = vec![];
-    
+
         for i in 0..df_receiver.height() {
             let mut message = default_message.clone();
             let personalized_columns = values.clone();
-    
+
             for col_name in personalized_columns {
                 match df_receiver.column(col_name)?.utf8()?.get(i) {
                     Some(col_value) => message = message.personalize(col_name, col_value)?,
@@ -235,7 +237,7 @@ impl<'a> BulkEmail<'a> {
                     }
                 };
             }
-    
+
             // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used
             let receiver_col = match matches.value_of(arg::RECEIVER_COLUMN) {
                 Some(receiver_col) => receiver_col,
@@ -256,7 +258,7 @@ impl<'a> BulkEmail<'a> {
                 .get(i)
                 .context("Can't get value of chunked array")?;
             let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
-    
+
             emails.push(Email {
                 sender,
                 receiver: receiver.to_string(),
@@ -264,7 +266,7 @@ impl<'a> BulkEmail<'a> {
                 mime_format,
             });
         }
-    
+
         Ok(emails)
     }
 }
