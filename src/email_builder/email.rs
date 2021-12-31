@@ -7,10 +7,10 @@ use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use std::io;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Email<'a> {
     pub sender: &'a str,
-    pub receiver: String,
+    pub receiver: &'a str,
     pub message: Message,
     pub mime_format: MimeFormat,
 }
@@ -25,10 +25,15 @@ impl<'a> Email<'a> {
         Ok(email)
     }
 
-    fn new(sender: &'a str, receiver: &str, message: &Message, mime_format: &MimeFormat) -> Result<Self, anyhow::Error> {
+    pub fn new(
+        sender: &'a str,
+        receiver: &'a str,
+        message: &Message,
+        mime_format: &MimeFormat,
+    ) -> Result<Self, anyhow::Error> {
         let email = Email {
             sender,
-            receiver: receiver.to_string(),
+            receiver,
             message: message.to_owned(),
             mime_format: mime_format.to_owned(),
         };
