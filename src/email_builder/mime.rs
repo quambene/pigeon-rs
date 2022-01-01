@@ -14,7 +14,7 @@ pub struct MimeFormat {
 
 impl MimeFormat {
     pub fn new(
-        matches: &ArgMatches<'_>,
+        matches: &ArgMatches,
         sender: &str,
         receiver: &str,
         message: &email_builder::Message,
@@ -108,7 +108,7 @@ impl MimeFormat {
 }
 
 impl fmt::Debug for MimeFormat {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
             "{}",

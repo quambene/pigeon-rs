@@ -19,7 +19,7 @@ async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::E
 }
 
 #[allow(dead_code)]
-pub fn setup_ses_client(matches: &ArgMatches<'_>) -> Result<SesV2Client, anyhow::Error> {
+pub fn setup_ses_client(matches: &ArgMatches) -> Result<SesV2Client, anyhow::Error> {
     println!("Setting up email client ...");
     let http = HttpClient::new()?;
     let provider = EnvironmentProvider::default();

@@ -12,7 +12,7 @@ pub fn read_csv(csv_file: &PathBuf) -> Result<DataFrame, anyhow::Error> {
     Ok(df)
 }
 
-pub fn write_csv(matches: &ArgMatches<'_>, df: DataFrame) -> Result<(), anyhow::Error> {
+pub fn write_csv(matches: &ArgMatches, df: DataFrame) -> Result<(), anyhow::Error> {
     let now = SystemTime::now();
     let now_utc: chrono::DateTime<chrono::Utc> = now.into();
     let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);

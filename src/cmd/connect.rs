@@ -16,7 +16,7 @@ pub fn connect_args() -> [Arg<'static, 'static>; 2] {
     ]
 }
 
-pub fn connect(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }

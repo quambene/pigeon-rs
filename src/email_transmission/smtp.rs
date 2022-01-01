@@ -27,7 +27,7 @@ impl Client {
 
     pub fn send<'a>(
         &self,
-        matches: &ArgMatches<'_>,
+        matches: &ArgMatches,
         email: &'a Email<'a>,
     ) -> Result<SentEmail<'a>, anyhow::Error> {
         let sent_email = if matches.is_present(arg::DRY_RUN) {

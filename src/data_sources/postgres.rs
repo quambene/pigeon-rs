@@ -16,14 +16,14 @@ use crate::{arg, data_sources::SshTunnel};
 pub struct Password(pub String);
 
 impl fmt::Debug for Password {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let len = self.0.len();
         write!(f, "{}", &("*".repeat(len - 3) + &self.0[(len - 3)..]))
     }
 }
 
 impl fmt::Display for Password {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::Debug::fmt(self, f)
     }
 }
@@ -76,7 +76,7 @@ impl ConnVars {
     }
 }
 
-pub fn query_postgres(matches: &ArgMatches<'_>, query: &str) -> Result<DataFrame, anyhow::Error> {
+pub fn query_postgres(matches: &ArgMatches, query: &str) -> Result<DataFrame, anyhow::Error> {
     let conn_vars = ConnVars::from_env()?;
 
     let ssh_tunnel = if matches.is_present(arg::SSH_TUNNEL) {

@@ -16,7 +16,7 @@ use crate::{
 pub struct TabularData;
 
 impl TabularData {
-    pub fn from_query(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+    pub fn from_query(matches: &ArgMatches) -> Result<DataFrame, anyhow::Error> {
         let receiver_query = Receiver::query(matches)?;
         let df_receiver = query_postgres(matches, receiver_query)?;
 
@@ -27,7 +27,7 @@ impl TabularData {
         Ok(df_receiver)
     }
 
-    pub fn from_file(matches: &ArgMatches<'_>) -> Result<DataFrame, anyhow::Error> {
+    pub fn from_file(matches: &ArgMatches) -> Result<DataFrame, anyhow::Error> {
         let receiver_file = Receiver::file_name(matches)?;
         let path = PathBuf::from(receiver_file);
         let df_receiver = read_csv(&path)?;

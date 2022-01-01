@@ -14,7 +14,7 @@ pub struct SshTunnel {
 const LOCALHOST: &str = "127.0.0.1";
 
 impl SshTunnel {
-    pub fn new(matches: &ArgMatches<'_>, conn_vars: &ConnVars) -> Result<Self, anyhow::Error> {
+    pub fn new(matches: &ArgMatches, conn_vars: &ConnVars) -> Result<Self, anyhow::Error> {
         println!("Opening ssh tunnel ...");
 
         let server_host = env::var("SERVER_HOST")

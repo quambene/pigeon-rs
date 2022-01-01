@@ -32,7 +32,7 @@ impl<'a> EmlFormatter<'a> {
         Ok(formatter)
     }
 
-    pub fn archive(&self, matches: &ArgMatches<'_>, email: &Email) -> Result<(), anyhow::Error> {
+    pub fn archive(&self, matches: &ArgMatches, email: &Email) -> Result<(), anyhow::Error> {
         if matches.is_present(arg::ARCHIVE) {
             let message_id = self
                 .transport
@@ -57,7 +57,7 @@ fn old_path(message_id: &str, target_dir: &Path) -> PathBuf {
     target_dir.join(old_file_name)
 }
 
-fn new_path(matches: &ArgMatches<'_>, message_id: &str, target_dir: &Path) -> PathBuf {
+fn new_path(matches: &ArgMatches, message_id: &str, target_dir: &Path) -> PathBuf {
     let now = std::time::SystemTime::now();
     let now_utc: chrono::DateTime<chrono::Utc> = now.into();
     let timestamp = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);

@@ -41,7 +41,7 @@ fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
 }
 
 impl MessageTemplate {
-    pub fn create(_matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+    pub fn create(_matches: &ArgMatches) -> Result<(), anyhow::Error> {
         let current_dir = env::current_dir().context("Can't get current directory")?;
         let path_dir = current_dir;
 
@@ -88,7 +88,7 @@ impl MessageTemplate {
         Ok(())
     }
 
-    pub fn read(matches: &ArgMatches<'_>) -> Result<Self, anyhow::Error> {
+    pub fn read(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         if matches.is_present(arg::MESSAGE_FILE) {
             match matches.value_of(arg::MESSAGE_FILE) {
                 Some(message_file) => {

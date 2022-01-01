@@ -17,7 +17,7 @@ pub fn simple_query_args() -> [Arg<'static, 'static>; 2] {
     ]
 }
 
-pub fn simple_query(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }

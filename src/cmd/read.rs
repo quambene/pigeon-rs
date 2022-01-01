@@ -17,7 +17,7 @@ pub fn read_args() -> [Arg<'static, 'static>; 3] {
     ]
 }
 
-pub fn read(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
