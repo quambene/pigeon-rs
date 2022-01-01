@@ -1,6 +1,6 @@
 use crate::{
     arg,
-    email_builder::{BulkEmail, Confirmed, Receiver, Sender},
+    email_builder::{BulkEmail, Confirmed, Message, MessageTemplate, Receiver, Sender},
     helper::format_green,
 };
 use anyhow::Result;
@@ -76,14 +76,16 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 14] {
     ]
 }
 
-pub fn send_bulk(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
     let sender = Sender::new(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
-    let bulk_email = BulkEmail::new(matches, sender, &df_receiver)?;
+    let message_template = MessageTemplate::read(matches)?;
+    let default_message = Message::default(message_template)?;
+    let bulk_email = BulkEmail::build(matches, sender, &df_receiver, &default_message)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);

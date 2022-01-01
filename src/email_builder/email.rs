@@ -40,7 +40,7 @@ impl<'a> Email<'a> {
         Ok(email)
     }
 
-    pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {
+    pub fn confirm(&self, matches: &ArgMatches) -> Result<Confirmed, anyhow::Error> {
         let mut input = String::new();
 
         match matches.value_of(arg::RECEIVER) {

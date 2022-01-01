@@ -2,7 +2,7 @@ use super::{MimeFormat, Receiver};
 use crate::{
     arg,
     data_loader::TabularData,
-    email_builder::{Confirmed, Email, Message, MessageTemplate},
+    email_builder::{Confirmed, Email, Message},
     email_formatter::EmlFormatter,
     email_transmission::Client,
 };
@@ -17,36 +17,80 @@ pub struct BulkEmail<'a> {
 }
 
 impl<'a> BulkEmail<'a> {
-    pub fn new(
-        matches: &'a ArgMatches<'a>,
+    pub fn build(
+        matches: &'a ArgMatches,
         sender: &'a str,
         df_receiver: &'a DataFrame,
+        default_message: &'a Message,
     ) -> Result<Self, anyhow::Error> {
-        let emails = if matches.is_present(arg::PERSONALIZE) {
+        let bulk_email = if matches.is_present(arg::PERSONALIZE) {
             match matches.values_of(arg::PERSONALIZE) {
-                Some(personalized_columns) => {
-                    let message_template = MessageTemplate::read(matches)?;
-                    let default_message = Message::default(&message_template)?;
-                    BulkEmail::create_personalized_emails(
-                        matches,
-                        sender,
-                        df_receiver,
-                        personalized_columns,
-                        &default_message,
-                    )?
-                }
+                Some(personalized_columns) => BulkEmail::personalize(
+                    matches,
+                    sender,
+                    &df_receiver,
+                    &default_message,
+                    personalized_columns,
+                )?,
                 None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
             }
         } else {
-            let message_template = MessageTemplate::read(matches)?;
-            let message = Message::default(&message_template)?;
-            BulkEmail::create_emails(matches, sender, df_receiver, &message)?
+            BulkEmail::new(matches, sender, &df_receiver, &default_message)?
         };
+
+        Ok(bulk_email)
+    }
+
+    pub fn new(
+        matches: &'a ArgMatches,
+        sender: &'a str,
+        df_receiver: &'a DataFrame,
+        message: &'a Message,
+    ) -> Result<Self, anyhow::Error> {
+        let mut emails: Vec<Email> = vec![];
+        let receiver_column_name = Receiver::column_name(matches)?;
+        let receivers = TabularData::column(receiver_column_name, df_receiver)?;
+
+        for receiver in receivers {
+            match receiver {
+                Some(receiver) => {
+                    let mime_format = MimeFormat::new(matches, sender, receiver, message)?;
+                    let email = Email::new(sender, receiver, &message, &mime_format)?;
+                    emails.push(email);
+                }
+                None => continue,
+            }
+        }
 
         Ok(BulkEmail { emails })
     }
 
-    pub fn process(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+    pub fn personalize(
+        matches: &ArgMatches,
+        sender: &'a str,
+        df_receiver: &'a DataFrame,
+        default_message: &Message,
+        personalized_columns: Values,
+    ) -> Result<Self, anyhow::Error> {
+        let mut emails: Vec<Email> = vec![];
+        let columns: Vec<&str> = personalized_columns.collect();
+        let receiver_column_name = Receiver::column_name(matches)?;
+
+        for i in 0..df_receiver.height() {
+            let mut message = default_message.clone();
+            message.personalize(i, &df_receiver, &columns)?;
+
+            let receiver = TabularData::row(i, receiver_column_name, &df_receiver)?;
+            let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+            let email = Email::new(sender, receiver, &message, &mime_format)?;
+
+            emails.push(email);
+        }
+
+        Ok(BulkEmail { emails })
+    }
+
+    pub fn process(&self, matches: &ArgMatches) -> Result<(), anyhow::Error> {
         let client = Client::new()?;
         let eml_formatter = EmlFormatter::new(matches)?;
 
@@ -103,58 +147,5 @@ impl<'a> BulkEmail<'a> {
             }
         };
         Ok(confirmation)
-    }
-
-    fn create_emails(
-        matches: &'a ArgMatches,
-        sender: &'a str,
-        df_receiver: &'a DataFrame,
-        message: &Message,
-    ) -> Result<Vec<Email<'a>>, anyhow::Error> {
-        let mut emails: Vec<Email> = vec![];
-        let receiver_column_name = Receiver::column_name(matches)?;
-        let receivers = TabularData::column(receiver_column_name, df_receiver)?;
-
-        for receiver in receivers {
-            match receiver {
-                Some(receiver) => {
-                    let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
-                    let email = Email::new(sender, receiver, message, &mime_format)?;
-                    emails.push(email);
-                }
-                None => continue,
-            }
-        }
-
-        Ok(emails)
-    }
-
-    fn create_personalized_emails(
-        matches: &ArgMatches<'_>,
-        sender: &'a str,
-        df_receiver: &'a DataFrame,
-        personalized_columns: Values,
-        default_message: &Message,
-    ) -> Result<Vec<Email<'a>>, anyhow::Error> {
-        let mut emails: Vec<Email> = vec![];
-        let columns: Vec<&str> = personalized_columns.collect();
-        let receiver_column_name = Receiver::column_name(matches)?;
-
-        for i in 0..df_receiver.height() {
-            let mut message = default_message.clone();
-
-            for &col_name in columns.iter() {
-                let col_value = TabularData::row(i, col_name, &df_receiver)?;
-                message = message.personalize(col_name, col_value)?;
-            }
-
-            let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
-            let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
-            let email = Email::new(sender, receiver, &message, &mime_format)?;
-
-            emails.push(email);
-        }
-
-        Ok(emails)
     }
 }
