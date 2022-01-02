@@ -346,4 +346,32 @@ mod tests {
 
         assert!(res.is_ok())
     }
+
+    #[test]
+    fn test_send_bulk_aws_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND_BULK,
+            "albert@einstein.com",
+            "--receiver-file",
+            "./test_data/receiver.csv",
+            "--message-file",
+            "./test_data/message.yaml",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--connection",
+            "aws",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send_bulk(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
 }

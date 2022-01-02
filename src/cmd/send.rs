@@ -408,4 +408,66 @@ mod tests {
 
         assert!(res.is_ok())
     }
+
+    #[test]
+    fn test_send_aws_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test Subject",
+            "--content",
+            "This is a test message (plaintext).",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
+            "--connection",
+            "aws",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    #[ignore]
+    fn test_send_aws() {
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            &sender,
+            &receiver,
+            "--subject",
+            "Test Subject",
+            "--content",
+            "This is a test message (plaintext).",
+            "--display",
+            "--assume-yes",
+            "--connection",
+            "aws",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
 }
