@@ -33,12 +33,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
                     match client {
                         Ok(client) => {
-                            println!(
-                                "Connected to {} server '{}' ... {}",
-                                connection,
-                                client.endpoint,
-                                format_green("ok")
-                            );
+                            client.display_connection_status(connection);
                             Ok(())
                         }
                         Err(err) => Err(anyhow!(
@@ -53,12 +48,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
                     match client {
                         Ok(client) => {
-                            println!(
-                                "Connected to {} server with region '{}' ... {}",
-                                connection,
-                                client.region_name,
-                                format_green("ok")
-                            );
+                            client.display_connection_status(connection);
                             Ok(())
                         }
                         Err(err) => Err(anyhow!(

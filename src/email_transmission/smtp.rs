@@ -1,5 +1,5 @@
 use super::{client::SendEmail, SentEmail, Status};
-use crate::{arg, email_builder::Email};
+use crate::{arg, email_builder::Email, helper::format_green};
 use anyhow::Context;
 use clap::ArgMatches;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};
@@ -29,6 +29,15 @@ impl SmtpClient {
             endpoint,
             transport,
         })
+    }
+
+    pub fn display_connection_status(&self, connection: &str) {
+        println!(
+            "Connected to {} server '{}' ... {}",
+            connection,
+            self.endpoint,
+            format_green("ok")
+        );
     }
 }
 

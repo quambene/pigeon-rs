@@ -4,7 +4,7 @@ use crate::{
     data_loader::TabularData,
     email_builder::{Confirmed, Email, Message},
     email_formatter::EmlFormatter,
-    email_transmission::{Client, SendEmail, SmtpClient},
+    email_transmission::Client,
 };
 use anyhow::{anyhow, Context, Result};
 use clap::{ArgMatches, Values};

@@ -2,6 +2,7 @@ use crate::{
     arg,
     email_builder::Email,
     email_transmission::{SendEmail, SentEmail, Status},
+    helper::format_green,
 };
 use anyhow::Result;
 use bytes::Bytes;
@@ -28,10 +29,20 @@ impl AwsSesClient {
         }
 
         let client = SesClient::new_with(http, provider, region);
+
         Ok(AwsSesClient {
             region_name,
             client,
         })
+    }
+
+    pub fn display_connection_status(&self, connection: &str) {
+        println!(
+            "Connected to {} server in region '{}' ... {}",
+            connection,
+            self.region_name,
+            format_green("ok")
+        );
     }
 }
 
