@@ -1,4 +1,6 @@
-use crate::{arg, cmd, email_transmission::Client, helper::format_green};
+use crate::{
+    arg, cmd, email_provider::AwsSesClient, email_transmission::SmtpClient, helper::format_green,
+};
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
@@ -6,7 +8,7 @@ pub fn connect_args() -> [Arg<'static, 'static>; 2] {
     [
         Arg::with_name(cmd::CONNECT)
             .takes_value(true)
-            .possible_values(&["smtp"])
+            .possible_values(&["smtp", "aws"])
             .default_value("smtp")
             .help("Check connection to SMTP server."),
         Arg::with_name(arg::VERBOSE)
@@ -25,9 +27,9 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         match matches.value_of(cmd::CONNECT) {
             Some(provider) => match provider {
                 x if x == "smtp" => {
-                    let client = Client::new();
+                    let client = SmtpClient::new();
 
-                    println!("Connecting to smtp server ...");
+                    println!("Connecting to {} server ...", x);
 
                     match client {
                         Ok(client) => {
@@ -35,6 +37,28 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                                 "Connected to {} server '{}' ... {}",
                                 x,
                                 client.endpoint,
+                                format_green("ok")
+                            );
+                            Ok(())
+                        }
+                        Err(err) => Err(anyhow!(
+                            "Can't establish connection to {} server: {:#?}",
+                            x,
+                            err
+                        )),
+                    }
+                }
+                x if x == "aws" => {
+                    let client = AwsSesClient::new(matches);
+
+                    println!("Connecting to {} server ...", x);
+
+                    match client {
+                        Ok(client) => {
+                            println!(
+                                "Connected to {} server with region '{}' ... {}",
+                                x,
+                                client.region_name,
                                 format_green("ok")
                             );
                             Ok(())

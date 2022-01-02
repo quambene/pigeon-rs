@@ -2,7 +2,7 @@ use crate::{
     arg,
     email_builder::{Confirmed, Email},
     email_formatter::EmlFormatter,
-    email_transmission::Client,
+    email_transmission::SmtpClient,
     helper::format_green,
 };
 use anyhow::Result;
@@ -77,7 +77,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let email = Email::build(matches)?;
-    let client = Client::new()?;
+    let client = SmtpClient::new()?;
     let eml_formatter = EmlFormatter::new(matches)?;
 
     if matches.is_present(arg::DISPLAY) {

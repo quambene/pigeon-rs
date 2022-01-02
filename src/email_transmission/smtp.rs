@@ -5,12 +5,12 @@ use clap::ArgMatches;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};
 use std::env;
 
-pub struct Client {
+pub struct SmtpClient {
     pub endpoint: String,
     transport: SmtpTransport,
 }
 
-impl Client {
+impl SmtpClient {
     // TLS connection to SMTP server
     pub fn new() -> Result<Self, anyhow::Error> {
         let endpoint = env::var("SMTP_SERVER").expect("Missing environment variable 'SMTP_SERVER'");
