@@ -46,7 +46,8 @@ elie@cartan.com ... ok
   - [Send bulk email to multiple receivers](#send-bulk-email-to-multiple-receivers)
   - [Personalize your emails](#personalize-your-emails)
 - [How to connect](#how-to-connect)
-  - [How to connect to email provider](#how-to-connect-to-email-provider)
+  - [How to connect to smtp server](#how-to-connect-to-smtp-server)
+  - [How to connect to email provider API](#how-to-connect-to-email-provider-api)
   - [How to connect to postgres database](#how-to-connect-to-postgres-database)
 - [Integrations](#integrations)
   - [Email provider](#email-provider)
@@ -96,15 +97,17 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 ## Usage
 
-Check connection to your email provider with `pigeon connect`. For example, using AWS Simple Email Service (SES):
+Check connection to your smtp server with `pigeon connect`:
 
 ``` bash
-pigeon connect aws
+pigeon connect
 ```
 
-> Connected to aws client: <span style="color:MediumSeaGreen">ok</span>
+> Connected to smtp server 'email-smtp.eu-west-1.amazonaws.com' ... <span style="color:MediumSeaGreen">ok</span>
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
+
+_Note:_ You can also check connection to third party API. For example, for AWS SES API: `pigeon connect aws`.
 
 ### Send email to a single receiver
 
@@ -284,17 +287,9 @@ Confirm `y` if you are ready to go.
 
 ## How to connect
 
-### How to connect to email provider
-
-For AWS SES, define environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Source your environment `.env` in your current shell:
-
-``` bash
-set -a && source .env && set +a
-```
-
 ### How to connect to SMTP server
 
-Instead of using the API of a specific email provider, you can send emails via SMTP as well. To connect to a SMTP server, define environment variables `SMTP_SERVER`, `SMTP_USERNAME`, and `SMTP_PASSWORD`. For example, using AWS SES:
+To connect to a SMTP server, define environment variables `SMTP_SERVER`, `SMTP_USERNAME`, and `SMTP_PASSWORD`. For example, using AWS Simple SES:
 
 ``` bash
 SMTP_SERVER=email-smtp.eu-west-1.amazonaws.com
@@ -303,6 +298,26 @@ SMTP_PASSWORD=...
 ```
 
 where `SMTP_SERVER` depends on the specified region for your AWS SES account.
+
+Source your environment `.env` in your current shell:
+
+``` bash
+set -a && source .env && set +a
+```
+
+### How to connect to email provider API
+
+Instead of using SMTP, you can send emails via the API of a specific email provider as well.
+
+Using AWS SES, define the following environment variables:
+
+``` bash
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=eu-west-1
+```
+
+where `AWS_REGION` depends on the specified region for your AWS SES account.
 
 Source your environment again:
 
