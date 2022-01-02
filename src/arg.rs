@@ -23,3 +23,4 @@ pub const FILE_TYPE: &str = "file-type";
 pub const IMAGE_COLUMN: &str = "image-column";
 pub const IMAGE_NAME: &str = "image-name";
 pub const SSH_TUNNEL: &str = "ssh-tunnel";
+pub const CONNECTION: &str = "connection";

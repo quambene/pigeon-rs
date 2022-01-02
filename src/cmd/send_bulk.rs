@@ -6,7 +6,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 14] {
+pub fn send_bulk_args() -> [Arg<'static, 'static>; 15] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -64,15 +64,21 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 14] {
             .long(arg::ASSUME_YES)
             .takes_value(false)
             .help("Send emails without confirmation"),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
         Arg::with_name(arg::SSH_TUNNEL)
             .long(arg::SSH_TUNNEL)
             .value_name("port")
             .takes_value(true)
             .help("Query db through ssh tunnel"),
+        Arg::with_name(arg::CONNECTION)
+            .long(arg::CONNECTION)
+            .takes_value(true)
+            .possible_values(&["smtp", "aws"])
+            .default_value("smtp")
+            .help("Send emails via SMTP or AWS API"),
+        Arg::with_name(arg::VERBOSE)
+            .long(arg::VERBOSE)
+            .takes_value(false)
+            .help("Shows what is going on for subcommand"),
     ]
 }
 

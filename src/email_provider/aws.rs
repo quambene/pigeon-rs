@@ -1,7 +1,7 @@
 use crate::{
     arg,
     email_builder::Email,
-    email_transmission::{SentEmail, Status},
+    email_transmission::{SendEmail, SentEmail, Status},
 };
 use anyhow::Result;
 use bytes::Bytes;
@@ -12,7 +12,7 @@ use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
 
 pub struct AwsSesClient {
     pub region_name: String,
-    client: SesClient,
+    pub client: SesClient,
 }
 
 impl AwsSesClient {
@@ -24,7 +24,7 @@ impl AwsSesClient {
 
         // Check if AWS access keys are set in environment
         if matches.is_present(arg::DRY_RUN) {
-            Self::get_credentials(&provider)?;
+            get_credentials(&provider)?;
         }
 
         let client = SesClient::new_with(http, provider, region);
@@ -33,15 +33,11 @@ impl AwsSesClient {
             client,
         })
     }
+}
 
+impl<'a> SendEmail<'a> for AwsSesClient {
     #[tokio::main]
-    async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
-        let _credentials = provider.credentials().await?;
-        Ok(())
-    }
-
-    #[tokio::main]
-    pub async fn send<'a>(
+    async fn send(
         &self,
         matches: &ArgMatches,
         email: &'a Email<'a>,
@@ -69,3 +65,8 @@ impl AwsSesClient {
     }
 }
 
+#[tokio::main]
+async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
+    let _credentials = provider.credentials().await?;
+    Ok(())
+}

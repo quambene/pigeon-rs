@@ -1,4 +1,4 @@
-use super::{SentEmail, Status};
+use super::{client::SendEmail, SentEmail, Status};
 use crate::{arg, email_builder::Email};
 use anyhow::Context;
 use clap::ArgMatches;
@@ -7,7 +7,7 @@ use std::env;
 
 pub struct SmtpClient {
     pub endpoint: String,
-    transport: SmtpTransport,
+    pub transport: SmtpTransport,
 }
 
 impl SmtpClient {
@@ -30,8 +30,10 @@ impl SmtpClient {
             transport,
         })
     }
+}
 
-    pub fn send<'a>(
+impl<'a> SendEmail<'a> for SmtpClient {
+    fn send(
         &self,
         matches: &ArgMatches,
         email: &'a Email<'a>,

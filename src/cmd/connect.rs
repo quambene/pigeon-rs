@@ -23,19 +23,19 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
+    println!("Connecting to email server ...");
+
     if matches.is_present(cmd::CONNECT) {
         match matches.value_of(cmd::CONNECT) {
-            Some(provider) => match provider {
-                x if x == "smtp" => {
+            Some(connection) => match connection {
+                "smtp" => {
                     let client = SmtpClient::new();
-
-                    println!("Connecting to {} server ...", x);
 
                     match client {
                         Ok(client) => {
                             println!(
                                 "Connected to {} server '{}' ... {}",
-                                x,
+                                connection,
                                 client.endpoint,
                                 format_green("ok")
                             );
@@ -43,21 +43,19 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                         }
                         Err(err) => Err(anyhow!(
                             "Can't establish connection to {} server: {:#?}",
-                            x,
+                            connection,
                             err
                         )),
                     }
                 }
-                x if x == "aws" => {
+                "aws" => {
                     let client = AwsSesClient::new(matches);
-
-                    println!("Connecting to {} server ...", x);
 
                     match client {
                         Ok(client) => {
                             println!(
                                 "Connected to {} server with region '{}' ... {}",
-                                x,
+                                connection,
                                 client.region_name,
                                 format_green("ok")
                             );
@@ -65,12 +63,16 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                         }
                         Err(err) => Err(anyhow!(
                             "Can't establish connection to {} server: {:#?}",
-                            x,
+                            connection,
                             err
                         )),
                     }
                 }
-                _ => Err(anyhow!("Invalid value for argument '{}'", cmd::CONNECT)),
+                other => Err(anyhow!(
+                    "Value '{}' for argument '{}' not supported",
+                    other,
+                    cmd::CONNECT
+                )),
             },
             None => Err(anyhow!("Missing value for argument '{}'", cmd::CONNECT)),
         }

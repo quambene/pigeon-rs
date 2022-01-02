@@ -2,13 +2,13 @@ use crate::{
     arg,
     email_builder::{Confirmed, Email},
     email_formatter::EmlFormatter,
-    email_transmission::SmtpClient,
+    email_transmission::Client,
     helper::format_green,
 };
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_args() -> [Arg<'static, 'static>; 12] {
+pub fn send_args() -> [Arg<'static, 'static>; 13] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -64,6 +64,12 @@ pub fn send_args() -> [Arg<'static, 'static>; 12] {
             .long(arg::ASSUME_YES)
             .takes_value(false)
             .help("Send email without confirmation"),
+        Arg::with_name(arg::CONNECTION)
+            .long(arg::CONNECTION)
+            .takes_value(true)
+            .possible_values(&["smtp", "aws"])
+            .default_value("smtp")
+            .help("Send emails via SMTP or AWS API"),
         Arg::with_name(arg::VERBOSE)
             .long(arg::VERBOSE)
             .takes_value(false)
@@ -77,7 +83,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let email = Email::build(matches)?;
-    let client = SmtpClient::new()?;
+    let client = Client::new(matches)?;
     let eml_formatter = EmlFormatter::new(matches)?;
 
     if matches.is_present(arg::DISPLAY) {

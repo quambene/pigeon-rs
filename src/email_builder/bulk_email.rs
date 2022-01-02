@@ -4,7 +4,7 @@ use crate::{
     data_loader::TabularData,
     email_builder::{Confirmed, Email, Message},
     email_formatter::EmlFormatter,
-    email_transmission::SmtpClient,
+    email_transmission::{Client, SendEmail, SmtpClient},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::{ArgMatches, Values};
@@ -91,7 +91,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     pub fn process(&self, matches: &ArgMatches) -> Result<(), anyhow::Error> {
-        let client = SmtpClient::new()?;
+        let client = Client::new(matches)?;
         let eml_formatter = EmlFormatter::new(matches)?;
 
         println!("Sending email to {} receivers ...", self.emails.len());
