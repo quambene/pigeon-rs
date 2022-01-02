@@ -13,7 +13,7 @@ impl<'a> SentEmail<'a> {
     pub fn new(email: &'a Email<'a>, status: Status) -> Self {
         Self {
             sender: email.sender,
-            receiver: &email.receiver,
+            receiver: email.receiver,
             message: &email.message,
             status,
         }

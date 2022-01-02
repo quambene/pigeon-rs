@@ -28,14 +28,14 @@ impl<'a> BulkEmail<'a> {
                 Some(personalized_columns) => BulkEmail::personalize(
                     matches,
                     sender,
-                    &df_receiver,
-                    &default_message,
+                    df_receiver,
+                    default_message,
                     personalized_columns,
                 )?,
                 None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
             }
         } else {
-            BulkEmail::new(matches, sender, &df_receiver, &default_message)?
+            BulkEmail::new(matches, sender, df_receiver, default_message)?
         };
 
         Ok(bulk_email)
@@ -55,7 +55,7 @@ impl<'a> BulkEmail<'a> {
             match receiver {
                 Some(receiver) => {
                     let mime_format = MimeFormat::new(matches, sender, receiver, message)?;
-                    let email = Email::new(sender, receiver, &message, &mime_format)?;
+                    let email = Email::new(sender, receiver, message, &mime_format)?;
                     emails.push(email);
                 }
                 None => continue,
@@ -78,9 +78,9 @@ impl<'a> BulkEmail<'a> {
 
         for i in 0..df_receiver.height() {
             let mut message = default_message.clone();
-            message.personalize(i, &df_receiver, &columns)?;
+            message.personalize(i, df_receiver, &columns)?;
 
-            let receiver = TabularData::row(i, receiver_column_name, &df_receiver)?;
+            let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
             let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
             let email = Email::new(sender, receiver, &message, &mime_format)?;
 

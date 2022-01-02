@@ -39,8 +39,8 @@ impl<'a> EmlFormatter<'a> {
                 .send(&email.mime_format.message)
                 .context("Can't save email in .eml format")?;
 
-            let old_path = old_path(message_id.as_str(), &self.target_dir);
-            let new_path = new_path(matches, message_id.as_str(), &self.target_dir);
+            let old_path = old_path(message_id.as_str(), self.target_dir);
+            let new_path = new_path(matches, message_id.as_str(), self.target_dir);
 
             println!("Archiving '{}' ...", new_path.display());
 

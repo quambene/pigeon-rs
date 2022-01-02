@@ -42,12 +42,12 @@ pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         )?;
         let rows = client.simple_query(simple_query)?;
 
-        for i in 0..rows.len() {
+        for row in rows {
             println!("row: ");
-            match &rows[i] {
+            match &row {
                 SimpleQueryMessage::Row(simple_query_row) => {
-                    for j in 0..simple_query_row.len() {
-                        print!("{:#?} ", simple_query_row.get(j))
+                    for i in 0..simple_query_row.len() {
+                        print!("{:#?} ", simple_query_row.get(i))
                     }
                 }
                 SimpleQueryMessage::CommandComplete(row_count) => {

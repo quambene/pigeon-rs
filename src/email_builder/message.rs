@@ -80,7 +80,7 @@ impl Message {
         columns: &[&str],
     ) -> Result<(), anyhow::Error> {
         for &col_name in columns.iter() {
-            let col_value = TabularData::row(index, col_name, &df_receiver)?;
+            let col_value = TabularData::row(index, col_name, df_receiver)?;
             self.replace(col_name, col_value);
         }
 
@@ -91,16 +91,14 @@ impl Message {
         self.subject = self
             .subject
             .replace(&format!("{{{}}}", col_name), col_value);
-
-        self.text = match &self.text {
-            Some(text) => Some(text.replace(&format!("{{{}}}", col_name), col_value)),
-            None => None,
-        };
-
-        self.html = match &self.html {
-            Some(html) => Some(html.replace(&format!("{{{}}}", col_name), col_value)),
-            None => None,
-        };
+        self.text = self
+            .text
+            .as_ref()
+            .map(|text| text.replace(&format!("{{{}}}", col_name), col_value));
+        self.html = self
+            .html
+            .as_ref()
+            .map(|html| html.replace(&format!("{{{}}}", col_name), col_value));
     }
 
     fn html_template(content: String) -> String {
