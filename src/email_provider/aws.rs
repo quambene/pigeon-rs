@@ -4,12 +4,13 @@ use crate::{
     email_transmission::{SendEmail, SentEmail, Status},
     helper::format_green,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use bytes::Bytes;
 use clap::ArgMatches;
 use rusoto_core::{HttpClient, Region};
 use rusoto_credential::{EnvironmentProvider, ProvideAwsCredentials};
 use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
+use std::{env, str::FromStr};
 
 pub struct AwsSesClient {
     pub region_name: String,
@@ -20,7 +21,10 @@ impl AwsSesClient {
     pub fn new(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         let http = HttpClient::new()?;
         let provider = EnvironmentProvider::default();
-        let region = Region::EuWest1;
+
+        let aws_region =
+            env::var("AWS_REGION").context("Missing environment variable 'AWS_REGION'")?;
+        let region = Region::from_str(&aws_region)?;
         let region_name = region.name().to_string();
 
         // Check if AWS access keys are set in environment

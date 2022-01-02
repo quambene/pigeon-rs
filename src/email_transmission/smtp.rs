@@ -13,11 +13,12 @@ pub struct SmtpClient {
 impl SmtpClient {
     // TLS connection to SMTP server
     pub fn new() -> Result<Self, anyhow::Error> {
-        let endpoint = env::var("SMTP_SERVER").expect("Missing environment variable 'SMTP_SERVER'");
+        let endpoint =
+            env::var("SMTP_SERVER").context("Missing environment variable 'SMTP_SERVER'")?;
         let username =
-            env::var("SMTP_USERNAME").expect("Missing environment variable 'SMTP_USERNAME'");
+            env::var("SMTP_USERNAME").context("Missing environment variable 'SMTP_USERNAME'")?;
         let password =
-            env::var("SMTP_PASSWORD").expect("Missing environment variable 'SMTP_PASSWORD'");
+            env::var("SMTP_PASSWORD").context("Missing environment variable 'SMTP_PASSWORD'")?;
         let credentials = Credentials::new(username, password);
 
         let transport = SmtpTransport::relay(endpoint.as_str())
