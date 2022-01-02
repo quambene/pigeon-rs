@@ -6,6 +6,7 @@ use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transp
 use std::env;
 
 pub struct Client {
+    pub endpoint: String,
     transport: SmtpTransport,
 }
 
@@ -18,11 +19,16 @@ impl Client {
         let password =
             env::var("SMTP_PASSWORD").expect("Missing environment variable 'SMTP_PASSWORD'");
         let credentials = Credentials::new(username, password);
+
         let transport = SmtpTransport::relay(endpoint.as_str())
             .context("Can't connect to smtp server")?
             .credentials(credentials)
             .build();
-        Ok(Self { transport })
+
+        Ok(Self {
+            endpoint,
+            transport,
+        })
     }
 
     pub fn send<'a>(

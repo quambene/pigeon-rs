@@ -27,9 +27,16 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 x if x == "smtp" => {
                     let client = Client::new();
 
+                    println!("Connecting to smtp server ...");
+
                     match client {
-                        Ok(_) => {
-                            println!("Connected to {} server: {}", x, format_green("ok"));
+                        Ok(client) => {
+                            println!(
+                                "Connected to {} server '{}' ... {}",
+                                x,
+                                client.endpoint,
+                                format_green("ok")
+                            );
                             Ok(())
                         }
                         Err(err) => Err(anyhow!(
