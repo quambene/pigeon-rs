@@ -9,28 +9,22 @@ use std::{
 };
 
 const TEMPLATE_FILE_NAME: &str = "message.yaml";
-static MESSAGE_TEMPLATE: &str = r##"# You can leave EITHER the text OR the html empty, but not both. Ideally, fill out both.
-# You MUST provide a subject. Personalize message by wrapping variables in curly brackets, eg. {firstname}.
+static MESSAGE_TEMPLATE: &str = r##"# Specify the subject, plaintext and html version of your email.
+# Personalize message by wrapping variables in curly brackets, eg. {first_name}.
 
-message:
-    # The subject of your email
-    subject: ""
-    # The plaintext version
-    text: ""
-    # The html version
-    html: ""
+# The subject of your email
+subject: ""
+# The plaintext version
+text: ""
+# The html version
+html: ""
 "##;
 
 #[derive(Debug, Deserialize)]
 pub struct MessageTemplate {
-    pub message: Message,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Message {
     pub subject: String,
-    pub text: String,
-    pub html: String,
+    pub text: Option<String>,
+    pub html: Option<String>,
 }
 
 impl MessageTemplate {

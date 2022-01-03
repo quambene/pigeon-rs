@@ -1,7 +1,7 @@
 mod message;
 mod message_template;
-mod text_message;
+mod reader;
 
 pub use message::Message;
 pub use message_template::MessageTemplate;
-pub use text_message::TextMessage;
+pub use reader::Reader;

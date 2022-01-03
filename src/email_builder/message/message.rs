@@ -1,4 +1,4 @@
-use super::{MessageTemplate, TextMessage};
+use super::{MessageTemplate, Reader};
 use crate::{arg, data_loader::TabularData};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
@@ -12,18 +12,15 @@ pub struct Message {
 }
 
 impl Message {
-    pub fn new(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
+    pub fn build(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         let message = if matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT) {
-            Message::simple(matches)?
+            Message::from_cmd(matches)?
         } else if matches.is_present(arg::MESSAGE_FILE) {
-            let message_template = MessageTemplate::read(matches)?;
-            Message::from_template(message_template)?
+            Message::from_template(matches)?
         } else if matches.is_present(arg::SUBJECT)
             && (matches.is_present(arg::TEXT_FILE) || matches.is_present(arg::HTML_FILE))
         {
-            let subject = Message::subject(matches)?;
-            let text_message = TextMessage::read(matches)?;
-            Message::from_text_file(subject, text_message)?
+            Message::from_file(matches)?
         } else {
             return Err(anyhow!(
                 "Missing arguments. Please provide {} and {} or {}",
@@ -36,51 +33,31 @@ impl Message {
         Ok(message)
     }
 
-    pub fn from_text_file(subject: &str, text_message: TextMessage) -> Result<Self, anyhow::Error> {
-        let message = Message {
-            subject: subject.to_string(),
-            text: match text_message.text {
-                text if !text.is_empty() => Some(text),
-                text if text.is_empty() => None,
-                _ => unreachable!(),
-            },
-            html: None,
-        };
+    pub fn from_file(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
+        let subject = Message::subject(matches)?.to_string();
+        let text = Reader::read_txt(matches)?;
+        let html = Reader::read_html(matches)?;
+        let message = Message::new(subject, text, html);
         Ok(message)
     }
 
-    pub fn from_template(message_template: MessageTemplate) -> Result<Self, anyhow::Error> {
-        let message = Message {
-            subject: message_template.message.subject,
-            text: match message_template.message.text {
-                text if !text.is_empty() => Some(text),
-                text if text.is_empty() => None,
-                _ => unreachable!(),
-            },
-            html: match message_template.message.html {
-                html if !html.is_empty() => Some(Self::html_template(html)),
-                html if html.is_empty() => None,
-                _ => unreachable!(),
-            },
-        };
+    pub fn from_template(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
+        let message_template = MessageTemplate::read(matches)?;
+        let message = Message::new(
+            message_template.subject,
+            message_template.text,
+            message_template.html,
+        );
         Ok(message)
     }
 
-    pub fn simple(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
+    pub fn from_cmd(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         match (
             matches.value_of(arg::SUBJECT),
             matches.value_of(arg::CONTENT),
         ) {
             (Some(subject), Some(content)) => {
-                let message = Message {
-                    subject: subject.to_string(),
-                    text: match content {
-                        text if !text.is_empty() => Some(text.to_string()),
-                        text if text.is_empty() => None,
-                        _ => unreachable!(),
-                    },
-                    html: None,
-                };
+                let message = Message::new(subject, Some(content), None);
                 Ok(message)
             }
             (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::CONTENT)),
@@ -132,15 +109,14 @@ impl Message {
         }
     }
 
-    fn html_template(content: String) -> String {
-        format!(
-            "<html>
-            <head></head>
-            <body>
-            {}
-            </body>
-            </html>",
-            content
-        )
+    fn new<S>(subject: S, text: Option<S>, html: Option<S>) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            subject: subject.into(),
+            text: text.map(|text| text.into()),
+            html: html.map(|text| text.into()),
+        }
     }
 }
