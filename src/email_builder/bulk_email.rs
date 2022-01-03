@@ -1,8 +1,7 @@
-use super::{MimeFormat, Receiver};
 use crate::{
     arg,
     data_loader::TabularData,
-    email_builder::{Confirmed, Email, Message},
+    email_builder::{Confirmed, Email, Message, MimeFormat, Receiver},
     email_formatter::EmlFormatter,
     email_transmission::Client,
 };

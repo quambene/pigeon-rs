@@ -1,5 +1,5 @@
-use super::TextMessage;
-use crate::{arg, data_loader::TabularData, email_builder::MessageTemplate};
+use super::{MessageTemplate, TextMessage};
+use crate::{arg, data_loader::TabularData};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 use polars::prelude::DataFrame;

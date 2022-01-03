@@ -1,7 +1,6 @@
-use super::{MimeFormat, Receiver, Sender};
 use crate::{
     arg,
-    email_builder::{Confirmed, Message},
+    email_builder::{Confirmed, Message, MimeFormat, Receiver, Sender},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
