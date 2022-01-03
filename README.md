@@ -289,7 +289,7 @@ Confirm `y` if you are ready to go.
 
 ### How to connect to SMTP server
 
-To connect to a SMTP server, define environment variables `SMTP_SERVER`, `SMTP_USERNAME`, and `SMTP_PASSWORD`. For example, using AWS Simple SES:
+To connect to a SMTP server, define environment variables `SMTP_SERVER`, `SMTP_USERNAME`, and `SMTP_PASSWORD`. For example, using AWS SES:
 
 ``` bash
 SMTP_SERVER=email-smtp.eu-west-1.amazonaws.com
