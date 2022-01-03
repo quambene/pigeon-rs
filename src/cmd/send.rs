@@ -8,7 +8,7 @@ use crate::{
 use anyhow::Result;
 use clap::{Arg, ArgMatches};
 
-pub fn send_args() -> [Arg<'static, 'static>; 13] {
+pub fn send_args() -> [Arg<'static, 'static>; 15] {
     [
         Arg::with_name(arg::SENDER)
             .index(1)
@@ -25,20 +25,33 @@ pub fn send_args() -> [Arg<'static, 'static>; 13] {
         Arg::with_name(arg::SUBJECT)
             .long(arg::SUBJECT)
             .takes_value(true)
-            .requires(arg::CONTENT)
             .required_unless_one(&[arg::MESSAGE_FILE])
             .help("Subject of the email"),
         Arg::with_name(arg::CONTENT)
             .long(arg::CONTENT)
             .takes_value(true)
             .requires(arg::SUBJECT)
-            .required_unless_one(&[arg::MESSAGE_FILE])
+            .required_unless_one(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
+            .conflicts_with_all(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
             .help("Content of the email"),
         Arg::with_name(arg::MESSAGE_FILE)
             .long(arg::MESSAGE_FILE)
             .takes_value(true)
-            .required_unless_one(&[arg::SUBJECT, arg::CONTENT])
+            .required_unless_one(&[arg::SUBJECT, arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
+            .conflicts_with_all(&[arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
             .help("Path of the message file"),
+        Arg::with_name(arg::TEXT_FILE)
+            .long(arg::TEXT_FILE)
+            .takes_value(true)
+            .requires(arg::SUBJECT)
+            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+            .help("Path of text file for text message"),
+        Arg::with_name(arg::HTML_FILE)
+            .long(arg::HTML_FILE)
+            .takes_value(true)
+            .requires(arg::SUBJECT)
+            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+            .help("Path of html file for html message"),
         Arg::with_name(arg::ATTACHMENT)
             .long(arg::ATTACHMENT)
             .takes_value(true)
@@ -458,6 +471,33 @@ mod tests {
             "--assume-yes",
             "--connection",
             "aws",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_send_text_file_dry() {
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test Subject",
+            "--text-file",
+            "./test_data/message.txt",
+            "--dry-run",
+            "--display",
+            "--assume-yes",
         ];
 
         let app = app();

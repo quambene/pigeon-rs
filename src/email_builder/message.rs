@@ -1,3 +1,4 @@
+use super::TextMessage;
 use crate::{arg, data_loader::TabularData, email_builder::MessageTemplate};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
@@ -16,7 +17,13 @@ impl Message {
             Message::simple(matches)?
         } else if matches.is_present(arg::MESSAGE_FILE) {
             let message_template = MessageTemplate::read(matches)?;
-            Message::default(message_template)?
+            Message::from_template(message_template)?
+        } else if matches.is_present(arg::SUBJECT)
+            && (matches.is_present(arg::TEXT_FILE) || matches.is_present(arg::HTML_FILE))
+        {
+            let subject = Message::subject(matches)?;
+            let text_message = TextMessage::read(matches)?;
+            Message::from_text_file(subject, text_message)?
         } else {
             return Err(anyhow!(
                 "Missing arguments. Please provide {} and {} or {}",
@@ -29,7 +36,20 @@ impl Message {
         Ok(message)
     }
 
-    pub fn default(message_template: MessageTemplate) -> Result<Self, anyhow::Error> {
+    pub fn from_text_file(subject: &str, text_message: TextMessage) -> Result<Self, anyhow::Error> {
+        let message = Message {
+            subject: subject.to_string(),
+            text: match text_message.text {
+                text if !text.is_empty() => Some(text),
+                text if text.is_empty() => None,
+                _ => unreachable!(),
+            },
+            html: None,
+        };
+        Ok(message)
+    }
+
+    pub fn from_template(message_template: MessageTemplate) -> Result<Self, anyhow::Error> {
         let message = Message {
             subject: message_template.message.subject,
             text: match message_template.message.text {
@@ -99,6 +119,17 @@ impl Message {
             .html
             .as_ref()
             .map(|html| html.replace(&format!("{{{}}}", col_name), col_value));
+    }
+
+    fn subject<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
+        if matches.is_present(arg::SUBJECT) {
+            match matches.value_of(arg::SUBJECT) {
+                Some(subject) => Ok(subject),
+                None => Err(anyhow!("Missing value for argument '{}'", arg::SUBJECT)),
+            }
+        } else {
+            Err(anyhow!("Missing argument '{}'", arg::SUBJECT))
+        }
     }
 
     fn html_template(content: String) -> String {

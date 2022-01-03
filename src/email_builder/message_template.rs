@@ -33,13 +33,6 @@ pub struct Message {
     pub html: String,
 }
 
-fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
-    let mut message_template =
-        fs::File::create(path).context("Unable to create message template.")?;
-    message_template.write_all(MESSAGE_TEMPLATE.as_bytes())?;
-    Ok(())
-}
-
 impl MessageTemplate {
     pub fn create(_matches: &ArgMatches) -> Result<(), anyhow::Error> {
         let current_dir = env::current_dir().context("Can't get current directory")?;
@@ -112,4 +105,11 @@ impl MessageTemplate {
             Err(anyhow!("Missing argument '{}'", arg::MESSAGE_FILE))
         }
     }
+}
+
+fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
+    let mut message_template =
+        fs::File::create(path).context("Unable to create message template.")?;
+    message_template.write_all(MESSAGE_TEMPLATE.as_bytes())?;
+    Ok(())
 }

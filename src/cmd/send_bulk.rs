@@ -90,7 +90,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let sender = Sender::new(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
     let message_template = MessageTemplate::read(matches)?;
-    let default_message = Message::default(message_template)?;
+    let default_message = Message::from_template(message_template)?;
     let bulk_email = BulkEmail::build(matches, sender, &df_receiver, &default_message)?;
 
     if matches.is_present(arg::DISPLAY) {
