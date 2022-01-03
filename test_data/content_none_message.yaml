@@ -3,7 +3,3 @@
 
 # The subject of your email
 subject: "Test subject"
-# The plaintext version
-text: "This is a test message (plaintext)."
-# The html version
-html: "<p>This is a test message (html).</p>"

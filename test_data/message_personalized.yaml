@@ -1,14 +1,13 @@
-# You can leave EITHER the text OR the html empty, but not both. Ideally, fill out both.
-# You MUST provide a subject. Personalize message by wrapping variables in curly brackets, eg. {firstname}.
+# Specify the subject, plaintext and html version of your email.
+# Personalize message by wrapping variables in curly brackets, eg. {first_name}.
 
-message:
-    # The subject of your email
-    subject: "Test subject"
-    # The plaintext version
-    text: "Dear {first_name} {last_name},
-          \nThis is a test message (plaintext)."
-    # The html version
-    html: "Dear {first_name} {last_name},
-          <br>
-          <br>
-          This is a test message (html)."
+# The subject of your email
+subject: "Test subject"
+# The plaintext version
+text: "Dear {first_name} {last_name},
+      \nThis is a test message (plaintext)."
+# The html version
+html: "Dear {first_name} {last_name},
+      <br>
+      <br>
+      This is a test message (html)."
