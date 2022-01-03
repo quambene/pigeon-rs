@@ -96,8 +96,6 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let email = Email::build(matches)?;
-    let client = Client::new(matches)?;
-    let eml_formatter = EmlFormatter::new(matches)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display email: {:#?}", email);
@@ -106,6 +104,9 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::DRY_RUN) {
         println!("Dry run: {}", format_green("activated"));
     }
+
+    let client = Client::new(matches)?;
+    let eml_formatter = EmlFormatter::new(matches)?;
 
     println!("Sending email to 1 recipient ...");
 
