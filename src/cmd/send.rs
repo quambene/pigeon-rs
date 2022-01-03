@@ -1,5 +1,5 @@
 use crate::{
-    arg,
+    arg::{self, val},
     email_builder::{Confirmed, Email},
     email_formatter::EmlFormatter,
     email_transmission::Client,
@@ -80,8 +80,8 @@ pub fn send_args() -> [Arg<'static, 'static>; 15] {
         Arg::with_name(arg::CONNECTION)
             .long(arg::CONNECTION)
             .takes_value(true)
-            .possible_values(&["smtp", "aws"])
-            .default_value("smtp")
+            .possible_values(&[val::SMTP, val::AWS])
+            .default_value(val::SMTP)
             .help("Send emails via SMTP or AWS API"),
         Arg::with_name(arg::VERBOSE)
             .long(arg::VERBOSE)
@@ -438,7 +438,7 @@ mod tests {
             "--display",
             "--assume-yes",
             "--connection",
-            "aws",
+            val::AWS,
         ];
 
         let app = app();
@@ -471,7 +471,7 @@ mod tests {
             "--display",
             "--assume-yes",
             "--connection",
-            "aws",
+            val::AWS,
         ];
 
         let app = app();

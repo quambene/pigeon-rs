@@ -26,3 +26,13 @@ pub const IMAGE_COLUMN: &str = "image-column";
 pub const IMAGE_NAME: &str = "image-name";
 pub const SSH_TUNNEL: &str = "ssh-tunnel";
 pub const CONNECTION: &str = "connection";
+
+// values for args
+pub mod val {
+    // default value for RECEIVER_COLUMN
+    pub const EMAIL: &str = "email";
+
+    // possible values for arg CONNECTION and subcommand CONNECT
+    pub const SMTP: &str = "smtp";
+    pub const AWS: &str = "aws";
+}

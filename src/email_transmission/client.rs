@@ -1,5 +1,9 @@
 use super::{SentEmail, SmtpClient};
-use crate::{arg, email_builder::Email, email_provider::AwsSesClient};
+use crate::{
+    arg::{self, val},
+    email_builder::Email,
+    email_provider::AwsSesClient,
+};
 use anyhow::anyhow;
 use clap::ArgMatches;
 
@@ -20,12 +24,12 @@ impl Client {
         if matches.is_present(arg::CONNECTION) {
             match matches.value_of(arg::CONNECTION) {
                 Some(connection) => match connection {
-                    "smtp" => {
+                    val::SMTP => {
                         let client = SmtpClient::new()?;
                         client.display_connection_status(connection);
                         Ok(Box::new(client))
                     }
-                    "aws" => {
+                    val::AWS => {
                         let client = AwsSesClient::new(matches)?;
                         client.display_connection_status(connection);
                         Ok(Box::new(client))

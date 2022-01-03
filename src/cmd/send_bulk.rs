@@ -1,5 +1,5 @@
 use crate::{
-    arg,
+    arg::{self, val},
     email_builder::{BulkEmail, Confirmed, Message, MessageTemplate, Receiver, Sender},
     helper::format_green,
 };
@@ -44,7 +44,7 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 15] {
         Arg::with_name(arg::RECEIVER_COLUMN)
             .long(arg::RECEIVER_COLUMN)
             .takes_value(true)
-            .default_value("email")
+            .default_value(val::EMAIL)
             .help("Specifies the column in which to look for email addresses"),
         Arg::with_name(arg::PERSONALIZE)
             .long(arg::PERSONALIZE)
@@ -72,8 +72,8 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 15] {
         Arg::with_name(arg::CONNECTION)
             .long(arg::CONNECTION)
             .takes_value(true)
-            .possible_values(&["smtp", "aws"])
-            .default_value("smtp")
+            .possible_values(&[val::SMTP, val::AWS])
+            .default_value(val::SMTP)
             .help("Send emails via SMTP or AWS API"),
         Arg::with_name(arg::VERBOSE)
             .long(arg::VERBOSE)
@@ -361,7 +361,7 @@ mod tests {
             "--display",
             "--assume-yes",
             "--connection",
-            "aws",
+            val::AWS,
         ];
 
         let app = app();

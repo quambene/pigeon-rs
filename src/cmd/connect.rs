@@ -1,4 +1,9 @@
-use crate::{arg, cmd, email_provider::AwsSesClient, email_transmission::SmtpClient};
+use crate::{
+    arg::{self, val},
+    cmd,
+    email_provider::AwsSesClient,
+    email_transmission::SmtpClient,
+};
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 
@@ -6,8 +11,8 @@ pub fn connect_args() -> [Arg<'static, 'static>; 2] {
     [
         Arg::with_name(cmd::CONNECT)
             .takes_value(true)
-            .possible_values(&["smtp", "aws"])
-            .default_value("smtp")
+            .possible_values(&[val::SMTP, val::AWS])
+            .default_value(val::SMTP)
             .help("Check connection to SMTP server."),
         Arg::with_name(arg::VERBOSE)
             .long(arg::VERBOSE)
@@ -26,7 +31,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(cmd::CONNECT) {
         match matches.value_of(cmd::CONNECT) {
             Some(connection) => match connection {
-                "smtp" => {
+                val::SMTP => {
                     let client = SmtpClient::new();
 
                     match client {
@@ -41,7 +46,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                         )),
                     }
                 }
-                "aws" => {
+                val::AWS => {
                     let client = AwsSesClient::new(matches);
 
                     match client {
