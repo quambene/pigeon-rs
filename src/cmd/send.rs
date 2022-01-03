@@ -510,4 +510,35 @@ mod tests {
 
         assert!(res.is_ok())
     }
+
+    #[test]
+    #[ignore]
+    fn test_send_text_file() {
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            &sender,
+            &receiver,
+            "--subject",
+            "Test Subject",
+            "--text-file",
+            "./test_data/message.txt",
+            "--display",
+            "--assume-yes",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
 }
