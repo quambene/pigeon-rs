@@ -16,6 +16,12 @@
   - `query --save-dir`
   - `send --archive-dir`
   - `send-bulk --archive-dir`
+  - `send --connection`
+  - `send-bulk --connection`
+  - `send --text-file`
+  - `send-bulk --text-file`
+  - `send --html-file`
+  - `send-bulk --html-file`
 
 ### v0.1.3
 
