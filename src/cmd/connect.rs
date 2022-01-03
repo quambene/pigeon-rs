@@ -1,6 +1,4 @@
-use crate::{
-    arg, cmd, email_provider::AwsSesClient, email_transmission::SmtpClient, helper::format_green,
-};
+use crate::{arg, cmd, email_provider::AwsSesClient, email_transmission::SmtpClient};
 use anyhow::{anyhow, Result};
 use clap::{Arg, ArgMatches};
 

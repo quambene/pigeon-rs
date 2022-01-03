@@ -1,5 +1,5 @@
 use super::{SentEmail, SmtpClient};
-use crate::{arg, email_builder::Email, email_provider::AwsSesClient, helper::format_green};
+use crate::{arg, email_builder::Email, email_provider::AwsSesClient};
 use anyhow::anyhow;
 use clap::ArgMatches;
 
