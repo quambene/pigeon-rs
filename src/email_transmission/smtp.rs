@@ -1,5 +1,9 @@
 use super::{client::SendEmail, SentEmail, Status};
-use crate::{arg, email_builder::Email, helper::format_green};
+use crate::{
+    arg,
+    email_builder::Email,
+    helper::{format_green, format_red},
+};
 use anyhow::Context;
 use clap::ArgMatches;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};
@@ -22,9 +26,19 @@ impl SmtpClient {
         let credentials = Credentials::new(username, password);
 
         let transport = SmtpTransport::relay(endpoint.as_str())
-            .context("Can't connect to smtp server")?
+            .context(format!(
+                "Connecting to smtp server '{}' ... {}",
+                endpoint,
+                format_red("FAILED")
+            ))?
             .credentials(credentials)
             .build();
+
+        println!(
+            "Connecting to smtp server '{}' ... {}",
+            endpoint,
+            format_green("ok")
+        );
 
         Ok(Self {
             endpoint,

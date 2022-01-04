@@ -24,15 +24,23 @@ impl AwsSesClient {
 
         let aws_region =
             env::var("AWS_REGION").context("Missing environment variable 'AWS_REGION'")?;
-        let region = Region::from_str(&aws_region)?;
+        let region = Region::from_str(&aws_region).context("Unknown aws region")?;
         let region_name = region.name().to_string();
 
         // Check if AWS access keys are set in environment
         if matches.is_present(arg::DRY_RUN) {
-            get_credentials(&provider)?;
+            AwsSesClient::get_credentials(&provider).context(
+                "Missing environment variable 'AWS_ACCESS_KEY_ID' and/or 'AWS_SECRET_ACCESS_KEY'",
+            )?;
         }
 
         let client = SesClient::new_with(http, provider, region);
+
+        println!(
+            "Connecting to aws server in region '{}' ... {}",
+            region_name,
+            format_green("ok")
+        );
 
         Ok(AwsSesClient {
             region_name,
@@ -40,13 +48,10 @@ impl AwsSesClient {
         })
     }
 
-    pub fn display_connection_status(&self, connection: &str) {
-        println!(
-            "Connected to {} server in region '{}' ... {}",
-            connection,
-            self.region_name,
-            format_green("ok")
-        );
+    #[tokio::main]
+    async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
+        let _credentials = provider.credentials().await?;
+        Ok(())
     }
 }
 
@@ -78,10 +83,4 @@ impl<'a> SendEmail<'a> for AwsSesClient {
 
         Ok(sent_email)
     }
-}
-
-#[tokio::main]
-async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
-    let _credentials = provider.credentials().await?;
-    Ok(())
 }
