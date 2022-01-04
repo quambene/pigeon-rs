@@ -50,7 +50,8 @@ elie@cartan.com ... ok
   - [How to connect to email provider API](#how-to-connect-to-email-provider-api)
   - [How to connect to postgres database](#how-to-connect-to-postgres-database)
 - [Integrations](#integrations)
-  - [Email provider](#email-provider)
+  - [Email protocols](#email-protocols)
+  - [Third-party APIs](#third-party-apis)
   - [Data sources](#data-sources)
 - [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
 
@@ -107,20 +108,27 @@ pigeon connect
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
 
-_Note:_ You can also check connection to third party API. For example, for AWS SES API: `pigeon connect aws`.
+_Note:_ You can also check connection to third-party APIs instead of using the SMTP protocol. For example, using AWS Simple Email Service (SES): `pigeon connect aws`.
 
 ### Send email to a single receiver
 
 Send a single email with subject and content:
 
 ``` bash
-pigeon send sender@your-domain.com receiver@gmail.com --subject "Test subject" --content "This is a test email."
+pigeon send \
+    sender@your-domain.com \
+    receiver@gmail.com \
+    --subject "Test subject" \
+    --content "This is a test email."
 ```
 
 Send a single email with message defined in separate template file:
 
 ``` bash
-pigeon send sender@your-domain.com receiver@gmail.com --message-file "message.yaml"
+pigeon send \
+    sender@your-domain.com \
+    receiver@gmail.com \
+    --message-file "message.yaml"
 ```
 
 The message template `message.yaml` is created with subcommand `init`:
@@ -130,6 +138,19 @@ pigeon init
 ```
 
 _Note:_ One of the advantages of a `--message-file` is that you can also draft the html version of your email. In contrast, with the options `--subject` and `--content` the email will only be sent in plaintext format.
+
+If you prefer a dedicated HTML file for drafting your email, use the following command:
+
+``` bash
+pigeon send \
+    sender@your-domain.com \
+    receiver@gmail.com \
+    --subject "Test subject" \
+    --text-file "./message.txt" \
+    --html-file "./message.html"
+```
+
+where `--text-file` defines the plaintext and `--html-file` the HTML version of your email.
 
 ### Send bulk email to multiple receivers
 
@@ -165,7 +186,12 @@ _Note:_ You can also `--save` your query as a csv file: `pigeon query --save <my
 Now send your newsletter to the queried receivers. If the table column name is different to "email" use `--receiver-column` to define a different column name. Let's try a `--dry-run` without confirmation `--assume-yes` first:
 
 ``` bash
-pigeon send-bulk albert@einstein.com --receiver-query "select email from user where newsletter_confirmed = true" --message-file "message.yaml" --assume-yes --dry-run
+pigeon send-bulk \
+    albert@einstein.com \
+    --receiver-query "select email from user where newsletter_confirmed = true" \
+    --message-file "message.yaml" \
+    --assume-yes \
+    --dry-run
 ```
 
 ``` console
@@ -208,7 +234,12 @@ pigeon query --display "select first_name, last_name, email from user where news
 In your message template `message.yaml` use variables in curly brackets, like `{first_name}` and `{last_name}`. Then define personalized colums as parameters for option `--personalize`. Finally, let's display everything with `--display`:
 
 ``` bash
-pigeon send-bulk albert@einstein.com --receiver-query "select first_name, last_name, email from user where newsletter_confirmed = true" --message-file "message.yaml" --personalize "first_name" "last_name" --display
+pigeon send-bulk \
+    albert@einstein.com \
+    --receiver-query "select first_name, last_name, email from user where newsletter_confirmed = true" \
+    --message-file "message.yaml" \
+    --personalize "first_name" "last_name" \
+    --display
 ```
 
 ``` console
@@ -358,7 +389,7 @@ In addition to the environment variables above, `SERVER_USER` and `SERVER_HOST` 
 - MIME
 - SMTP
 
-### Email provider
+### Third-party APIs
 
 - AWS SES
 
