@@ -19,19 +19,15 @@ pub struct Client;
 
 impl Client {
     pub fn new<'a>(matches: &ArgMatches) -> Result<Box<dyn SendEmail<'a>>, anyhow::Error> {
-        println!("Connecting to email server ...");
-
         if matches.is_present(arg::CONNECTION) {
             match matches.value_of(arg::CONNECTION) {
                 Some(connection) => match connection {
                     val::SMTP => {
                         let client = SmtpClient::new()?;
-                        client.display_connection_status(connection);
                         Ok(Box::new(client))
                     }
                     val::AWS => {
                         let client = AwsSesClient::new(matches)?;
-                        client.display_connection_status(connection);
                         Ok(Box::new(client))
                     }
                     other => Err(anyhow!(format!(

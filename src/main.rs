@@ -50,7 +50,7 @@ pub fn app() -> App<'static, 'static> {
         )
         .subcommand(
             SubCommand::with_name(cmd::CONNECT)
-                .about("Check connection to the provider specified")
+                .about("Check connection to SMTP server or email provider")
                 .args(&cmd::connect_args()),
         )
         .subcommand(
@@ -70,7 +70,7 @@ pub fn app() -> App<'static, 'static> {
         )
         .subcommand(
             SubCommand::with_name(cmd::SEND)
-                .about("Send single email via command line")
+                .about("Send email to single recipient")
                 .args(&cmd::send_args()),
         )
         .subcommand(

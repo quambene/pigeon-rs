@@ -22,7 +22,7 @@ pub fn send_bulk_args() -> [Arg<'static, 'static>; 19] {
             .long(arg::RECEIVER_QUERY)
             .required_unless(arg::RECEIVER_FILE)
             .takes_value(true)
-            .help("Email addresses of multiple receivers fetched from provided  query"),
+            .help("Email addresses of multiple receivers fetched from provided query"),
         Arg::with_name(arg::SUBJECT)
             .long(arg::SUBJECT)
             .takes_value(true)

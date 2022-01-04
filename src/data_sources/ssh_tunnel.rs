@@ -43,7 +43,7 @@ impl SshTunnel {
         };
 
         println!(
-            "Ssh tunnel openend: forwarding port from {} to {} for user {} on server {}",
+            "Ssh tunnel openend: forwarding port from {} to {} for user '{}' on server '{}'",
             local_url, db_url, server_user, server_host
         );
         Ok(ssh_tunnel)

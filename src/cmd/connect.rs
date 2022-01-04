@@ -26,40 +26,16 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    println!("Connecting to email server ...");
-
     if matches.is_present(cmd::CONNECT) {
         match matches.value_of(cmd::CONNECT) {
             Some(connection) => match connection {
                 val::SMTP => {
-                    let client = SmtpClient::new();
-
-                    match client {
-                        Ok(client) => {
-                            client.display_connection_status(connection);
-                            Ok(())
-                        }
-                        Err(err) => Err(anyhow!(
-                            "Can't establish connection to {} server: {:#?}",
-                            connection,
-                            err
-                        )),
-                    }
+                    let _client = SmtpClient::new()?;
+                    Ok(())
                 }
                 val::AWS => {
-                    let client = AwsSesClient::new(matches);
-
-                    match client {
-                        Ok(client) => {
-                            client.display_connection_status(connection);
-                            Ok(())
-                        }
-                        Err(err) => Err(anyhow!(
-                            "Can't establish connection to {} server: {:#?}",
-                            connection,
-                            err
-                        )),
-                    }
+                    let _client = AwsSesClient::new(matches)?;
+                    Ok(())
                 }
                 other => Err(anyhow!(
                     "Value '{}' for argument '{}' not supported",
