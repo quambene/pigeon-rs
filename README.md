@@ -41,6 +41,7 @@ elie@cartan.com ... ok
 - [Install Pigeon](#install-pigeon)
   - [Install Pigeon from crates.io](#install-pigeon-from-crates-io)
   - [Install Pigeon from github.com](#install-pigeon-form-github-com)
+- [Getting help](#getting-help)
 - [Usage](#usage)
   - [Send email to a single receiver](#send-email-to-a-single-receiver)
   - [Send bulk email to multiple receivers](#send-bulk-email-to-multiple-receivers)
@@ -96,6 +97,27 @@ _Note:_ Add `$HOME/.cargo/bin` to your `PATH` if it is missing:
 export PATH="$HOME/.cargo/bin:$PATH"
 ```
 
+## Getting help
+
+For getting help, try one of the following:
+
+``` bash
+# Check version
+pigeon --version
+
+# Print help
+pigeon --help
+
+# Print help for subcommand
+pigeon help send
+pigeon help send-bulk
+pigeon help connect
+pigeon help init
+pigeon help query
+pigeon help simple-query
+pigeon help read
+```
+
 ## Usage
 
 Check connection to your smtp server with `pigeon connect`:
@@ -104,7 +126,7 @@ Check connection to your smtp server with `pigeon connect`:
 pigeon connect
 ```
 
-> Connected to smtp server 'email-smtp.eu-west-1.amazonaws.com' ... <span style="color:MediumSeaGreen">ok</span>
+> Connecting to smtp server 'email-smtp.eu-west-1.amazonaws.com' ... <span style="color:MediumSeaGreen">ok</span>
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
 
