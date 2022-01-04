@@ -45,15 +45,6 @@ impl SmtpClient {
             transport,
         })
     }
-
-    pub fn display_connection_status(&self, connection: &str) {
-        println!(
-            "Connected to {} server '{}' ... {}",
-            connection,
-            self.endpoint,
-            format_green("ok")
-        );
-    }
 }
 
 impl<'a> SendEmail<'a> for SmtpClient {
