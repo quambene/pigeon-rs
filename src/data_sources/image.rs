@@ -10,7 +10,7 @@ use std::{
 use uuid::Uuid;
 
 pub fn write_image(
-    matches: &ArgMatches<'_>,
+    matches: &ArgMatches,
     df: DataFrame,
     file_type: &str,
 ) -> Result<(), anyhow::Error> {

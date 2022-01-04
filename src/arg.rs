@@ -9,6 +9,8 @@ pub const CONTENT: &str = "content";
 pub const DRY_RUN: &str = "dry-run";
 pub const DISPLAY: &str = "display";
 pub const MESSAGE_FILE: &str = "message-file";
+pub const TEXT_FILE: &str = "text-file";
+pub const HTML_FILE: &str = "html-file";
 pub const ARCHIVE: &str = "archive";
 pub const ARCHIVE_DIR: &str = "archive-dir";
 pub const RECEIVER_FILE: &str = "receiver-file";
@@ -23,3 +25,14 @@ pub const FILE_TYPE: &str = "file-type";
 pub const IMAGE_COLUMN: &str = "image-column";
 pub const IMAGE_NAME: &str = "image-name";
 pub const SSH_TUNNEL: &str = "ssh-tunnel";
+pub const CONNECTION: &str = "connection";
+
+// values for args
+pub mod val {
+    // default value for RECEIVER_COLUMN
+    pub const EMAIL: &str = "email";
+
+    // possible values for arg CONNECTION and subcommand CONNECT
+    pub const SMTP: &str = "smtp";
+    pub const AWS: &str = "aws";
+}

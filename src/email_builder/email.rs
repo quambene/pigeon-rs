@@ -1,65 +1,45 @@
-use super::Mime;
 use crate::{
     arg,
-    email_builder::{Confirmed, Message},
-    email_provider,
-    helper::{check_send_status, format_green},
+    email_builder::{Confirmed, Message, MimeFormat, Receiver, Sender},
 };
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use std::io;
 
 #[derive(Debug)]
-pub struct Email {
-    pub sender: String,
-    pub receiver: String,
+pub struct Email<'a> {
+    pub sender: &'a str,
+    pub receiver: &'a str,
     pub message: Message,
-    pub mime: Mime,
+    pub mime_format: MimeFormat,
 }
 
-impl Email {
-    pub fn new(matches: &ArgMatches<'_>) -> Result<Self, anyhow::Error> {
-        match (
-            matches.value_of(arg::SENDER),
-            matches.value_of(arg::RECEIVER),
-        ) {
-            (Some(sender), Some(receiver)) => {
-                let message = Message::new(matches)?;
-                let mime = Mime::new(matches, sender, receiver, &message)?;
-                let email = Email {
-                    sender: sender.to_string(),
-                    receiver: receiver.to_string(),
-                    message,
-                    mime,
-                };
-                Ok(email)
-            }
-            (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::RECEIVER)),
-            (None, Some(_)) => Err(anyhow!("Missing value for argument '{}'", arg::SENDER)),
-            (None, None) => Err(anyhow!(
-                "Missing values for arguments '{}' and '{}'",
-                arg::SENDER,
-                arg::RECEIVER
-            )),
-        }
+impl<'a> Email<'a> {
+    pub fn build(matches: &'a ArgMatches) -> Result<Self, anyhow::Error> {
+        let sender = Sender::new(matches)?;
+        let receiver = Receiver::new(matches)?;
+        let message = Message::build(matches)?;
+        let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+        let email = Email::new(sender, receiver, &message, &mime_format)?;
+        Ok(email)
     }
 
-    pub fn send(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::DRY_RUN) {
-            // Setup client but do not send email
-            let _client = email_provider::setup_ses_client(matches)?;
-            println!("{:#?} ... {}", self.receiver, format_green("dry run"));
-            Ok(())
-        } else {
-            let client = email_provider::setup_ses_client(matches)?;
-            let res = email_provider::send_raw_email(self, &client);
-            let status = check_send_status(res);
-            println!("{:#?} ... {}", self.receiver, status);
-            Ok(())
-        }
+    pub fn new(
+        sender: &'a str,
+        receiver: &'a str,
+        message: &Message,
+        mime_format: &MimeFormat,
+    ) -> Result<Self, anyhow::Error> {
+        let email = Email {
+            sender,
+            receiver,
+            message: message.to_owned(),
+            mime_format: mime_format.to_owned(),
+        };
+        Ok(email)
     }
 
-    pub fn confirm(&self, matches: &ArgMatches<'_>) -> Result<Confirmed, anyhow::Error> {
+    pub fn confirm(&self, matches: &ArgMatches) -> Result<Confirmed, anyhow::Error> {
         let mut input = String::new();
 
         match matches.value_of(arg::RECEIVER) {
@@ -87,13 +67,5 @@ impl Email {
             }
         };
         Ok(confirmation)
-    }
-
-    pub fn archive(&self, matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::ARCHIVE) {
-            self.mime.archive(matches)?;
-        }
-
-        Ok(())
     }
 }

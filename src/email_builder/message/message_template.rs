@@ -9,39 +9,26 @@ use std::{
 };
 
 const TEMPLATE_FILE_NAME: &str = "message.yaml";
-static MESSAGE_TEMPLATE: &str = r##"# You can leave EITHER the text OR the html empty, but not both. Ideally, fill out both.
-# You MUST provide a subject. Personalize message by wrapping variables in curly brackets, eg. {firstname}.
+static MESSAGE_TEMPLATE: &str = r##"# Specify the subject, plaintext and html version of your email.
+# Personalize message by wrapping variables in curly brackets, eg. {first_name}.
 
-message:
-    # The subject of your email
-    subject: ""
-    # The plaintext version
-    text: ""
-    # The html version
-    html: ""
+# The subject of your email
+subject: ""
+# The plaintext version
+text: ""
+# The html version
+html: ""
 "##;
 
 #[derive(Debug, Deserialize)]
 pub struct MessageTemplate {
-    pub message: Message,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Message {
     pub subject: String,
-    pub text: String,
-    pub html: String,
-}
-
-fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
-    let mut message_template =
-        fs::File::create(path).context("Unable to create message template.")?;
-    message_template.write_all(MESSAGE_TEMPLATE.as_bytes())?;
-    Ok(())
+    pub text: Option<String>,
+    pub html: Option<String>,
 }
 
 impl MessageTemplate {
-    pub fn create(_matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+    pub fn create(_matches: &ArgMatches) -> Result<(), anyhow::Error> {
         let current_dir = env::current_dir().context("Can't get current directory")?;
         let path_dir = current_dir;
 
@@ -88,7 +75,7 @@ impl MessageTemplate {
         Ok(())
     }
 
-    pub fn read(matches: &ArgMatches<'_>) -> Result<Self, anyhow::Error> {
+    pub fn read(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         if matches.is_present(arg::MESSAGE_FILE) {
             match matches.value_of(arg::MESSAGE_FILE) {
                 Some(message_file) => {
@@ -112,4 +99,11 @@ impl MessageTemplate {
             Err(anyhow!("Missing argument '{}'", arg::MESSAGE_FILE))
         }
     }
+}
+
+fn create_template(path: PathBuf) -> Result<(), anyhow::Error> {
+    let mut message_template =
+        fs::File::create(path).context("Unable to create message template.")?;
+    message_template.write_all(MESSAGE_TEMPLATE.as_bytes())?;
+    Ok(())
 }

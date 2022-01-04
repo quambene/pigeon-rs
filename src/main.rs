@@ -2,9 +2,12 @@
 
 mod arg;
 mod cmd;
+mod data_loader;
 mod data_sources;
 mod email_builder;
+mod email_formatter;
 mod email_provider;
+mod email_transmission;
 mod helper;
 
 use anyhow::anyhow;

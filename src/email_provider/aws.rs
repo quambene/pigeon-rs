@@ -1,117 +1,87 @@
-use crate::{arg, email_builder::Email};
-use anyhow::Result;
+use crate::{
+    arg,
+    email_builder::Email,
+    email_transmission::{SendEmail, SentEmail, Status},
+    helper::format_green,
+};
+use anyhow::{Context, Result};
 use bytes::Bytes;
 use clap::ArgMatches;
 use rusoto_core::{HttpClient, Region};
 use rusoto_credential::{EnvironmentProvider, ProvideAwsCredentials};
-use rusoto_sesv2::{
-    Body, Content as SesContent, Destination, EmailContent as SesEmailContent,
-    Message as SesMessage, RawMessage, SendEmailRequest, SesV2, SesV2Client,
-};
+use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
+use std::{env, str::FromStr};
 
-pub const CHARSET: &str = "UTF-8";
+pub struct AwsSesClient {
+    pub region_name: String,
+    pub client: SesClient,
+}
+
+impl AwsSesClient {
+    pub fn new(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
+        let http = HttpClient::new()?;
+        let provider = EnvironmentProvider::default();
+
+        let aws_region =
+            env::var("AWS_REGION").context("Missing environment variable 'AWS_REGION'")?;
+        let region = Region::from_str(&aws_region)?;
+        let region_name = region.name().to_string();
+
+        // Check if AWS access keys are set in environment
+        if matches.is_present(arg::DRY_RUN) {
+            get_credentials(&provider)?;
+        }
+
+        let client = SesClient::new_with(http, provider, region);
+
+        Ok(AwsSesClient {
+            region_name,
+            client,
+        })
+    }
+
+    pub fn display_connection_status(&self, connection: &str) {
+        println!(
+            "Connected to {} server in region '{}' ... {}",
+            connection,
+            self.region_name,
+            format_green("ok")
+        );
+    }
+}
+
+impl<'a> SendEmail<'a> for AwsSesClient {
+    #[tokio::main]
+    async fn send(
+        &self,
+        matches: &ArgMatches,
+        email: &'a Email<'a>,
+    ) -> Result<SentEmail<'a>, anyhow::Error> {
+        let sent_email = if matches.is_present(arg::DRY_RUN) {
+            let status = Status::DryRun;
+            SentEmail::new(email, status)
+        } else {
+            let raw_message = RawMessage {
+                data: Bytes::from(email.mime_format.message.formatted()),
+            };
+            let request = SendRawEmailRequest {
+                raw_message,
+                ..Default::default()
+            };
+            let response = self.client.send_raw_email(request).await;
+            let status = match response {
+                Ok(response) => Status::SentOk(response.message_id),
+                Err(err) => Status::SentError(err.to_string()),
+            };
+            SentEmail::new(email, status)
+        };
+
+        Ok(sent_email)
+    }
+}
 
 #[tokio::main]
 async fn get_credentials(provider: &EnvironmentProvider) -> Result<(), anyhow::Error> {
     let _credentials = provider.credentials().await?;
-    Ok(())
-}
-
-pub fn setup_ses_client(matches: &ArgMatches<'_>) -> Result<SesV2Client, anyhow::Error> {
-    println!("Setting up email client ...");
-    let http = HttpClient::new()?;
-    let provider = EnvironmentProvider::default();
-
-    // Check if AWS access keys are set in environment
-    if matches.is_present(arg::DRY_RUN) {
-        get_credentials(&provider)?;
-    }
-
-    let client = SesV2Client::new_with(http, provider, Region::EuWest1);
-    Ok(client)
-}
-
-#[allow(dead_code)]
-#[tokio::main]
-pub async fn send_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
-    let subject = &email.message.subject;
-    let text = &email.message.text;
-    let html = &email.message.html;
-    let message = SesMessage {
-        subject: SesContent {
-            charset: Some(CHARSET.to_string()),
-            data: subject.to_string(),
-        },
-        body: Body {
-            text: text.as_ref().map(|text| SesContent {
-                data: text.to_string(),
-                charset: Some(CHARSET.to_string()),
-            }),
-            html: html.as_ref().map(|html| SesContent {
-                data: html.to_string(),
-                charset: Some(CHARSET.to_string()),
-            }),
-        },
-    };
-    let request = SendEmailRequest {
-        from_email_address: Some(email.sender.to_string()),
-        destination: Some(Destination {
-            to_addresses: Some(vec![email.receiver.to_string()]),
-            bcc_addresses: None,
-            cc_addresses: None,
-        }),
-        content: SesEmailContent {
-            raw: None,
-            template: None,
-            simple: Some(message),
-        },
-        configuration_set_name: None,
-        email_tags: None,
-        feedback_forwarding_email_address: None,
-        reply_to_addresses: None,
-        feedback_forwarding_email_address_identity_arn: None,
-        from_email_address_identity_arn: None,
-        list_management_options: None,
-    };
-
-    let _response = client.send_email(request).await?;
-
-    Ok(())
-}
-
-#[tokio::main]
-pub async fn send_raw_email(email: &Email, client: &SesV2Client) -> Result<(), anyhow::Error> {
-    let message = RawMessage {
-        data: Bytes::from(email.mime.message.formatted()),
-    };
-    let request = SendEmailRequest {
-        /* TODO: The field 'from_email_address' should be
-        'None' for MIME formatted (raw) emails, but leading
-        to error: Missing required header 'From' */
-        from_email_address: Some(email.sender.to_string()),
-        destination: Some(Destination {
-            /* TODO: The field 'to_addresses' should be
-            'None' for MIME formatted (raw) emails, but leading
-            to error: Missing required header 'From' */
-            to_addresses: Some(vec![email.receiver.to_string()]),
-            bcc_addresses: None,
-            cc_addresses: None,
-        }),
-        content: SesEmailContent {
-            raw: Some(message),
-            template: None,
-            simple: None,
-        },
-        configuration_set_name: None,
-        email_tags: None,
-        feedback_forwarding_email_address: None,
-        reply_to_addresses: None,
-        feedback_forwarding_email_address_identity_arn: None,
-        from_email_address_identity_arn: None,
-        list_management_options: None,
-    };
-
-    let _response = client.send_email(request).await?;
-
     Ok(())
 }

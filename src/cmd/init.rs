@@ -8,7 +8,7 @@ pub fn init_args() -> [Arg<'static, 'static>; 1] {
         .help("Shows what is going on for subcommand")]
 }
 
-pub fn init(matches: &ArgMatches<'_>) -> Result<(), anyhow::Error> {
+pub fn init(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
