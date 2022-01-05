@@ -25,6 +25,9 @@ rust-toolchain
 ### Config files
 **/*.yaml
 
+### Releases
+releases
+
 ### Data
 sent_emails
 my-sent-emails

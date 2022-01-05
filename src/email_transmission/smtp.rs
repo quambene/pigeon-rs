@@ -27,7 +27,7 @@ impl SmtpClient {
 
         let transport = SmtpTransport::relay(endpoint.as_str())
             .context(format!(
-                "Connecting to smtp server '{}' ... {}",
+                "Connecting to SMTP server '{}' ... {}",
                 endpoint,
                 format_red("FAILED")
             ))?
@@ -35,7 +35,7 @@ impl SmtpClient {
             .build();
 
         println!(
-            "Connecting to smtp server '{}' ... {}",
+            "Connecting to SMTP server '{}' ... {}",
             endpoint,
             format_green("ok")
         );
