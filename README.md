@@ -47,7 +47,7 @@ elie@cartan.com ... ok
   - [Send bulk email to multiple receivers](#send-bulk-email-to-multiple-receivers)
   - [Personalize your emails](#personalize-your-emails)
 - [How to connect](#how-to-connect)
-  - [How to connect to smtp server](#how-to-connect-to-smtp-server)
+  - [How to connect to SMTP server](#how-to-connect-to-smtp-server)
   - [How to connect to email provider API](#how-to-connect-to-email-provider-api)
   - [How to connect to postgres database](#how-to-connect-to-postgres-database)
 - [Integrations](#integrations)
@@ -120,7 +120,7 @@ pigeon help read
 
 ## Usage
 
-Check connection to your smtp server with `pigeon connect`:
+Check connection to your SMTP server with `pigeon connect`:
 
 ``` bash
 pigeon connect
