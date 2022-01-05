@@ -21,7 +21,7 @@ impl Client {
     pub fn new<'a>(matches: &ArgMatches) -> Result<Box<dyn SendEmail<'a>>, anyhow::Error> {
         if matches.is_present(arg::CONNECTION) {
             match matches.value_of(arg::CONNECTION) {
-                Some(connection) => match connection {
+                Some(connection) => match connection.to_lowercase().as_str() {
                     val::SMTP => {
                         let client = SmtpClient::new()?;
                         Ok(Box::new(client))

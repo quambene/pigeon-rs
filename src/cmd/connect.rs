@@ -28,7 +28,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     if matches.is_present(cmd::CONNECT) {
         match matches.value_of(cmd::CONNECT) {
-            Some(connection) => match connection {
+            Some(connection) => match connection.to_lowercase().as_str() {
                 val::SMTP => {
                     let _client = SmtpClient::new()?;
                     Ok(())
