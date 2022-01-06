@@ -350,8 +350,6 @@ SMTP_USERNAME=...
 SMTP_PASSWORD=...
 ```
 
-where `SMTP_SERVER` depends on the specified region for your AWS SES account.
-
 Source your environment `.env` in your current shell:
 
 ``` bash
