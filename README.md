@@ -126,7 +126,7 @@ Check connection to your SMTP server with `pigeon connect`:
 pigeon connect
 ```
 
-> Connecting to smtp server 'email-smtp.eu-west-1.amazonaws.com' ... <span style="color:MediumSeaGreen">ok</span>
+> Connecting to SMTP server 'email-smtp.eu-west-1.amazonaws.com' ... <span style="color:MediumSeaGreen">ok</span>
 
 See currently supported [integrations](#integrations) and [how to connect](#how-to-connect) below.
 
