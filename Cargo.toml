@@ -31,7 +31,7 @@ connectorx = { git = "https://github.com/sfu-db/connector-x", rev = "0bc0b928e43
 postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }
-lettre = { version = "0.10.0-rc.4", features = ["file-transport", "rustls-tls"] }
+lettre = { version = "0.10.0-rc.4", default-features = false, features = ["builder", "pool", "smtp-transport", "file-transport", "rustls-tls"] }
 infer = "0.5.0"
 bytes = "1.1.0"
 
