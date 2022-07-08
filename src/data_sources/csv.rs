@@ -16,7 +16,7 @@ pub fn read_csv(csv_file: &Path) -> Result<DataFrame, anyhow::Error> {
     Ok(df)
 }
 
-pub fn write_csv(matches: &ArgMatches, df: DataFrame) -> Result<(), anyhow::Error> {
+pub fn write_csv(matches: &ArgMatches, mut df: DataFrame) -> Result<(), anyhow::Error> {
     let now = SystemTime::now();
     let now_utc: chrono::DateTime<chrono::Utc> = now.into();
     let current_time = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
@@ -42,8 +42,8 @@ pub fn write_csv(matches: &ArgMatches, df: DataFrame) -> Result<(), anyhow::Erro
     let timestamp_format = "%F_H:%M:%S";
 
     CsvWriter::new(csv_file)
-        .with_timestamp_format(timestamp_format.to_string())
-        .finish(&df)?;
+        .with_timestamp_format(Some(timestamp_format.to_string()))
+        .finish(&mut df)?;
 
     Ok(())
 }
