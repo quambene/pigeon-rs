@@ -142,7 +142,7 @@ mod tests {
     use std::env;
 
     #[test]
-    fn test_send_subject_content_dry() {
+    fn test_send_subject_content_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -171,7 +171,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_send_subject_content() {
+    fn test_send_subject_content_smtp() {
         let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
         let receiver =
             env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
@@ -202,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_message_file_dry() {
+    fn test_send_message_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -229,7 +229,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_send_message_file() {
+    fn test_send_message_file_smtp() {
         let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
         let receiver =
             env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
@@ -257,7 +257,38 @@ mod tests {
     }
 
     #[test]
-    fn test_send_message_file_empty_dry() {
+    #[ignore]
+    fn test_send_message_file_aws_api() {
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            &sender,
+            &receiver,
+            "--connection",
+            val::AWS,
+            "--message-file",
+            "./test_data/message.yaml",
+            "--display",
+            "--assume-yes",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_send_message_file_empty_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -283,7 +314,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_message_file_none_html_dry() {
+    fn test_send_message_file_none_html_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -309,7 +340,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_message_file_content_none_dry() {
+    fn test_send_message_file_content_none_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -335,7 +366,7 @@ mod tests {
     }
 
     #[test]
-    fn test_archive_dry() {
+    fn test_archive_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -361,7 +392,7 @@ mod tests {
     }
 
     #[test]
-    fn test_archive_dir_dry() {
+    fn test_archive_dir_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -389,7 +420,7 @@ mod tests {
     }
 
     #[test]
-    fn test_attachment_pdf_dry() {
+    fn test_attachment_pdf_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -417,7 +448,7 @@ mod tests {
     }
 
     #[test]
-    fn test_attachment_png_dry() {
+    fn test_attachment_png_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -445,7 +476,7 @@ mod tests {
     }
 
     #[test]
-    fn test_attachment_odt_dry() {
+    fn test_attachment_odt_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -474,7 +505,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_attachment_pdf() {
+    fn test_attachment_pdf_smtp() {
         let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
         let receiver =
             env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
@@ -505,7 +536,41 @@ mod tests {
     }
 
     #[test]
-    fn test_send_aws_dry() {
+    #[ignore]
+    fn test_attachment_pdf_aws_api() {
+        let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+        let receiver =
+            env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
+        let args = vec![
+            cmd::BIN,
+            cmd::SEND,
+            &sender,
+            &receiver,
+            "--connection",
+            val::AWS,
+            "--message-file",
+            "./test_data/message.yaml",
+            "--display",
+            "--assume-yes",
+            "--archive",
+            "--attachment",
+            "./test_data/test.pdf",
+        ];
+
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
+        println!("subcommand matches: {:#?}", subcommand_matches);
+
+        let res = send(&subcommand_matches);
+        println!("res: {:#?}", res);
+
+        assert!(res.is_ok())
+    }
+
+    #[test]
+    fn test_send_aws_api_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -536,7 +601,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_send_aws() {
+    fn test_send_aws_api() {
         let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
         let receiver =
             env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
@@ -569,7 +634,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_text_file_dry() {
+    fn test_send_text_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -597,7 +662,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_html_file_dry() {
+    fn test_send_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -625,7 +690,7 @@ mod tests {
     }
 
     #[test]
-    fn test_send_text_file_html_file_dry() {
+    fn test_send_text_file_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
             cmd::SEND,
@@ -656,7 +721,7 @@ mod tests {
 
     #[test]
     #[ignore]
-    fn test_send_text_file_html_file() {
+    fn test_send_text_file_html_file_smtp() {
         let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
         let receiver =
             env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");

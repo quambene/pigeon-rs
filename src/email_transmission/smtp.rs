@@ -62,7 +62,12 @@ impl<'a> SendEmail<'a> for SmtpClient {
                 .send(&email.mime_format.message)
                 .context("Can't sent email via SMTP");
             let status = match response {
-                Ok(response) => Status::SentOk(response.message().collect()),
+                Ok(response) => {
+                    let response_string = response.message().collect::<String>();
+                    let messages: Vec<&str> = response_string.split(' ').collect();
+                    let message_id = messages[1];
+                    Status::SentOk(message_id.to_string())
+                }
                 Err(err) => Status::SentError(err.to_string()),
             };
             SentEmail::new(email, status)
