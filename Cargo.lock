@@ -226,8 +226,9 @@ dependencies = [
 
 [[package]]
 name = "connectorx"
-version = "0.3.0"
-source = "git+https://github.com/sfu-db/connector-x?tag=v0.3.0#397e6f2979991e70ccf1746ab5bb7317060df5d8"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12cd8545b599f17b7556d4844ca15b4c441c3fa025274094eee8dea4f5eb9265"
 dependencies = [
  "anyhow",
  "arrow2",
@@ -1330,7 +1331,7 @@ dependencies = [
 
 [[package]]
 name = "pigeon-rs"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "base64",

@@ -2,7 +2,7 @@ cargo-features = ["different-binary-name"]
 
 [package]
 name = "pigeon-rs"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["quambene <contact.quambene@gmail.com>"]
 description = "Command line tool for cheap and efficient email automation"
 edition = "2018"
@@ -27,7 +27,7 @@ csv = "1.1.6"
 clap = "2.33.3"
 chrono = "0.4.19"
 polars = { version = "0.20.0", features = ["dtype-u8"] }
-connectorx = { git = "https://github.com/sfu-db/connector-x", tag = "v0.3.0", features = ["src_postgres", "dst_arrow2"] }
+connectorx = { version = "0.2.5", features = ["src_postgres", "dst_arrow2"] }
 postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }
