@@ -40,7 +40,8 @@ pub fn write_csv(matches: &ArgMatches, df: DataFrame) -> Result<(), anyhow::Erro
 
     let csv_file = &mut fs::File::create(target_path)?;
     let timestamp_format = "%F_H:%M:%S";
-    let _writer = CsvWriter::new(csv_file)
+
+    CsvWriter::new(csv_file)
         .with_timestamp_format(timestamp_format.to_string())
         .finish(&df)?;
 
