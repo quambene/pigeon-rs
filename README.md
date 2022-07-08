@@ -376,6 +376,16 @@ Source your environment again:
 set -a && source .env && set +a
 ```
 
+Send an email using `--connection`:
+
+``` rust
+pigeon send \
+    sender@your-domain.com \
+    receiver@gmail.com \
+    --connection aws \
+    --message-file "message.yaml"
+```
+
 ### How to connect to postgres database
 
 For postgres, the database url is constructed as follows: `postgresql://db_user:db_password@db_host:db_port/db_name`.

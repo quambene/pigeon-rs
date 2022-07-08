@@ -13,12 +13,7 @@ impl fmt::Display for Status {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Status::DryRun => write!(f, "{}", format_green("dry run")),
-            Status::SentOk(ok) => {
-                let messages: Vec<&str> = ok.split(' ').collect();
-                let ok_string = messages[0];
-                let message_id = messages[1];
-                write!(f, "{} {}", format_green(ok_string), message_id)
-            }
+            Status::SentOk(message_id) => write!(f, "{} {}", format_green("ok"), message_id),
             Status::SentError(err) => write!(f, "{} {}", format_red("FAILED"), err),
         }
     }

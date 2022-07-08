@@ -67,7 +67,7 @@ impl<'a> SendEmail<'a> for AwsSesClient {
             SentEmail::new(email, status)
         } else {
             let raw_message = RawMessage {
-                data: Bytes::from(email.mime_format.message.formatted()),
+                data: Bytes::from(base64::encode(email.mime_format.message.formatted())),
             };
             let request = SendRawEmailRequest {
                 raw_message,
