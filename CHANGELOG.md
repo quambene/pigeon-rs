@@ -1,5 +1,14 @@
 <!-- markdownlint-disable MD041 -->
 
+### v0.3.0
+
+- bugfixes
+  - Fix invalid base64 encoding for AWS api
+- others
+  - Update connectorx to 0.3.0
+  - Update polars to 0.20.0
+  - Update lettre to 0.10.0
+
 ### v0.2.0
 
 - features
