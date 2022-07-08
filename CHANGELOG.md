@@ -5,7 +5,7 @@
 - bugfixes
   - Fix invalid base64 encoding for AWS api
 - others
-  - Update connectorx to 0.3.0
+  - Update connectorx to 0.2.5
   - Update polars to 0.20.0
   - Update lettre to 0.10.0
 
