@@ -1,5 +1,3 @@
-#![feature(generic_associated_types)]
-
 mod arg;
 mod cmd;
 mod data_loader;
