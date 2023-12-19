@@ -27,10 +27,10 @@ impl SshTunnel {
             None => return Err(anyhow!("Missing value for argument '{}'", arg::SSH_TUNNEL)),
         };
         let local_url = &(LOCALHOST.to_string() + ":" + local_port) as &str;
-        let db_url = conn_vars.db_host.to_string() + ":" + &conn_vars.db_port;
+        let db_url = format!("{}:{}", conn_vars.db_host, &conn_vars.db_port);
 
-        let port_fwd = local_url.to_string() + ":" + &db_url;
-        let ssh_connection = server_user.to_string() + "@" + &server_host;
+        let port_fwd = format!("{}:{}", local_url, &db_url);
+        let ssh_connection = format!("{}@{}", server_user, &server_host);
 
         let process = Command::new("ssh")
             .args(["-N", "-T", "-L", &port_fwd, &ssh_connection])
@@ -78,13 +78,9 @@ impl SshTunnel {
     }
 
     fn connection_url(conn_vars: &ConnVars, tunnel_url: &str) -> String {
-        String::from("postgresql://")
-            + &conn_vars.db_user
-            + ":"
-            + &conn_vars.db_password.0
-            + "@"
-            + tunnel_url
-            + "/"
-            + &conn_vars.db_name
+        format!(
+            "postgresql://{}:{}@{}/{}",
+            &conn_vars.db_user, &conn_vars.db_password.0, tunnel_url, &conn_vars.db_name
+        )
     }
 }

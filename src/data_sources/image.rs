@@ -59,7 +59,7 @@ pub fn write_image(
             _ => Some(
                 df.column(name_col)
                     .context("Can't find column for image name")?
-                    .get(i)
+                    .get(i)?
                     .to_string(),
             ),
         };
