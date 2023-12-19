@@ -1,8 +1,7 @@
-use std::{fs, path::Path};
-
 use crate::arg;
 use anyhow::anyhow;
 use clap::ArgMatches;
+use std::{fs, path::Path};
 
 #[derive(Debug)]
 pub struct Reader;

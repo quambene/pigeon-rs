@@ -1,7 +1,6 @@
+use crate::arg;
 use anyhow::anyhow;
 use clap::ArgMatches;
-
-use crate::arg;
 
 pub struct Sender;
 

@@ -1,3 +1,4 @@
+use crate::arg;
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
 use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
@@ -6,8 +7,6 @@ use std::{
     path::{Path, PathBuf},
     time::SystemTime,
 };
-
-use crate::arg;
 
 pub fn read_csv(csv_file: &Path) -> Result<DataFrame, anyhow::Error> {
     println!("Reading csv file '{}' ...", csv_file.display());

@@ -1,3 +1,4 @@
+use crate::{arg, data_sources::SshTunnel};
 use anyhow::{Context, Result};
 use clap::ArgMatches;
 use connectorx::{
@@ -10,8 +11,6 @@ use polars::frame::DataFrame;
 use postgres::NoTls;
 use std::{env, fmt};
 use url::Url;
-
-use crate::{arg, data_sources::SshTunnel};
 
 pub struct Password(pub String);
 
