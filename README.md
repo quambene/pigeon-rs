@@ -39,8 +39,8 @@ elie@cartan.com ... ok
 
 - [Requirements](#requirements)
 - [Install Pigeon](#install-pigeon)
-  - [Install Pigeon from crates.io](#install-pigeon-from-crates-io)
-  - [Install Pigeon from github.com](#install-pigeon-form-github-com)
+  - [Install Pigeon from crates.io](#install-pigeon-from-cratesio)
+  - [Install Pigeon from github.com](#install-pigeon-from-githubcom)
 - [Getting help](#getting-help)
 - [Usage](#usage)
   - [Send email to a single receiver](#send-email-to-a-single-receiver)
