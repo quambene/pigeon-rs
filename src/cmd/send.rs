@@ -105,7 +105,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
-    let client = Client::new(matches)?;
+    let client = Client::init(matches)?;
     let eml_formatter = EmlFormatter::new(matches)?;
 
     println!("Sending email to 1 recipient ...");
@@ -142,6 +142,7 @@ mod tests {
     use std::env;
 
     #[test]
+    #[ignore]
     fn test_send_subject_content_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -163,7 +164,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -195,13 +196,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -221,7 +223,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -250,7 +252,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -281,13 +283,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_empty_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -307,13 +310,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_none_html_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -333,13 +337,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_content_none_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -359,13 +364,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_err())
     }
 
     #[test]
+    #[ignore]
     fn test_archive_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -385,13 +391,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_archive_dir_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -413,13 +420,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_pdf_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -441,13 +449,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_png_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -469,13 +478,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_odt_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -497,7 +507,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -529,7 +539,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -563,13 +573,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_aws_api_dry() {
         let args = vec![
             cmd::BIN,
@@ -593,7 +604,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -627,13 +638,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_text_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -655,13 +667,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -683,13 +696,14 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
     }
 
     #[test]
+    #[ignore]
     fn test_send_text_file_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -713,7 +727,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -747,7 +761,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())

@@ -1,6 +1,5 @@
-use std::fmt;
-
 use crate::helper::{format_green, format_red};
+use std::fmt;
 
 #[derive(Debug, Clone)]
 pub enum Status {

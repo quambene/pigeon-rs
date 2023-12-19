@@ -1,17 +1,15 @@
-use std::path::PathBuf;
-
+use crate::{
+    arg,
+    data_sources::{query_postgres, read_csv},
+    email_builder::Receiver,
+};
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
 use polars::{
     chunked_array::ChunkedArray,
     prelude::{DataFrame, TakeRandom, Utf8Type},
 };
-
-use crate::{
-    arg,
-    data_sources::{query_postgres, read_csv},
-    email_builder::Receiver,
-};
+use std::path::PathBuf;
 
 pub struct TabularData;
 

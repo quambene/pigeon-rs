@@ -2,8 +2,11 @@
 
 ### v0.3.1 (upcoming)
 
-- improvements
+- added
+  - Add CI pipeline
+- removed
   - Remove unnecessary cargo feature "different-binary-name"
+  - Remove nightly
 
 ### v0.3.0 (2022-07-09)
 

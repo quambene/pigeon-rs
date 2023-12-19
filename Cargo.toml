@@ -3,7 +3,7 @@ name = "pigeon-rs"
 version = "0.3.0"
 authors = ["quambene <contact.quambene@gmail.com>"]
 description = "Command line tool for cheap and efficient email automation"
-edition = "2018"
+edition = "2021"
 homepage = "https://github.com/quambene/pigeon-rs"
 repository = "https://github.com/quambene/pigeon-rs"
 documentation = "https://github.com/quambene/pigeon-rs"
@@ -23,9 +23,9 @@ serde_yaml = "0.8.17"
 tokio = "1.12.0"
 csv = "1.1.6"
 clap = "2.33.3"
-chrono = "0.4.19"
-polars = { version = "0.20.0", features = ["dtype-u8"] }
-connectorx = { version = "0.2.5", features = ["src_postgres", "dst_arrow2"] }
+chrono = "0.4"
+polars = { version = "0.32", features = ["dtype-u8"] }
+connectorx = { version = "0.3.2", features = ["src_postgres", "dst_arrow2"] }
 postgres = "0.19.2"
 url = "2.2.2"
 uuid = { version = "0.8.2", features = ["v4"] }

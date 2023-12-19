@@ -1,3 +1,4 @@
+use crate::{arg, data_sources::SshTunnel};
 use anyhow::{Context, Result};
 use clap::ArgMatches;
 use connectorx::{
@@ -10,8 +11,6 @@ use polars::frame::DataFrame;
 use postgres::NoTls;
 use std::{env, fmt};
 use url::Url;
-
-use crate::{arg, data_sources::SshTunnel};
 
 pub struct Password(pub String);
 
@@ -63,16 +62,10 @@ impl ConnVars {
     }
 
     pub fn connection_url(&self) -> String {
-        String::from("postgresql://")
-            + &self.db_user
-            + ":"
-            + &self.db_password.0
-            + "@"
-            + &self.db_host
-            + ":"
-            + &self.db_port
-            + "/"
-            + &self.db_name
+        format!(
+            "postgresql://{}:{}@{}:{}/{}",
+            &self.db_user, &self.db_password.0, &self.db_host, &self.db_port, &self.db_name
+        )
     }
 }
 
@@ -101,12 +94,12 @@ pub fn query_postgres(matches: &ArgMatches, query: &str) -> Result<DataFrame, an
         None,
     );
     dispatcher.run()?;
-    let df = destination.polars();
+    let df = destination.polars()?;
 
     match &ssh_tunnel {
         Some(tunnel) => tunnel.kill()?,
         None => (),
     }
 
-    Ok(df?)
+    Ok(df)
 }

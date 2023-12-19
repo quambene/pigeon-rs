@@ -16,8 +16,8 @@ pub struct Email<'a> {
 
 impl<'a> Email<'a> {
     pub fn build(matches: &'a ArgMatches) -> Result<Self, anyhow::Error> {
-        let sender = Sender::new(matches)?;
-        let receiver = Receiver::new(matches)?;
+        let sender = Sender::init(matches)?;
+        let receiver = Receiver::init(matches)?;
         let message = Message::build(matches)?;
         let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
         let email = Email::new(sender, receiver, &message, &mime_format)?;

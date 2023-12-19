@@ -72,7 +72,7 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                     // If argument 'FILE_TYPE' is not present the default value 'csv' will be used
                     match matches.value_of(arg::FILE_TYPE) {
                         Some(file_type) => match file_type {
-                            x if x == "csv" => write_csv(matches, df_query_result)?,
+                            "csv" => write_csv(matches, df_query_result)?,
                             x if x == "jpg" => write_image(matches, df_query_result, x)?,
                             x if x == "png" => write_image(matches, df_query_result, x)?,
                             _ => {
@@ -115,7 +115,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = query(&subcommand_matches);
+        let res = query(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -138,7 +138,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = query(&subcommand_matches);
+        let res = query(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -163,7 +163,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = query(&subcommand_matches);
+        let res = query(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())

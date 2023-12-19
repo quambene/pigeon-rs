@@ -37,7 +37,6 @@ emmy@noether.com ... ok
 elie@cartan.com ... ok
 ```
 
-- [Requirements](#requirements)
 - [Install Pigeon](#install-pigeon)
   - [Install Pigeon from crates.io](#install-pigeon-from-cratesio)
   - [Install Pigeon from github.com](#install-pigeon-from-githubcom)
@@ -56,21 +55,11 @@ elie@cartan.com ... ok
   - [Data sources](#data-sources)
 - [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
 
-## Requirements
-
-You need to have Rust installed on your system and nightly toolchain activated.
-
 ## Install Pigeon
 
 ### Install Pigeon from [crates.io](https://crates.io/crates/pigeon-rs)
 
 ``` bash
-# Install nightly toolchain
-rustup toolchain install nightly
-
-# Switch to nightly toolchain
-rustup override set nightly
-
 # Build and install pigeon binary to ~/.cargo/bin
 cargo install pigeon-rs
 ```
@@ -83,9 +72,6 @@ _Note:_ Run `cargo install pigeon-rs` again to update to the latest version. Uni
 # Clone repository
 git clone git@github.com:quambene/pigeon-rs.git
 cd pigeon-rs
-
-# Activate rust nightly toolchain for current directory
-echo "nightly" > rust-toolchain
 
 # Build and install pigeon binary to ~/.cargo/bin
 cargo install --path .

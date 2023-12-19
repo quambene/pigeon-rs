@@ -1,3 +1,4 @@
+use crate::arg;
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
 use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
@@ -6,8 +7,6 @@ use std::{
     path::{Path, PathBuf},
     time::SystemTime,
 };
-
-use crate::arg;
 
 pub fn read_csv(csv_file: &Path) -> Result<DataFrame, anyhow::Error> {
     println!("Reading csv file '{}' ...", csv_file.display());
@@ -25,7 +24,7 @@ pub fn write_csv(matches: &ArgMatches, mut df: DataFrame) -> Result<(), anyhow::
         Some(save_dir) => PathBuf::from(save_dir),
         None => return Err(anyhow!("Missing value for argument '{}'", arg::SAVE_DIR)),
     };
-    let target_file = "query_".to_string() + &current_time + ".csv";
+    let target_file = format!("query_{}.csv", &current_time);
 
     match target_dir.exists() {
         true => (),
@@ -42,7 +41,7 @@ pub fn write_csv(matches: &ArgMatches, mut df: DataFrame) -> Result<(), anyhow::
     let timestamp_format = "%F_H:%M:%S";
 
     CsvWriter::new(csv_file)
-        .with_timestamp_format(Some(timestamp_format.to_string()))
+        .with_datetime_format(Some(timestamp_format.to_string()))
         .finish(&mut df)?;
 
     Ok(())
