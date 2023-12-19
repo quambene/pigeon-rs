@@ -1,6 +1,11 @@
 <!-- markdownlint-disable MD041 -->
 
-### v0.3.0
+### v0.3.1 (upcoming)
+
+- improvements
+  - Remove unnecessary cargo feature "different-binary-name"
+
+### v0.3.0 (2022-07-09)
 
 - bugfixes
   - Fix invalid base64 encoding for AWS api
@@ -9,7 +14,7 @@
   - Update polars to 0.20.0
   - Update lettre to 0.10.0
 
-### v0.2.0
+### v0.2.0 (2022-01-05)
 
 - features
   - Support for arrow2
@@ -32,12 +37,12 @@
   - `send --html-file`
   - `send-bulk --html-file`
 
-### v0.1.3
+### v0.1.3 (2021-11-16)
 
 - bugfixes
   - Fix empty text message or html message
 
-### v0.1.2
+### v0.1.2 (2021-11-09)
 
 - bugfixes
   - Fix `--ssh-tunnel` for `send-bulk`
