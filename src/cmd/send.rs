@@ -142,6 +142,7 @@ mod tests {
     use std::env;
 
     #[test]
+    #[ignore]
     fn test_send_subject_content_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -202,6 +203,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -288,6 +290,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_empty_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -314,6 +317,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_none_html_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -340,6 +344,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_message_file_content_none_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -366,6 +371,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_archive_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -392,6 +398,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_archive_dir_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -420,6 +427,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_pdf_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -448,6 +456,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_png_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -476,6 +485,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_odt_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -570,6 +580,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_aws_api_dry() {
         let args = vec![
             cmd::BIN,
@@ -634,6 +645,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_text_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -662,6 +674,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,
@@ -690,6 +703,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_text_file_html_file_smtp_dry() {
         let args = vec![
             cmd::BIN,

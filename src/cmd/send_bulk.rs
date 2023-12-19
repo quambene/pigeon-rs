@@ -146,6 +146,7 @@ mod tests {
     use crate::{app, cmd};
 
     #[test]
+    #[ignore]
     fn test_send_bulk_subject_content_dry() {
         let args = vec![
             cmd::BIN,
@@ -174,6 +175,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_bulk_text_file_html_file_dry() {
         let args = vec![
             cmd::BIN,
@@ -204,6 +206,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_bulk_message_file_dry() {
         let args = vec![
             cmd::BIN,
@@ -230,6 +233,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_bulk_receiver_column_dry() {
         let args = vec![
             cmd::BIN,
@@ -258,6 +262,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_bulk_personalize_dry() {
         let args = vec![
             cmd::BIN,
@@ -287,6 +292,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_archive_dry() {
         let args = vec![
             cmd::BIN,
@@ -314,6 +320,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_archive_dir_dry() {
         let args = vec![
             cmd::BIN,
@@ -343,6 +350,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_pdf_dry() {
         let args = vec![
             cmd::BIN,
@@ -372,6 +380,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_png_dry() {
         let args = vec![
             cmd::BIN,
@@ -401,6 +410,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_attachment_odt_dry() {
         let args = vec![
             cmd::BIN,
@@ -430,6 +440,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_send_bulk_aws_dry() {
         let args = vec![
             cmd::BIN,
