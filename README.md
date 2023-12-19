@@ -37,7 +37,6 @@ emmy@noether.com ... ok
 elie@cartan.com ... ok
 ```
 
-- [Requirements](#requirements)
 - [Install Pigeon](#install-pigeon)
   - [Install Pigeon from crates.io](#install-pigeon-from-cratesio)
   - [Install Pigeon from github.com](#install-pigeon-from-githubcom)
@@ -55,10 +54,6 @@ elie@cartan.com ... ok
   - [Third-party APIs](#third-party-apis)
   - [Data sources](#data-sources)
 - [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
-
-## Requirements
-
-You need to have Rust installed on your system and nightly toolchain activated.
 
 ## Install Pigeon
 
