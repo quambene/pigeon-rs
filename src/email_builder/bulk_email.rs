@@ -90,7 +90,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     pub fn process(&self, matches: &ArgMatches) -> Result<(), anyhow::Error> {
-        let client = Client::new(matches)?;
+        let client = Client::init(matches)?;
         let eml_formatter = EmlFormatter::new(matches)?;
 
         println!("Sending email to {} receivers ...", self.emails.len());

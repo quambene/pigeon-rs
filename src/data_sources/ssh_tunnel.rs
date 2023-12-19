@@ -33,7 +33,7 @@ impl SshTunnel {
         let ssh_connection = server_user.to_string() + "@" + &server_host;
 
         let process = Command::new("ssh")
-            .args(&["-N", "-T", "-L", &port_fwd, &ssh_connection])
+            .args(["-N", "-T", "-L", &port_fwd, &ssh_connection])
             .spawn()?;
 
         let connection_url = SshTunnel::connection_url(conn_vars, local_url);

@@ -18,7 +18,7 @@ pub trait SendEmail<'a> {
 pub struct Client;
 
 impl Client {
-    pub fn new<'a>(matches: &ArgMatches) -> Result<Box<dyn SendEmail<'a>>, anyhow::Error> {
+    pub fn init<'a>(matches: &ArgMatches) -> Result<Box<dyn SendEmail<'a>>, anyhow::Error> {
         if matches.is_present(arg::CONNECTION) {
             match matches.value_of(arg::CONNECTION) {
                 Some(connection) => match connection.to_lowercase().as_str() {

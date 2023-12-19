@@ -6,7 +6,7 @@ use polars::prelude::DataFrame;
 pub struct Receiver;
 
 impl Receiver {
-    pub fn new<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
+    pub fn init<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
         if matches.is_present(arg::RECEIVER) {
             match matches.value_of(arg::RECEIVER) {
                 Some(receiver) => Ok(receiver),

@@ -112,7 +112,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    let sender = Sender::new(matches)?;
+    let sender = Sender::init(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
     let default_message = Message::build(matches)?;
     let bulk_email = BulkEmail::build(matches, sender, &df_receiver, &default_message)?;
@@ -167,7 +167,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -197,7 +197,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -223,7 +223,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -251,7 +251,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -280,7 +280,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -307,7 +307,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -336,7 +336,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -365,7 +365,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -394,7 +394,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -423,7 +423,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -451,7 +451,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send_bulk(&subcommand_matches);
+        let res = send_bulk(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())

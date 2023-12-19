@@ -55,7 +55,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::READ).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = read(&subcommand_matches);
+        let res = read(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())

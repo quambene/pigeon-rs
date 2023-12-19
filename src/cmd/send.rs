@@ -105,7 +105,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
-    let client = Client::new(matches)?;
+    let client = Client::init(matches)?;
     let eml_formatter = EmlFormatter::new(matches)?;
 
     println!("Sending email to 1 recipient ...");
@@ -163,7 +163,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -195,7 +195,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -221,7 +221,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -250,7 +250,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -281,7 +281,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -307,7 +307,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -333,7 +333,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -359,7 +359,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_err())
@@ -385,7 +385,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -413,7 +413,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -441,7 +441,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -469,7 +469,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -497,7 +497,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -529,7 +529,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -563,7 +563,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -593,7 +593,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -627,7 +627,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -655,7 +655,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -683,7 +683,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -713,7 +713,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
@@ -747,7 +747,7 @@ mod tests {
         let subcommand_matches = matches.subcommand_matches(cmd::SEND).unwrap();
         println!("subcommand matches: {:#?}", subcommand_matches);
 
-        let res = send(&subcommand_matches);
+        let res = send(subcommand_matches);
         println!("res: {:#?}", res);
 
         assert!(res.is_ok())
