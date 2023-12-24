@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD041 -->
 
-### v0.3.1 (upcoming)
+### v0.4.0 (2022-12-24)
 
 - added
   - Add CI pipeline

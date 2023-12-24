@@ -1,6 +1,6 @@
 [package]
 name = "pigeon-rs"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["quambene <contact.quambene@gmail.com>"]
 description = "Command line tool for cheap and efficient email automation"
 edition = "2021"
