@@ -1,21 +1,17 @@
+use assert_cmd::Command;
 use pigeon_rs::{app, cmd};
+use predicates::str;
 use std::env;
 
 #[test]
-#[ignore]
 fn test_display_query() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
-    let args = vec![cmd::BIN, cmd::QUERY, test_query.as_str(), "--display"];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::query(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    println!("Execute 'pigeon query {test_query} --display'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args(["query", test_query.as_str(), "--display"]);
+    cmd.assert()
+        .success()
+        .stdout(str::contains("Display query result"));
 }
 
 #[test]
