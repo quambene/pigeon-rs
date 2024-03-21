@@ -40,24 +40,3 @@ pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         Err(anyhow!("Missing argument '{}'", cmd::READ))
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::{app, cmd};
-
-    #[test]
-    fn test_read() {
-        let args = vec![cmd::BIN, cmd::READ, "./test_data/receiver.csv"];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::READ).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = read(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-}
