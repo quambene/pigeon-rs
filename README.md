@@ -440,7 +440,19 @@ Sendgrid | equals monthly limit
 
 ## Testing
 
-Integration tests require a locally running database.
+Integration tests require a locally running database, and an AWS SES account.
+Specify the following environment variables:
+
+- AWS SES
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_REGION`
+- Postgres
+  - `DB_HOST`
+  - `DB_PORT`
+  - `DB_USER`
+  - `DB_PASSWORD`
+  - `DB_NAME`
 
 ``` bash
 # Run unit tests and integration tests
