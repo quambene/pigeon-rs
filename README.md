@@ -54,6 +54,7 @@ elie@cartan.com ... ok
   - [Third-party APIs](#third-party-apis)
   - [Data sources](#data-sources)
 - [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
+- [Testing](#testing)
 
 ## Install Pigeon
 
@@ -436,3 +437,18 @@ provider | daily limit
 Pigeon+AWS | 50,000
 Mailchimp | equals monthly limit
 Sendgrid | equals monthly limit
+
+## Testing
+
+Integration tests require a locally running database.
+
+``` bash
+# Run unit tests and integration tests
+cargo test
+
+# Run unit tests
+cargo test --lib
+
+# Run integration tests
+cargo test --test '*'
+```
