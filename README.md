@@ -443,6 +443,10 @@ Sendgrid | equals monthly limit
 Integration tests require a locally running database, and an AWS SES account.
 Specify the following environment variables:
 
+- SMTP
+  - `SMTP_SERVER`
+  - `SMTP_USERNAME`
+  - `SMTP_PASSWORD`
 - AWS SES
   - `AWS_ACCESS_KEY_ID`
   - `AWS_SECRET_ACCESS_KEY`

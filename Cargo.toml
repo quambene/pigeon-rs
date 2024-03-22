@@ -16,6 +16,10 @@ license = "Apache-2.0"
 name = "pigeon"
 path = "src/main.rs"
 
+[[test]]
+name = "integration_tests"
+path = "tests/cmd/lib.rs"
+
 [dependencies]
 anyhow = "1.0.40"
 rusoto_ses = { version = "0.47.0", default-features = false, features = ["rustls"] }
