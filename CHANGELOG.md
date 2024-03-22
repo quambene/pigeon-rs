@@ -1,5 +1,11 @@
 <!-- markdownlint-disable MD041 -->
 
+### Unreleased
+
+- changed
+  - Refactor integration tests
+  - Update to rust 1.77
+
 ### v0.4.0 (2022-12-24)
 
 - added
