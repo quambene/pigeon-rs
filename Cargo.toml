@@ -16,6 +16,9 @@ license = "Apache-2.0"
 name = "pigeon"
 path = "src/main.rs"
 
+[lib]
+test = false
+
 [[test]]
 name = "integration_tests"
 path = "tests/cmd/lib.rs"
@@ -45,3 +48,4 @@ base64 = "0.13.0"
 [dev-dependencies]
 assert_cmd = "2.0.14"
 predicates = "3.1.0"
+tempfile = "3.10.1"
