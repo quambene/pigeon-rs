@@ -1,16 +1,34 @@
-use pigeon_rs::{app, cmd};
+use assert_cmd::Command;
+use predicates::{boolean::PredicateBooleanExt, str};
 
 #[test]
 fn test_read() {
-    let args = vec![cmd::BIN, cmd::READ, "./test_data/receiver.csv"];
+    let test_data = "./test_data/receiver.csv";
+    println!("Execute 'pigeon read {test_data}'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args(["read", test_data]);
+    cmd.assert().success().stdout(str::contains(
+        "Reading csv file './test_data/receiver.csv' ...",
+    ));
+}
 
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::READ).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::read(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+#[test]
+fn test_read_display() {
+    let test_data = "./test_data/receiver.csv";
+    println!("Execute 'pigeon read {test_data} --display'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args(["read", test_data, "--display"]);
+    cmd.assert().success().stdout(
+        str::contains("Reading csv file './test_data/receiver.csv' ...").and(str::contains(
+            "Display csv file: shape: (2, 3)
+┌────────────┬──────────────┬────────────────────────────┐
+│ first_name ┆ last_name    ┆ email                      │
+│ ---        ┆ ---          ┆ ---                        │
+│ str        ┆ str          ┆ str                        │
+╞════════════╪══════════════╪════════════════════════════╡
+│ Marie      ┆ Curie        ┆ marie@curie.com            │
+│ Alexandre  ┆ Grothendieck ┆ alexandre@grothendieck.com │
+└────────────┴──────────────┴────────────────────────────┘",
+        )),
+    );
 }
