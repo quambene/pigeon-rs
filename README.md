@@ -2,6 +2,9 @@
 
 # Pigeon
 
+[![Latest Version](https://img.shields.io/crates/v/bogrep.svg)](https://crates.io/crates/bogrep)
+[![Build Status](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml)
+
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
 
 For example, query the subscribers of your newsletter, create a plaintext and html email from a template file, and send it to all of them:
