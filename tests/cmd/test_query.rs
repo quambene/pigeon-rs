@@ -1,10 +1,10 @@
 use assert_cmd::Command;
-use pigeon_rs::{app, cmd};
 use predicates::str;
-use std::env;
+use std::{env, fs};
+use tempfile::tempdir;
 
 #[test]
-fn test_display_query() {
+fn test_query_display() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
     println!("Execute 'pigeon query {test_query} --display'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
@@ -15,49 +15,70 @@ fn test_display_query() {
 }
 
 #[test]
-#[ignore]
-fn test_save_query() {
+fn test_query_save() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
-    let args = vec![
-        cmd::BIN,
-        cmd::QUERY,
-        test_query.as_str(),
-        "--display",
-        "--save",
-    ];
+    let temp_dir = tempdir().unwrap();
+    let temp_path = temp_dir.path();
+    assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
+    let save_dir = temp_path.to_str().unwrap();
 
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
+    println!("Execute 'pigeon query {test_query} --save'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.current_dir(save_dir);
+    cmd.args(["query", test_query.as_str(), "--save"]);
+    cmd.assert()
+        .success()
+        .stdout(str::contains("Save query result to file"));
 
-    let res = cmd::query(subcommand_matches);
-    println!("res: {:#?}", res);
+    if let Ok(mut entries) = fs::read_dir(temp_path.join("saved_queries")) {
+        let dir_entry = entries.find_map(|entry| {
+            if let Ok(entry) = entry {
+                if entry.file_name().to_str().is_some_and(|file_name| {
+                    file_name.contains("query") && file_name.ends_with(".csv")
+                }) {
+                    return Some(entry);
+                }
+            }
 
-    assert!(res.is_ok())
+            None
+        });
+        assert!(dir_entry.is_some());
+    }
 }
 
 #[test]
-#[ignore]
-fn test_save_dir() {
+fn test_query_save_dir() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
-    let args = vec![
-        cmd::BIN,
-        cmd::QUERY,
+    let temp_dir = tempdir().unwrap();
+    let temp_path = temp_dir.path();
+    assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
+    let save_dir = temp_path.to_str().unwrap();
+
+    println!("Execute 'pigeon query {test_query} --save --save-dir {save_dir}'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "query",
         test_query.as_str(),
-        "--display",
         "--save",
         "--save-dir",
-        "./my-saved-queries",
-    ];
+        save_dir,
+    ]);
+    cmd.assert()
+        .success()
+        .stdout(str::contains("Save query result to file"));
 
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::QUERY).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
+    if let Ok(mut entries) = fs::read_dir(temp_path) {
+        let dir_entry = entries.find_map(|entry| {
+            if let Ok(entry) = entry {
+                if entry.file_name().to_str().is_some_and(|file_name| {
+                    file_name.contains("query") && file_name.ends_with(".csv")
+                }) {
+                    return Some(entry);
+                }
+            }
 
-    let res = cmd::query(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+            None
+        });
+        assert!(dir_entry.is_some());
+    }
 }
