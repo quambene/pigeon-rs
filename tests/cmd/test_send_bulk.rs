@@ -2,7 +2,6 @@ use assert_cmd::Command;
 use predicates::{boolean::PredicateBooleanExt, str};
 
 #[test]
-#[ignore]
 fn test_send_bulk_subject_content_dry() {
     println!("Execute 'pigeon send-bulk'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
