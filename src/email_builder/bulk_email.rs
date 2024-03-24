@@ -5,7 +5,7 @@ use crate::{
     email_formatter::EmlFormatter,
     email_transmission::Client,
 };
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result};
 use clap::{ArgMatches, Values};
 use polars::prelude::DataFrame;
 use std::io;
@@ -16,33 +16,10 @@ pub struct BulkEmail<'a> {
 }
 
 impl<'a> BulkEmail<'a> {
-    pub fn build(
-        matches: &'a ArgMatches,
-        sender: &'a str,
-        df_receiver: &'a DataFrame,
-        default_message: &'a Message,
-    ) -> Result<Self, anyhow::Error> {
-        let bulk_email = if matches.is_present(arg::PERSONALIZE) {
-            match matches.values_of(arg::PERSONALIZE) {
-                Some(personalized_columns) => BulkEmail::personalize(
-                    matches,
-                    sender,
-                    df_receiver,
-                    default_message,
-                    personalized_columns,
-                )?,
-                None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
-            }
-        } else {
-            BulkEmail::new(matches, sender, df_receiver, default_message)?
-        };
-
-        Ok(bulk_email)
-    }
-
     pub fn new(
         matches: &'a ArgMatches,
         sender: &'a str,
+
         df_receiver: &'a DataFrame,
         message: &'a Message,
     ) -> Result<Self, anyhow::Error> {

@@ -1,6 +1,6 @@
 use crate::{
-    arg::{self},
-    email_builder::{Confirmed, Email},
+    arg,
+    email_builder::{Confirmed, Email, Message, MimeFormat, Receiver, Sender},
     email_formatter::EmlFormatter,
     email_transmission::Client,
     helper::format_green,
@@ -13,7 +13,11 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    let email = Email::build(matches)?;
+    let sender = Sender::init(matches)?;
+    let receiver = Receiver::init(matches)?;
+    let message = Message::build(matches)?;
+    let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+    let email = Email::new(sender, receiver, &message, &mime_format)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display email: {:#?}", email);
