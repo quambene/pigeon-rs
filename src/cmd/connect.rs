@@ -5,21 +5,7 @@ use crate::{
     email_transmission::SmtpClient,
 };
 use anyhow::{anyhow, Result};
-use clap::{Arg, ArgMatches};
-
-pub fn connect_args() -> [Arg<'static, 'static>; 2] {
-    [
-        Arg::with_name(cmd::CONNECT)
-            .takes_value(true)
-            .possible_values(&[val::SMTP, val::AWS])
-            .default_value(val::SMTP)
-            .help("Check connection to SMTP server."),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-    ]
-}
+use clap::ArgMatches;
 
 pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {

@@ -1,94 +1,12 @@
 use crate::{
-    arg::{self, val},
+    arg::{self},
     email_builder::{Confirmed, Email},
     email_formatter::EmlFormatter,
     email_transmission::Client,
     helper::format_green,
 };
 use anyhow::Result;
-use clap::{Arg, ArgMatches};
-
-pub fn send_args() -> [Arg<'static, 'static>; 15] {
-    [
-        Arg::with_name(arg::SENDER)
-            .index(1)
-            .required(true)
-            .takes_value(true)
-            .requires_all(&[arg::RECEIVER])
-            .help("Email address of the sender"),
-        Arg::with_name(arg::RECEIVER)
-            .index(2)
-            .required(true)
-            .takes_value(true)
-            .requires_all(&[arg::SENDER])
-            .help("Email address of the receiver"),
-        Arg::with_name(arg::SUBJECT)
-            .long(arg::SUBJECT)
-            .takes_value(true)
-            .required_unless_one(&[arg::MESSAGE_FILE])
-            .help("Subject of the email"),
-        Arg::with_name(arg::CONTENT)
-            .long(arg::CONTENT)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .required_unless_one(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-            .conflicts_with_all(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-            .help("Content of the email"),
-        Arg::with_name(arg::MESSAGE_FILE)
-            .long(arg::MESSAGE_FILE)
-            .takes_value(true)
-            .required_unless_one(&[arg::SUBJECT, arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
-            .conflicts_with_all(&[arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
-            .help("Path of the message file"),
-        Arg::with_name(arg::TEXT_FILE)
-            .long(arg::TEXT_FILE)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
-            .help("Path of text file"),
-        Arg::with_name(arg::HTML_FILE)
-            .long(arg::HTML_FILE)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
-            .help("Path of html file"),
-        Arg::with_name(arg::ATTACHMENT)
-            .long(arg::ATTACHMENT)
-            .takes_value(true)
-            .help("Path of attachment"),
-        Arg::with_name(arg::ARCHIVE)
-            .long(arg::ARCHIVE)
-            .takes_value(false)
-            .help("Archive sent emails"),
-        Arg::with_name(arg::ARCHIVE_DIR)
-            .long(arg::ARCHIVE_DIR)
-            .takes_value(true)
-            .default_value("./sent_emails")
-            .help("Path of sent emails"),
-        Arg::with_name(arg::DISPLAY)
-            .long(arg::DISPLAY)
-            .takes_value(false)
-            .help("Display email in terminal"),
-        Arg::with_name(arg::DRY_RUN)
-            .long(arg::DRY_RUN)
-            .takes_value(false)
-            .help("Prepare email but do not send email"),
-        Arg::with_name(arg::ASSUME_YES)
-            .long(arg::ASSUME_YES)
-            .takes_value(false)
-            .help("Send email without confirmation"),
-        Arg::with_name(arg::CONNECTION)
-            .long(arg::CONNECTION)
-            .takes_value(true)
-            .possible_values(&[val::SMTP, val::AWS])
-            .default_value(val::SMTP)
-            .help("Send emails via SMTP or AWS API"),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-    ]
-}
+use clap::ArgMatches;
 
 pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {

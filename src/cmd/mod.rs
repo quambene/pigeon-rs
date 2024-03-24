@@ -6,13 +6,13 @@ mod send;
 mod send_bulk;
 mod simple_query;
 
-pub use connect::{connect, connect_args};
-pub use init::{init, init_args};
-pub use query::{query, query_args};
-pub use read::{read, read_args};
-pub use send::{send, send_args};
-pub use send_bulk::{send_bulk, send_bulk_args};
-pub use simple_query::{simple_query, simple_query_args};
+pub use connect::connect;
+pub use init::init;
+pub use query::query;
+pub use read::read;
+pub use send::send;
+pub use send_bulk::send_bulk;
+pub use simple_query::simple_query;
 
 // Binary name
 pub const BIN: &str = "pigeon";

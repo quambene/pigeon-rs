@@ -1,21 +1,7 @@
 use crate::{arg, cmd, data_sources::read_csv};
 use anyhow::{anyhow, Result};
-use clap::{Arg, ArgMatches};
+use clap::ArgMatches;
 use std::path::PathBuf;
-
-pub fn read_args() -> [Arg<'static, 'static>; 3] {
-    [
-        Arg::with_name(cmd::READ).required(true).takes_value(true),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-        Arg::with_name(arg::DISPLAY)
-            .long(arg::DISPLAY)
-            .takes_value(false)
-            .help("Display csv file in terminal"),
-    ]
-}
 
 pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {

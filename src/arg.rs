@@ -32,7 +32,7 @@ pub mod val {
     // default value for RECEIVER_COLUMN
     pub const EMAIL: &str = "email";
 
-    // possible values for arg CONNECTION and subcommand CONNECT
+    // possible values for argument CONNECTION and subcommand CONNECT
     pub const SMTP: &str = "smtp";
     pub const AWS: &str = "aws";
 }

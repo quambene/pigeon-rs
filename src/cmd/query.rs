@@ -4,55 +4,7 @@ use crate::{
     data_sources::{query_postgres, write_csv, write_image},
 };
 use anyhow::{anyhow, Result};
-use clap::{Arg, ArgMatches};
-
-pub fn query_args() -> [Arg<'static, 'static>; 9] {
-    [
-        Arg::with_name(cmd::QUERY)
-            .index(1)
-            .required(true)
-            .takes_value(true)
-            .help("Takes a sql query"),
-        Arg::with_name(arg::SSH_TUNNEL)
-            .long(arg::SSH_TUNNEL)
-            .value_name("port")
-            .takes_value(true)
-            .help("Connect to db through ssh tunnel"),
-        Arg::with_name(arg::SAVE)
-            .long(arg::SAVE)
-            .takes_value(false)
-            .help("Save query result"),
-        Arg::with_name(arg::SAVE_DIR)
-            .long(arg::SAVE_DIR)
-            .takes_value(true)
-            .default_value("./saved_queries")
-            .help("Specifies the output directory for saved query"),
-        Arg::with_name(arg::FILE_TYPE)
-            .long(arg::FILE_TYPE)
-            .takes_value(true)
-            .default_value("csv")
-            .possible_values(&["csv", "jpg", "png"])
-            .help("Specifies the file type for saved query"),
-        Arg::with_name(arg::IMAGE_COLUMN)
-            .long(arg::IMAGE_COLUMN)
-            .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
-            .takes_value(true)
-            .help("Specifies the column in which to look for images"),
-        Arg::with_name(arg::IMAGE_NAME)
-            .long(arg::IMAGE_NAME)
-            .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
-            .takes_value(true)
-            .help("Specifies the column used for the image name"),
-        Arg::with_name(arg::DISPLAY)
-            .long(arg::DISPLAY)
-            .takes_value(false)
-            .help("Print query result to terminal"),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-    ]
-}
+use clap::ArgMatches;
 
 pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
