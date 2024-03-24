@@ -1,11 +1,13 @@
-use pigeon_rs::{app, cmd};
+use assert_cmd::Command;
+use predicates::{boolean::PredicateBooleanExt, str};
 
 #[test]
 #[ignore]
 fn test_send_bulk_subject_content_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -16,25 +18,23 @@ fn test_send_bulk_subject_content_dry() {
         "--dry-run",
         "--display",
         "--assume-yes",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success().stdout(
+        str::contains("Reading csv file './test_data/receiver.csv' ...").and(
+            str::contains("Display csv file:")
+                .and(str::contains("Display emails:"))
+                .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m")),
+        ),
+    );
 }
 
 #[test]
 #[ignore]
 fn test_send_bulk_text_file_html_file_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -47,25 +47,17 @@ fn test_send_bulk_text_file_html_file_dry() {
         "--dry-run",
         "--display",
         "--assume-yes",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_send_bulk_message_file_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -74,25 +66,17 @@ fn test_send_bulk_message_file_dry() {
         "--dry-run",
         "--display",
         "--assume-yes",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_send_bulk_receiver_column_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/contacts.csv",
@@ -103,25 +87,17 @@ fn test_send_bulk_receiver_column_dry() {
         "--dry-run",
         "--display",
         "--assume-yes",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_send_bulk_personalize_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -133,25 +109,17 @@ fn test_send_bulk_personalize_dry() {
         "--dry-run",
         "--display",
         "--assume-yes",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_archive_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -161,25 +129,17 @@ fn test_archive_dry() {
         "--display",
         "--assume-yes",
         "--archive",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_archive_dir_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -191,25 +151,17 @@ fn test_archive_dir_dry() {
         "--archive",
         "--archive-dir",
         "./my-sent-emails",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_attachment_pdf_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -221,25 +173,17 @@ fn test_attachment_pdf_dry() {
         "--archive",
         "--attachment",
         "./test_data/test.pdf",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_attachment_png_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -251,25 +195,17 @@ fn test_attachment_png_dry() {
         "--archive",
         "--attachment",
         "./test_data/test.png",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_attachment_odt_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -281,25 +217,17 @@ fn test_attachment_odt_dry() {
         "--archive",
         "--attachment",
         "./test_data/test.odt",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }
 
 #[test]
 #[ignore]
 fn test_send_bulk_aws_dry() {
-    let args = vec![
-        cmd::BIN,
-        cmd::SEND_BULK,
+    println!("Execute 'pigeon send-bulk'");
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "send-bulk",
         "albert@einstein.com",
         "--receiver-file",
         "./test_data/receiver.csv",
@@ -309,16 +237,6 @@ fn test_send_bulk_aws_dry() {
         "--display",
         "--assume-yes",
         "--connection",
-        "aws",
-    ];
-
-    let app = app();
-    let matches = app.get_matches_from(args);
-    let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-    println!("subcommand matches: {:#?}", subcommand_matches);
-
-    let res = cmd::send_bulk(subcommand_matches);
-    println!("res: {:#?}", res);
-
-    assert!(res.is_ok())
+    ]);
+    cmd.assert().success();
 }

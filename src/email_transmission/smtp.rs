@@ -1,4 +1,4 @@
-use super::{client::SendEmail, SentEmail, Status};
+use super::{SendEmail, SentEmail, Status};
 use crate::{
     arg,
     email_builder::Email,
