@@ -24,7 +24,7 @@ pub fn write_csv(matches: &ArgMatches, mut df: DataFrame) -> Result<(), anyhow::
 
     match target_dir.exists() {
         true => (),
-        false => fs::create_dir(&target_dir).context(format!(
+        false => fs::create_dir(target_dir).context(format!(
             "Can't create directory: '{}'",
             target_dir.display()
         ))?,
