@@ -19,7 +19,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let receiver = Receiver::init(matches)?;
     let message = Message::build(matches)?;
     let attachment = matches.value_of(arg::ATTACHMENT);
-    let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
+    let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now, None)?;
     let email = Email::new(sender, receiver, &message, &mime_format)?;
 
     if matches.is_present(arg::DISPLAY) {

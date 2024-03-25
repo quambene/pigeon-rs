@@ -18,6 +18,7 @@ impl MimeFormat {
         message: &email_builder::Message,
         attachment: Option<&str>,
         now: SystemTime,
+        multipart_boundary: Option<&str>,
     ) -> Result<Self, anyhow::Error> {
         let message_builder = LettreMessage::builder()
             .from(sender.parse().context("Can't parse sender")?)
@@ -28,20 +29,18 @@ impl MimeFormat {
         let message = match (&message.text, &message.html, attachment) {
             (Some(text), Some(html), Some(attachment)) => message_builder.multipart(
                 MultiPart::mixed()
-                    .multipart(Self::alternative(text, html))
+                    .multipart(Self::alternative(text, html, multipart_boundary))
                     .singlepart(Self::attachment(attachment)?),
             ),
             (Some(text), Some(html), None) => {
-                message_builder.multipart(Self::alternative(text, html))
+                message_builder.multipart(Self::alternative(text, html, multipart_boundary))
             }
             (Some(text), None, Some(attachment)) => message_builder.multipart(
-                MultiPart::mixed()
-                    .singlepart(Self::text_plain(text))
+                Self::multipart_text(text, multipart_boundary)
                     .singlepart(Self::attachment(attachment)?),
             ),
             (None, Some(html), Some(attachment)) => message_builder.multipart(
-                MultiPart::mixed()
-                    .singlepart(Self::text_html(html))
+                Self::multipart_html(html, multipart_boundary)
                     .singlepart(Self::attachment(attachment)?),
             ),
             (Some(text), None, None) => message_builder.singlepart(Self::text_plain(text)),
@@ -66,6 +65,36 @@ impl MimeFormat {
         SinglePart::builder()
             .header(header::ContentType::TEXT_HTML)
             .body(text.to_string())
+    }
+
+    fn multipart_text(text: &str, boundary: Option<&str>) -> MultiPart {
+        match boundary {
+            Some(boundary) => MultiPart::mixed()
+                .boundary(boundary)
+                .singlepart(Self::text_plain(text)),
+            None => MultiPart::mixed().singlepart(Self::text_plain(text)),
+        }
+    }
+
+    fn multipart_html(html: &str, boundary: Option<&str>) -> MultiPart {
+        match boundary {
+            Some(boundary) => MultiPart::mixed()
+                .boundary(boundary)
+                .singlepart(Self::text_html(html)),
+            None => MultiPart::mixed().singlepart(Self::text_html(html)),
+        }
+    }
+
+    fn alternative(text: &str, html: &str, boundary: Option<&str>) -> MultiPart {
+        match boundary {
+            Some(boundary) => MultiPart::alternative()
+                .boundary(boundary)
+                .singlepart(Self::text_plain(text))
+                .singlepart(Self::text_html(html)),
+            None => MultiPart::alternative()
+                .singlepart(Self::text_plain(text))
+                .singlepart(Self::text_html(html)),
+        }
     }
 
     fn attachment(file: &str) -> Result<SinglePart, anyhow::Error> {
@@ -95,12 +124,6 @@ impl MimeFormat {
             ))?)
             .header(header::ContentDisposition::attachment(file_name))
             .body(bytes))
-    }
-
-    fn alternative(text: &str, html: &str) -> MultiPart {
-        MultiPart::alternative()
-            .singlepart(Self::text_plain(text))
-            .singlepart(Self::text_html(html))
     }
 }
 
@@ -132,7 +155,7 @@ mod tests {
         let text = "This is a test message (plaintext).";
         let message = Message::new(subject, Some(text), None);
 
-        let res = MimeFormat::new(sender, receiver, &message, None, system_time);
+        let res = MimeFormat::new(sender, receiver, &message, None, system_time, None);
         assert!(res.is_ok());
 
         let mime_format = format!("{:?}", res.unwrap());
@@ -154,11 +177,42 @@ mod tests {
         let html = "<p>This is a test message (html).</p>";
         let message = Message::new(subject, None, Some(html));
 
-        let res = MimeFormat::new(sender, receiver, &message, None, system_time);
+        let res = MimeFormat::new(sender, receiver, &message, None, system_time, None);
         assert!(res.is_ok());
 
         let mime_format = format!("{:?}", res.unwrap());
         let mut expected_file = File::open("./test_data/email_html.txt").unwrap();
+        let mut expected_format = String::new();
+        expected_file.read_to_string(&mut expected_format).unwrap();
+        assert_eq!(mime_format.replace("\r", ""), expected_format);
+    }
+
+    #[test]
+    fn test_mime_format_multipart() {
+        let date_time = chrono::DateTime::parse_from_rfc3339("2024-01-01T14:00:00Z")
+            .unwrap()
+            .timestamp() as u64;
+        let system_time = UNIX_EPOCH + std::time::Duration::from_secs(date_time);
+        let sender = "albert@einstein.com";
+        let receiver = "marie@curie.com";
+        let subject = "Test Subject";
+        let text = "This is a test message (plaintext).";
+        let html = "<p>This is a test message (html).</p>";
+        let message = Message::new(subject, Some(text), Some(html));
+        let multipart_boundary = "RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt";
+
+        let res = MimeFormat::new(
+            sender,
+            receiver,
+            &message,
+            None,
+            system_time,
+            Some(multipart_boundary),
+        );
+        assert!(res.is_ok());
+
+        let mime_format = format!("{:?}", res.unwrap());
+        let mut expected_file = File::open("./test_data/email_multipart.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
         assert_eq!(mime_format.replace("\r", ""), expected_format);

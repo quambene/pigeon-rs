@@ -32,7 +32,8 @@ impl<'a> BulkEmail<'a> {
             match receiver {
                 Some(receiver) => {
                     let attachment = matches.value_of(arg::ATTACHMENT);
-                    let mime_format = MimeFormat::new(sender, receiver, message, attachment, now)?;
+                    let mime_format =
+                        MimeFormat::new(sender, receiver, message, attachment, now, None)?;
                     let email = Email::new(sender, receiver, message, &mime_format)?;
                     emails.push(email);
                 }
@@ -61,7 +62,7 @@ impl<'a> BulkEmail<'a> {
 
             let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
             let attachment = matches.value_of(arg::ATTACHMENT);
-            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
+            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now, None)?;
             let email = Email::new(sender, receiver, &message, &mime_format)?;
 
             emails.push(email);
