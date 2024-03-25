@@ -1,27 +1,27 @@
-use std::env;
-
 use assert_cmd::Command;
 use predicates::str;
+use std::env;
 
 #[test]
-fn test_send_dry() {
+fn test_send_message_file_smtp_dry() {
     println!("Execute 'pigeon send'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
     cmd.args([
         "send",
         "albert@einstein.com",
-        "receiver@gmail.com",
-        "--subject",
-        "Test subject",
-        "--content",
-        "This is a test email.",
+        "marie@curie.com",
+        "--message-file",
+        "./test_data/message.yaml",
         "--dry-run",
+        "--display",
+        "--assume-yes",
+        "--archive",
     ]);
     cmd.assert().success().stdout(str::contains("abc"));
 }
 
 #[test]
-fn test_send_subject_content_smtp_dry() {
+fn test_send_aws_api_dry() {
     println!("Execute 'pigeon send'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
     cmd.args([
@@ -36,6 +36,8 @@ fn test_send_subject_content_smtp_dry() {
         "--display",
         "--assume-yes",
         "--archive",
+        "--connection",
+        "aws",
     ]);
     cmd.assert().success().stdout(str::contains("abc"));
 }
@@ -51,24 +53,6 @@ fn test_send_subject_content_smtp() {
         "Test Subject",
         "--content",
         "This is a test message (plaintext).",
-        "--display",
-        "--assume-yes",
-        "--archive",
-    ]);
-    cmd.assert().success().stdout(str::contains("abc"));
-}
-
-#[test]
-fn test_send_message_file_smtp_dry() {
-    println!("Execute 'pigeon send'");
-    let mut cmd = Command::cargo_bin("pigeon").unwrap();
-    cmd.args([
-        "send",
-        "albert@einstein.com",
-        "marie@curie.com",
-        "--message-file",
-        "./test_data/message.yaml",
-        "--dry-run",
         "--display",
         "--assume-yes",
         "--archive",
@@ -318,29 +302,6 @@ fn test_attachment_pdf_aws_api() {
         "--archive",
         "--attachment",
         "./test_data/test.pdf",
-    ]);
-    cmd.assert().success().stdout(str::contains("abc"));
-}
-
-#[test]
-#[ignore]
-fn test_send_aws_api_dry() {
-    println!("Execute 'pigeon send'");
-    let mut cmd = Command::cargo_bin("pigeon").unwrap();
-    cmd.args([
-        "send",
-        "albert@einstein.com",
-        "marie@curie.com",
-        "--subject",
-        "Test Subject",
-        "--content",
-        "This is a test message (plaintext).",
-        "--dry-run",
-        "--display",
-        "--assume-yes",
-        "--archive",
-        "--connection",
-        "aws",
     ]);
     cmd.assert().success().stdout(str::contains("abc"));
 }

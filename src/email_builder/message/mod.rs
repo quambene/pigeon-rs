@@ -15,6 +15,17 @@ pub struct Message {
 }
 
 impl Message {
+    pub fn new<S>(subject: S, text: Option<S>, html: Option<S>) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            subject: subject.into(),
+            text: text.map(|text| text.into()),
+            html: html.map(|text| text.into()),
+        }
+    }
+
     pub fn build(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         let message = if matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT) {
             Message::from_cmd(matches)?
@@ -109,17 +120,6 @@ impl Message {
             }
         } else {
             Err(anyhow!("Missing argument '{}'", arg::SUBJECT))
-        }
-    }
-
-    fn new<S>(subject: S, text: Option<S>, html: Option<S>) -> Self
-    where
-        S: Into<String>,
-    {
-        Self {
-            subject: subject.into(),
-            text: text.map(|text| text.into()),
-            html: html.map(|text| text.into()),
         }
     }
 }

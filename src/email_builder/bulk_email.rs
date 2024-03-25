@@ -8,7 +8,7 @@ use crate::{
 use anyhow::{Context, Result};
 use clap::{ArgMatches, Values};
 use polars::prelude::DataFrame;
-use std::io;
+use std::{io, time::SystemTime};
 
 #[derive(Debug)]
 pub struct BulkEmail<'a> {
@@ -23,6 +23,7 @@ impl<'a> BulkEmail<'a> {
         df_receiver: &'a DataFrame,
         message: &'a Message,
     ) -> Result<Self, anyhow::Error> {
+        let now = SystemTime::now();
         let mut emails: Vec<Email> = vec![];
         let receiver_column_name = Receiver::column_name(matches)?;
         let receivers = TabularData::column(receiver_column_name, df_receiver)?;
@@ -30,7 +31,8 @@ impl<'a> BulkEmail<'a> {
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
-                    let mime_format = MimeFormat::new(matches, sender, receiver, message)?;
+                    let attachment = matches.value_of(arg::ATTACHMENT);
+                    let mime_format = MimeFormat::new(sender, receiver, message, attachment, now)?;
                     let email = Email::new(sender, receiver, message, &mime_format)?;
                     emails.push(email);
                 }
@@ -48,6 +50,7 @@ impl<'a> BulkEmail<'a> {
         default_message: &Message,
         personalized_columns: Values,
     ) -> Result<Self, anyhow::Error> {
+        let now = SystemTime::now();
         let mut emails: Vec<Email> = vec![];
         let columns: Vec<&str> = personalized_columns.collect();
         let receiver_column_name = Receiver::column_name(matches)?;
@@ -57,7 +60,8 @@ impl<'a> BulkEmail<'a> {
             message.personalize(i, df_receiver, &columns)?;
 
             let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
-            let mime_format = MimeFormat::new(matches, sender, receiver, &message)?;
+            let attachment = matches.value_of(arg::ATTACHMENT);
+            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
             let email = Email::new(sender, receiver, &message, &mime_format)?;
 
             emails.push(email);
