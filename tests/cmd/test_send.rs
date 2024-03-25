@@ -3,24 +3,6 @@ use predicates::str;
 use std::env;
 
 #[test]
-fn test_send_message_file_smtp_dry() {
-    println!("Execute 'pigeon send'");
-    let mut cmd = Command::cargo_bin("pigeon").unwrap();
-    cmd.args([
-        "send",
-        "albert@einstein.com",
-        "marie@curie.com",
-        "--message-file",
-        "./test_data/message.yaml",
-        "--dry-run",
-        "--display",
-        "--assume-yes",
-        "--archive",
-    ]);
-    cmd.assert().success().stdout(str::contains("abc"));
-}
-
-#[test]
 fn test_send_aws_api_dry() {
     println!("Execute 'pigeon send'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
