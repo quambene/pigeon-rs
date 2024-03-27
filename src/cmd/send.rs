@@ -17,7 +17,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let now = SystemTime::now();
     let sender = Sender::init(matches)?;
     let receiver = Receiver::init(matches)?;
-    let message = Message::build(matches)?;
+    let message = Message::from_args(matches)?;
     let attachment = matches
         .value_of(arg::ATTACHMENT)
         .map(|attachment| Path::new(attachment));

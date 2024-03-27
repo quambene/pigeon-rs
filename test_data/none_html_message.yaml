@@ -1,7 +1,0 @@
-# Specify the subject, plaintext and html version of your email.
-# Personalize message by wrapping variables in curly brackets, eg. {first_name}.
-
-# The subject of your email
-subject: "Test subject"
-# The plaintext version
-text: ""
