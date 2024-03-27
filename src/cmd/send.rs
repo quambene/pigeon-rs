@@ -7,7 +7,7 @@ use crate::{
 };
 use anyhow::Result;
 use clap::ArgMatches;
-use std::time::SystemTime;
+use std::{path::Path, time::SystemTime};
 
 pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
@@ -18,8 +18,10 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let sender = Sender::init(matches)?;
     let receiver = Receiver::init(matches)?;
     let message = Message::build(matches)?;
-    let attachment = matches.value_of(arg::ATTACHMENT);
-    let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now, None)?;
+    let attachment = matches
+        .value_of(arg::ATTACHMENT)
+        .map(|attachment| Path::new(attachment));
+    let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
     let email = Email::new(sender, receiver, &message, &mime_format)?;
 
     if matches.is_present(arg::DISPLAY) {

@@ -8,7 +8,7 @@ use crate::{
 use anyhow::{Context, Result};
 use clap::{ArgMatches, Values};
 use polars::prelude::DataFrame;
-use std::{io, time::SystemTime};
+use std::{io, path::Path, time::SystemTime};
 
 #[derive(Debug)]
 pub struct BulkEmail<'a> {
@@ -31,9 +31,10 @@ impl<'a> BulkEmail<'a> {
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
-                    let attachment = matches.value_of(arg::ATTACHMENT);
-                    let mime_format =
-                        MimeFormat::new(sender, receiver, message, attachment, now, None)?;
+                    let attachment = matches
+                        .value_of(arg::ATTACHMENT)
+                        .map(|attachment| Path::new(attachment));
+                    let mime_format = MimeFormat::new(sender, receiver, message, attachment, now)?;
                     let email = Email::new(sender, receiver, message, &mime_format)?;
                     emails.push(email);
                 }
@@ -61,8 +62,10 @@ impl<'a> BulkEmail<'a> {
             message.personalize(i, df_receiver, &columns)?;
 
             let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
-            let attachment = matches.value_of(arg::ATTACHMENT);
-            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now, None)?;
+            let attachment = matches
+                .value_of(arg::ATTACHMENT)
+                .map(|attachment| Path::new(attachment));
+            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
             let email = Email::new(sender, receiver, &message, &mime_format)?;
 
             emails.push(email);
