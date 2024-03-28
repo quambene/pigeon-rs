@@ -206,7 +206,7 @@ mod tests {
         let mut expected_file = File::open("./test_data/email_singlepart_plaintext.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 
     #[test]
@@ -228,7 +228,7 @@ mod tests {
         let mut expected_file = File::open("./test_data/email_singlepart_html.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 
     #[test]
@@ -250,7 +250,7 @@ mod tests {
         let mut expected_file = File::open("./test_data/email_singlepart_attachment.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 
     #[test]
@@ -281,7 +281,7 @@ mod tests {
         let mut expected_file = File::open("./test_data/email_multipart_alternative.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 
     #[test]
@@ -312,7 +312,7 @@ mod tests {
         let mut expected_file = File::open("./test_data/email_multipart_mixed.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 
     #[test]
@@ -348,6 +348,6 @@ mod tests {
             File::open("./test_data/email_multipart_mixed_alternative.txt").unwrap();
         let mut expected_format = String::new();
         expected_file.read_to_string(&mut expected_format).unwrap();
-        assert_eq!(mime_format.replace("\r", ""), expected_format);
+        assert_eq!(mime_format.replace('\r', ""), expected_format);
     }
 }

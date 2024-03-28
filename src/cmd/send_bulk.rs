@@ -6,6 +6,7 @@ use crate::{
 use anyhow::anyhow;
 use anyhow::Result;
 use clap::ArgMatches;
+use std::path::Path;
 
 pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
@@ -13,21 +14,31 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let sender = Sender::init(matches)?;
+    let receiver_column_name = Receiver::column_name(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
     let default_message = Message::from_args(matches)?;
+    let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
     let bulk_email = if matches.is_present(arg::PERSONALIZE) {
-        match matches.values_of(arg::PERSONALIZE) {
-            Some(personalized_columns) => BulkEmail::personalize(
-                matches,
+        if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
+            BulkEmail::personalize(
                 sender,
+                receiver_column_name,
                 &df_receiver,
                 &default_message,
                 personalized_columns,
-            )?,
-            None => return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE)),
+                attachment,
+            )?
+        } else {
+            return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE));
         }
     } else {
-        BulkEmail::new(matches, sender, &df_receiver, &default_message)?
+        BulkEmail::new(
+            sender,
+            receiver_column_name,
+            &df_receiver,
+            &default_message,
+            attachment,
+        )?
     };
 
     if matches.is_present(arg::DISPLAY) {

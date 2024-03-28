@@ -165,7 +165,7 @@ mod tests {
         let matches = app.get_matches_from(args);
         let subcommand_matches = matches.subcommand_matches("send").unwrap();
 
-        let res = Message::from_args(&subcommand_matches);
+        let res = Message::from_args(subcommand_matches);
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let message = res.unwrap();
@@ -197,7 +197,7 @@ mod tests {
         let matches = app.get_matches_from(args);
         let subcommand_matches = matches.subcommand_matches("send").unwrap();
 
-        let res = Message::from_args(&subcommand_matches);
+        let res = Message::from_args(subcommand_matches);
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let message = res.unwrap();
@@ -230,7 +230,7 @@ mod tests {
         let matches = app.get_matches_from(args);
         let subcommand_matches = matches.subcommand_matches("send").unwrap();
 
-        let res = Message::from_args(&subcommand_matches);
+        let res = Message::from_args(subcommand_matches);
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let message = res.unwrap();
@@ -258,7 +258,7 @@ mod tests {
         let matches = app.get_matches_from(args);
         let subcommand_matches = matches.subcommand_matches("send").unwrap();
 
-        let res = Message::from_args(&subcommand_matches);
+        let res = Message::from_args(subcommand_matches);
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let message = res.unwrap();
@@ -286,7 +286,7 @@ mod tests {
         let matches = app.get_matches_from(args);
         let subcommand_matches = matches.subcommand_matches("send").unwrap();
 
-        let res = Message::from_args(&subcommand_matches);
+        let res = Message::from_args(subcommand_matches);
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let message = res.unwrap();

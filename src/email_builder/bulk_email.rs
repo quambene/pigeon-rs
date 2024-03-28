@@ -1,7 +1,7 @@
 use crate::{
     arg,
     data_loader::TabularData,
-    email_builder::{Confirmed, Email, Message, MimeFormat, Receiver},
+    email_builder::{Confirmed, Email, Message, MimeFormat},
     email_formatter::EmlFormatter,
     email_transmission::Client,
 };
@@ -17,23 +17,19 @@ pub struct BulkEmail<'a> {
 
 impl<'a> BulkEmail<'a> {
     pub fn new(
-        matches: &'a ArgMatches,
         sender: &'a str,
-
+        receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         message: &'a Message,
+        attachment: Option<&Path>,
     ) -> Result<Self, anyhow::Error> {
         let now = SystemTime::now();
         let mut emails: Vec<Email> = vec![];
-        let receiver_column_name = Receiver::column_name(matches)?;
         let receivers = TabularData::column(receiver_column_name, df_receiver)?;
 
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
-                    let attachment = matches
-                        .value_of(arg::ATTACHMENT)
-                        .map(|attachment| Path::new(attachment));
                     let mime_format = MimeFormat::new(sender, receiver, message, attachment, now)?;
                     let email = Email::new(sender, receiver, message, &mime_format)?;
                     emails.push(email);
@@ -46,25 +42,22 @@ impl<'a> BulkEmail<'a> {
     }
 
     pub fn personalize(
-        matches: &ArgMatches,
         sender: &'a str,
+        receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         default_message: &Message,
         personalized_columns: Values,
+        attachment: Option<&Path>,
     ) -> Result<Self, anyhow::Error> {
         let now = SystemTime::now();
         let mut emails: Vec<Email> = vec![];
         let columns: Vec<&str> = personalized_columns.collect();
-        let receiver_column_name = Receiver::column_name(matches)?;
 
         for i in 0..df_receiver.height() {
             let mut message = default_message.clone();
             message.personalize(i, df_receiver, &columns)?;
 
             let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
-            let attachment = matches
-                .value_of(arg::ATTACHMENT)
-                .map(|attachment| Path::new(attachment));
             let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
             let email = Email::new(sender, receiver, &message, &mime_format)?;
 

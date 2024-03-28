@@ -18,9 +18,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let sender = Sender::init(matches)?;
     let receiver = Receiver::init(matches)?;
     let message = Message::from_args(matches)?;
-    let attachment = matches
-        .value_of(arg::ATTACHMENT)
-        .map(|attachment| Path::new(attachment));
+    let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
     let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
     let email = Email::new(sender, receiver, &message, &mime_format)?;
 
