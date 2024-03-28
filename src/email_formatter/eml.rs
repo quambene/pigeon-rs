@@ -13,7 +13,7 @@ pub struct EmlFormatter<'a> {
 }
 
 impl<'a> EmlFormatter<'a> {
-    pub fn new(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
+    pub fn from_args(matches: &'a ArgMatches<'a>) -> Result<Self, anyhow::Error> {
         let target_dir = match matches.value_of(arg::ARCHIVE_DIR) {
             Some(archive_dir) => Path::new(archive_dir),
             None => return Err(anyhow!("Missing value for argument '{}'", arg::ARCHIVE_DIR)),
@@ -32,21 +32,19 @@ impl<'a> EmlFormatter<'a> {
         Ok(formatter)
     }
 
-    pub fn archive(&self, matches: &ArgMatches, email: &Email) -> Result<(), anyhow::Error> {
-        if matches.is_present(arg::ARCHIVE) {
-            let message_id = self
-                .transport
-                .send(&email.mime_format.message)
-                .context("Can't save email in .eml format")?;
+    pub fn archive(&self, email: &Email, dry_run: bool) -> Result<(), anyhow::Error> {
+        let message_id = self
+            .transport
+            .send(&email.mime_format.message)
+            .context("Can't save email in .eml format")?;
 
-            let old_path = old_path(message_id.as_str(), self.target_dir);
-            let new_path = new_path(matches, message_id.as_str(), self.target_dir);
+        let old_path = old_path(message_id.as_str(), self.target_dir);
+        let new_path = new_path(message_id.as_str(), self.target_dir, dry_run);
 
-            println!("Archiving '{}' ...", new_path.display());
+        println!("Archiving '{}' ...", new_path.display());
 
-            // TODO: renaming file is required because of issue/discussion https://github.com/lettre/lettre/discussions/711
-            fs::rename(old_path, new_path).context("Can't rename archived email")?;
-        }
+        // TODO: renaming file is required because of issue/discussion https://github.com/lettre/lettre/discussions/711
+        fs::rename(old_path, new_path).context("Can't rename archived email")?;
 
         Ok(())
     }
@@ -57,12 +55,12 @@ fn old_path(message_id: &str, target_dir: &Path) -> PathBuf {
     target_dir.join(old_file_name)
 }
 
-fn new_path(matches: &ArgMatches, message_id: &str, target_dir: &Path) -> PathBuf {
+fn new_path(message_id: &str, target_dir: &Path, dry_run: bool) -> PathBuf {
     let now = std::time::SystemTime::now();
     let now_utc: chrono::DateTime<chrono::Utc> = now.into();
     let timestamp = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
 
-    let new_file_name = if matches.is_present(arg::DRY_RUN) {
+    let new_file_name = if dry_run {
         format!("{}_{}_dry-run.eml", timestamp, message_id)
     } else {
         format!("{}_{}.eml", timestamp, message_id)

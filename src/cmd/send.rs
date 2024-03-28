@@ -14,6 +14,8 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
+    let dry_run = matches.is_present(arg::DRY_RUN);
+    let is_archived = matches.is_present(arg::ARCHIVE);
     let now = SystemTime::now();
     let sender = Sender::from_args(matches)?;
     let receiver = Receiver::from_args(matches)?;
@@ -26,26 +28,32 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("Display email: {:#?}", email);
     }
 
-    if matches.is_present(arg::DRY_RUN) {
+    if dry_run {
         println!("Dry run: {}", format_green("activated"));
     }
 
-    let client = Client::init(matches)?;
-    let eml_formatter = EmlFormatter::new(matches)?;
+    let client = Client::from_args(matches)?;
+    let eml_formatter = EmlFormatter::from_args(matches)?;
 
     println!("Sending email to 1 recipient ...");
 
     if matches.is_present(arg::ASSUME_YES) {
-        let sent_email = client.send(matches, &email)?;
+        let sent_email = client.send(&email)?;
         sent_email.display_status();
-        eml_formatter.archive(matches, &email)?;
+
+        if is_archived {
+            eml_formatter.archive(&email, dry_run)?;
+        }
     } else {
         let confirmation = confirm_email(&email)?;
         match confirmation {
             Confirmed::Yes => {
-                let sent_email = client.send(matches, &email)?;
+                let sent_email = client.send(&email)?;
                 sent_email.display_status();
-                eml_formatter.archive(matches, &email)?;
+
+                if is_archived {
+                    eml_formatter.archive(&email, dry_run)?;
+                }
             }
             Confirmed::No => (),
         }

@@ -15,6 +15,8 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
+    let dry_run = matches.is_present(arg::DRY_RUN);
+    let is_archived = matches.is_present(arg::ARCHIVE);
     let sender = Sender::from_args(matches)?;
     let receiver_column_name = Receiver::column_name(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
@@ -42,22 +44,36 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
             attachment,
         )?
     };
+    let client = Client::from_args(matches)?;
+    let eml_formatter = EmlFormatter::from_args(matches)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);
     }
 
-    if matches.is_present(arg::DRY_RUN) {
+    if dry_run {
         println!("Dry run: {}", format_green("activated"));
     }
 
     if matches.is_present(arg::ASSUME_YES) {
-        process_emails(&bulk_email.emails, matches)?;
+        process_emails(
+            &client,
+            &eml_formatter,
+            &bulk_email.emails,
+            dry_run,
+            is_archived,
+        )?;
     } else {
         let confirmation = confirm_emails(&bulk_email.emails)?;
         match confirmation {
             Confirmed::Yes => {
-                process_emails(&bulk_email.emails, matches)?;
+                process_emails(
+                    &client,
+                    &eml_formatter,
+                    &bulk_email.emails,
+                    dry_run,
+                    is_archived,
+                )?;
             }
             Confirmed::No => (),
         }
@@ -66,19 +82,25 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     Ok(())
 }
 
-pub fn process_emails(emails: &[Email], matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    let client = Client::init(matches)?;
-    let eml_formatter = EmlFormatter::new(matches)?;
-
+pub fn process_emails<'a>(
+    client: &Client<'a>,
+    eml_formatter: &EmlFormatter,
+    emails: &'a [Email],
+    dry_run: bool,
+    is_archived: bool,
+) -> Result<(), anyhow::Error> {
     println!("Sending email to {} receivers ...", emails.len());
 
     for email in emails {
-        let sent_email = client.send(matches, email)?;
+        let sent_email = client.send(email)?;
         sent_email.display_status();
-        eml_formatter.archive(matches, email)?;
+
+        if is_archived {
+            eml_formatter.archive(email, dry_run)?;
+        }
     }
 
-    if matches.is_present(arg::DRY_RUN) {
+    if dry_run {
         println!("All emails sent (dry run).");
     } else {
         println!("All emails sent.");

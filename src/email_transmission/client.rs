@@ -1,17 +1,18 @@
-use super::{MockClient, SendEmail, SmtpClient};
+use super::{MockClient, SendEmail, SentEmail, SmtpClient};
 use crate::{
     arg::{self, val},
+    email_builder::Email,
     email_provider::AwsSesClient,
 };
 use anyhow::anyhow;
 use clap::ArgMatches;
 
-pub struct Client;
+pub struct Client<'a>(pub Box<dyn SendEmail<'a>>);
 
-impl Client {
-    pub fn init<'a>(matches: &ArgMatches) -> Result<Box<dyn SendEmail<'a>>, anyhow::Error> {
+impl<'a> Client<'a> {
+    pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         if matches.is_present(arg::DRY_RUN) {
-            return Ok(Box::new(MockClient));
+            return Ok(Client(Box::new(MockClient)));
         }
 
         if matches.is_present(arg::CONNECTION) {
@@ -19,11 +20,11 @@ impl Client {
                 Some(connection) => match connection.to_lowercase().as_str() {
                     val::SMTP => {
                         let client = SmtpClient::new()?;
-                        Ok(Box::new(client))
+                        Ok(Client(Box::new(client)))
                     }
                     val::AWS => {
                         let client = AwsSesClient::new(matches)?;
-                        Ok(Box::new(client))
+                        Ok(Client(Box::new(client)))
                     }
                     other => Err(anyhow!(format!(
                         "Value '{}' for argument '{}' not supported",
@@ -39,5 +40,9 @@ impl Client {
         } else {
             Err(anyhow!(format!("Missing argument '{}'", arg::CONNECTION)))
         }
+    }
+
+    pub fn send(&self, email: &'a Email<'a>) -> Result<SentEmail<'a>, anyhow::Error> {
+        self.0.send(email)
     }
 }
