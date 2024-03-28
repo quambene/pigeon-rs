@@ -1,15 +1,12 @@
 use super::{Receiver, Sender};
 use crate::{
-    arg,
     data_loader::TabularData,
-    email_builder::{Confirmed, Email, Message, MimeFormat},
-    email_formatter::EmlFormatter,
-    email_transmission::Client,
+    email_builder::{Email, Message, MimeFormat},
 };
-use anyhow::{Context, Result};
-use clap::{ArgMatches, Values};
+use anyhow::Result;
+use clap::Values;
 use polars::prelude::DataFrame;
-use std::{io, path::Path, time::SystemTime};
+use std::{path::Path, time::SystemTime};
 
 #[derive(Debug)]
 pub struct BulkEmail<'a> {
@@ -68,64 +65,5 @@ impl<'a> BulkEmail<'a> {
         }
 
         Ok(BulkEmail { emails })
-    }
-
-    pub fn process(&self, matches: &ArgMatches) -> Result<(), anyhow::Error> {
-        let client = Client::init(matches)?;
-        let eml_formatter = EmlFormatter::new(matches)?;
-
-        println!("Sending email to {} receivers ...", self.emails.len());
-
-        for email in &self.emails {
-            let sent_email = client.send(matches, email)?;
-            sent_email.display_status();
-            eml_formatter.archive(matches, email)?;
-        }
-
-        if matches.is_present(arg::DRY_RUN) {
-            println!("All emails sent (dry run).");
-        } else {
-            println!("All emails sent.");
-        }
-
-        Ok(())
-    }
-
-    pub fn confirm(&self) -> Result<Confirmed, anyhow::Error> {
-        let mut input = String::new();
-        let email_count = self.emails.len();
-        let receivers = self
-            .emails
-            .iter()
-            .map(|email| email.receiver.as_str())
-            .collect::<Vec<_>>();
-        println!(
-            "Preparing to send an email to {} recipients: {:#?}",
-            email_count, receivers
-        );
-
-        println!(
-            "Should an email be sent to {} recipients? Yes (y) or no (n)",
-            email_count
-        );
-        let confirmation = loop {
-            io::stdin()
-                .read_line(&mut input)
-                .context("Can't read input")?;
-            match input.trim() {
-                "y" | "yes" | "Yes" => {
-                    break Confirmed::Yes;
-                }
-                "n" | "no" | "No" => {
-                    println!("Aborted ...");
-                    break Confirmed::No;
-                }
-                _ => {
-                    println!("Choose yes (y) or no (n). Try again.");
-                    continue;
-                }
-            }
-        };
-        Ok(confirmation)
     }
 }

@@ -5,9 +5,9 @@ use crate::{
     email_transmission::Client,
     helper::format_green,
 };
-use anyhow::Result;
+use anyhow::Context;
 use clap::ArgMatches;
-use std::{path::Path, time::SystemTime};
+use std::{io, path::Path, time::SystemTime};
 
 pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
@@ -40,7 +40,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         sent_email.display_status();
         eml_formatter.archive(matches, &email)?;
     } else {
-        let confirmation = email.confirm(matches)?;
+        let confirmation = confirm_email(&email)?;
         match confirmation {
             Confirmed::Yes => {
                 let sent_email = client.send(matches, &email)?;
@@ -58,4 +58,34 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     Ok(())
+}
+
+pub fn confirm_email(email: &Email) -> Result<Confirmed, anyhow::Error> {
+    let mut input = String::new();
+
+    println!(
+        "Preparing to send an email to 1 recipient: {}",
+        email.receiver.0
+    );
+
+    println!("Should an email be sent to 1 recipient? Yes (y) or no (n)");
+    let confirmation = loop {
+        io::stdin()
+            .read_line(&mut input)
+            .context("Can't read input")?;
+        match input.trim() {
+            "y" | "yes" | "Yes" => {
+                break Confirmed::Yes;
+            }
+            "n" | "no" | "No" => {
+                println!("Aborted ...");
+                break Confirmed::No;
+            }
+            _ => {
+                println!("Choose yes (y) or no (n). Try again.");
+                continue;
+            }
+        }
+    };
+    Ok(confirmation)
 }
