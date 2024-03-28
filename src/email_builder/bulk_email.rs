@@ -1,3 +1,4 @@
+use super::Sender;
 use crate::{
     arg,
     data_loader::TabularData,
@@ -17,7 +18,7 @@ pub struct BulkEmail<'a> {
 
 impl<'a> BulkEmail<'a> {
     pub fn new(
-        sender: &'a str,
+        sender: &'a Sender,
         receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         message: &'a Message,
@@ -30,8 +31,8 @@ impl<'a> BulkEmail<'a> {
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
-                    let mime_format = MimeFormat::new(sender, receiver, message, attachment, now)?;
-                    let email = Email::new(sender, receiver, message, &mime_format)?;
+                    let mime_format = MimeFormat::new(&sender, receiver, message, attachment, now)?;
+                    let email = Email::new(&sender, receiver, message, &mime_format)?;
                     emails.push(email);
                 }
                 None => continue,
@@ -42,7 +43,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     pub fn personalize(
-        sender: &'a str,
+        sender: &'a Sender,
         receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         default_message: &Message,

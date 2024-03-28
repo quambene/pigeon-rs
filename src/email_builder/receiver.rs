@@ -3,6 +3,7 @@ use anyhow::anyhow;
 use clap::ArgMatches;
 use polars::prelude::DataFrame;
 
+#[derive(Debug)]
 pub struct Receiver;
 
 impl Receiver {

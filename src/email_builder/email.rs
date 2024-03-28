@@ -1,3 +1,4 @@
+use super::Sender;
 use crate::{
     arg,
     email_builder::{Confirmed, Message, MimeFormat},
@@ -8,7 +9,7 @@ use std::io;
 
 #[derive(Debug)]
 pub struct Email<'a> {
-    pub sender: &'a str,
+    pub sender: &'a Sender<'a>,
     pub receiver: &'a str,
     pub message: Message,
     pub mime_format: MimeFormat,
@@ -16,7 +17,7 @@ pub struct Email<'a> {
 
 impl<'a> Email<'a> {
     pub fn new(
-        sender: &'a str,
+        sender: &'a Sender,
         receiver: &'a str,
         message: &Message,
         mime_format: &MimeFormat,

@@ -1,9 +1,9 @@
 use super::Status;
-use crate::email_builder::{Email, Message};
+use crate::email_builder::{Email, Message, Sender};
 
 #[derive(Debug)]
 pub struct SentEmail<'a> {
-    pub sender: &'a str,
+    pub sender: &'a Sender<'a>,
     pub receiver: &'a str,
     pub message: &'a Message,
     pub status: Status,

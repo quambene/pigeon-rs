@@ -2,13 +2,14 @@ use crate::arg;
 use anyhow::anyhow;
 use clap::ArgMatches;
 
-pub struct Sender;
+#[derive(Debug)]
+pub struct Sender<'a>(pub &'a str);
 
-impl Sender {
-    pub fn init<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
+impl<'a> Sender<'a> {
+    pub fn init(matches: &'a ArgMatches) -> Result<Sender<'a>, anyhow::Error> {
         if matches.is_present(arg::SENDER) {
             match matches.value_of(arg::SENDER) {
-                Some(sender) => Ok(sender),
+                Some(sender) => Ok(Sender(sender)),
                 None => Err(anyhow!("Missing value for argument '{}'", arg::SENDER)),
             }
         } else {
