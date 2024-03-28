@@ -3,14 +3,18 @@ use anyhow::anyhow;
 use clap::ArgMatches;
 use polars::prelude::DataFrame;
 
-#[derive(Debug)]
-pub struct Receiver;
+#[derive(Debug, Clone, Copy)]
+pub struct Receiver<'a>(pub &'a str);
 
-impl Receiver {
-    pub fn init<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
+impl<'a> Receiver<'a> {
+    pub fn as_str(&self) -> &str {
+        self.0
+    }
+
+    pub fn from_args(matches: &'a ArgMatches) -> Result<Self, anyhow::Error> {
         if matches.is_present(arg::RECEIVER) {
             match matches.value_of(arg::RECEIVER) {
-                Some(receiver) => Ok(receiver),
+                Some(receiver) => Ok(Self(receiver)),
                 None => Err(anyhow!("Missing value for argument '{}'", arg::RECEIVER)),
             }
         } else {
@@ -42,7 +46,7 @@ impl Receiver {
         }
     }
 
-    pub fn column_name<'a>(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
+    pub fn column_name(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
         // If argument 'RECEIVER_COLUMN' is not present the default value 'email' will be used as column name
         match matches.value_of(arg::RECEIVER_COLUMN) {
             Some(column_name) => Ok(column_name),
@@ -53,7 +57,7 @@ impl Receiver {
         }
     }
 
-    pub fn file_name<'a>(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
+    pub fn file_name(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
         match matches.value_of(arg::RECEIVER_FILE) {
             Some(file_name) => Ok(file_name),
             None => Err(anyhow!(
@@ -63,7 +67,7 @@ impl Receiver {
         }
     }
 
-    pub fn query<'a>(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
+    pub fn query(matches: &'a ArgMatches<'a>) -> Result<&str, anyhow::Error> {
         match matches.value_of(arg::RECEIVER_QUERY) {
             Some(query) => Ok(query),
             None => Err(anyhow!(

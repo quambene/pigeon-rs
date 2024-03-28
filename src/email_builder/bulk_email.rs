@@ -1,4 +1,4 @@
-use super::Sender;
+use super::{Receiver, Sender};
 use crate::{
     arg,
     data_loader::TabularData,
@@ -18,7 +18,7 @@ pub struct BulkEmail<'a> {
 
 impl<'a> BulkEmail<'a> {
     pub fn new(
-        sender: &'a Sender,
+        sender: Sender<'a>,
         receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         message: &'a Message,
@@ -31,8 +31,9 @@ impl<'a> BulkEmail<'a> {
         for receiver in receivers {
             match receiver {
                 Some(receiver) => {
-                    let mime_format = MimeFormat::new(&sender, receiver, message, attachment, now)?;
-                    let email = Email::new(&sender, receiver, message, &mime_format)?;
+                    let mime_format =
+                        MimeFormat::new(sender, Receiver(receiver), message, attachment, now)?;
+                    let email = Email::new(sender, Receiver(receiver), message, &mime_format)?;
                     emails.push(email);
                 }
                 None => continue,
@@ -43,7 +44,7 @@ impl<'a> BulkEmail<'a> {
     }
 
     pub fn personalize(
-        sender: &'a Sender,
+        sender: Sender<'a>,
         receiver_column_name: &str,
         df_receiver: &'a DataFrame,
         default_message: &Message,
@@ -59,8 +60,9 @@ impl<'a> BulkEmail<'a> {
             message.personalize(i, df_receiver, &columns)?;
 
             let receiver = TabularData::row(i, receiver_column_name, df_receiver)?;
-            let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
-            let email = Email::new(sender, receiver, &message, &mime_format)?;
+            let mime_format =
+                MimeFormat::new(sender, Receiver(receiver), &message, attachment, now)?;
+            let email = Email::new(sender, Receiver(receiver), &message, &mime_format)?;
 
             emails.push(email);
         }
@@ -92,11 +94,11 @@ impl<'a> BulkEmail<'a> {
     pub fn confirm(&self) -> Result<Confirmed, anyhow::Error> {
         let mut input = String::new();
         let email_count = self.emails.len();
-        let receivers: Vec<String> = self
+        let receivers = self
             .emails
             .iter()
-            .map(|email| email.receiver.to_string())
-            .collect();
+            .map(|email| email.receiver.as_str())
+            .collect::<Vec<_>>();
         println!(
             "Preparing to send an email to {} recipients: {:#?}",
             email_count, receivers

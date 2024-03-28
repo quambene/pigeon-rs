@@ -15,12 +15,12 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let now = SystemTime::now();
-    let sender = Sender::init(matches)?;
-    let receiver = Receiver::init(matches)?;
+    let sender = Sender::from_args(matches)?;
+    let receiver = Receiver::from_args(matches)?;
     let message = Message::from_args(matches)?;
     let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
-    let mime_format = MimeFormat::new(&sender, receiver, &message, attachment, now)?;
-    let email = Email::new(&sender, receiver, &message, &mime_format)?;
+    let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
+    let email = Email::new(sender, receiver, &message, &mime_format)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display email: {:#?}", email);

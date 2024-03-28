@@ -1,4 +1,4 @@
-use super::Sender;
+use super::{Receiver, Sender};
 use crate::email_builder;
 use anyhow::{anyhow, Context};
 use lettre::{
@@ -14,14 +14,14 @@ pub struct MimeFormat {
 
 impl MimeFormat {
     pub fn new(
-        sender: &Sender,
-        receiver: &str,
+        sender: Sender,
+        receiver: Receiver,
         message: &email_builder::Message,
         attachment: Option<&Path>,
         now: SystemTime,
     ) -> Result<Self, anyhow::Error> {
         let sender = sender.0.parse().context("Can't parse sender")?;
-        let receiver = receiver.parse().context("Can't parse receiver")?;
+        let receiver = receiver.0.parse().context("Can't parse receiver")?;
         let message_builder = LettreMessage::builder()
             .from(sender)
             .to(receiver)
@@ -195,12 +195,12 @@ mod tests {
             .timestamp() as u64;
         let system_time = UNIX_EPOCH + std::time::Duration::from_secs(date_time);
         let sender = Sender("albert@einstein.com");
-        let receiver = "marie@curie.com";
+        let receiver = Receiver("marie@curie.com");
         let subject = "Test Subject";
         let text = "This is a test message (plaintext).";
         let message = Message::new(subject, Some(text), None);
 
-        let res = MimeFormat::new(&sender, receiver, &message, None, system_time);
+        let res = MimeFormat::new(sender, receiver, &message, None, system_time);
         assert!(res.is_ok());
 
         let mime_format = format!("{:?}", res.unwrap());
@@ -217,12 +217,12 @@ mod tests {
             .timestamp() as u64;
         let system_time = UNIX_EPOCH + std::time::Duration::from_secs(date_time);
         let sender = Sender("albert@einstein.com");
-        let receiver = "marie@curie.com";
+        let receiver = Receiver("marie@curie.com");
         let subject = "Test Subject";
         let html = "<p>This is a test message (html).</p>";
         let message = Message::new(subject, None, Some(html));
 
-        let res = MimeFormat::new(&sender, receiver, &message, None, system_time);
+        let res = MimeFormat::new(sender, receiver, &message, None, system_time);
         assert!(res.is_ok());
 
         let mime_format = format!("{:?}", res.unwrap());
@@ -239,12 +239,12 @@ mod tests {
             .timestamp() as u64;
         let system_time = UNIX_EPOCH + std::time::Duration::from_secs(date_time);
         let sender = Sender("albert@einstein.com");
-        let receiver = "marie@curie.com";
+        let receiver = Receiver("marie@curie.com");
         let subject = "Test Subject";
         let message = Message::new(subject, None, None);
         let attachment = Path::new("./test_data/test.txt");
 
-        let res = MimeFormat::new(&sender, receiver, &message, Some(attachment), system_time);
+        let res = MimeFormat::new(sender, receiver, &message, Some(attachment), system_time);
         assert!(res.is_ok());
 
         let mime_format = format!("{:?}", res.unwrap());

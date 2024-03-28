@@ -13,7 +13,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
-    let sender = Sender::init(matches)?;
+    let sender = Sender::from_args(matches)?;
     let receiver_column_name = Receiver::column_name(matches)?;
     let df_receiver = Receiver::dataframe(matches)?;
     let default_message = Message::from_args(matches)?;
@@ -21,7 +21,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let bulk_email = if matches.is_present(arg::PERSONALIZE) {
         if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
             BulkEmail::personalize(
-                &sender,
+                sender,
                 receiver_column_name,
                 &df_receiver,
                 &default_message,
@@ -33,7 +33,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         }
     } else {
         BulkEmail::new(
-            &sender,
+            sender,
             receiver_column_name,
             &df_receiver,
             &default_message,
