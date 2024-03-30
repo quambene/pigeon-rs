@@ -6,6 +6,7 @@ use crate::{
     helper::format_green,
 };
 use anyhow::Context;
+use chrono::Utc;
 use clap::ArgMatches;
 use std::{io, path::Path, time::SystemTime};
 
@@ -32,6 +33,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
+    let now = Utc::now();
     let client = Client::from_args(matches)?;
     let eml_formatter = EmlFormatter::from_args(matches)?;
 
@@ -42,7 +44,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         sent_email.display_status();
 
         if is_archived {
-            eml_formatter.archive(&email, dry_run)?;
+            eml_formatter.archive(&email, now, dry_run)?;
         }
     } else {
         let confirmation = confirm_email(&email)?;
@@ -52,7 +54,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 sent_email.display_status();
 
                 if is_archived {
-                    eml_formatter.archive(&email, dry_run)?;
+                    eml_formatter.archive(&email, now, dry_run)?;
                 }
             }
             Confirmed::No => (),

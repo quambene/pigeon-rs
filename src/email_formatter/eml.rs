@@ -1,5 +1,6 @@
 use crate::{arg, email_builder::Email};
 use anyhow::{anyhow, Context};
+use chrono::{DateTime, Utc};
 use clap::ArgMatches;
 use lettre::{FileTransport, Transport};
 use std::{
@@ -32,14 +33,19 @@ impl<'a> EmlFormatter<'a> {
         Ok(formatter)
     }
 
-    pub fn archive(&self, email: &Email, dry_run: bool) -> Result<(), anyhow::Error> {
+    pub fn archive(
+        &self,
+        email: &Email,
+        now: DateTime<Utc>,
+        dry_run: bool,
+    ) -> Result<(), anyhow::Error> {
         let message_id = self
             .transport
             .send(&email.mime_format.message)
             .context("Can't save email in .eml format")?;
 
         let old_path = old_path(message_id.as_str(), self.target_dir);
-        let new_path = new_path(message_id.as_str(), self.target_dir, dry_run);
+        let new_path = new_path(message_id.as_str(), self.target_dir, dry_run, now);
 
         println!("Archiving '{}' ...", new_path.display());
 
@@ -55,10 +61,8 @@ fn old_path(message_id: &str, target_dir: &Path) -> PathBuf {
     target_dir.join(old_file_name)
 }
 
-fn new_path(message_id: &str, target_dir: &Path, dry_run: bool) -> PathBuf {
-    let now = std::time::SystemTime::now();
-    let now_utc: chrono::DateTime<chrono::Utc> = now.into();
-    let timestamp = now_utc.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+fn new_path(message_id: &str, target_dir: &Path, dry_run: bool, now: DateTime<Utc>) -> PathBuf {
+    let timestamp = now.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
 
     let new_file_name = if dry_run {
         format!("{}_{}_dry-run.eml", timestamp, message_id)

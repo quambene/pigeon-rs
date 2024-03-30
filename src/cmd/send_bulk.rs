@@ -6,6 +6,7 @@ use crate::{
     helper::format_green,
 };
 use anyhow::{anyhow, Context, Result};
+use chrono::Utc;
 use clap::ArgMatches;
 use std::{io, path::Path};
 
@@ -83,7 +84,8 @@ pub fn process_emails<'a>(
         sent_email.display_status();
 
         if is_archived {
-            eml_formatter.archive(email, dry_run)?;
+            let now = Utc::now();
+            eml_formatter.archive(email, now, dry_run)?;
         }
     }
 
