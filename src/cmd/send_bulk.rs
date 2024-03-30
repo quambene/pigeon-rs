@@ -1,6 +1,6 @@
 use crate::{
     arg,
-    email_builder::{BulkEmail, Confirmed, Email, Message, Receiver, Sender},
+    email_builder::{BulkEmail, BulkReceiver, Confirmed, Email, Message, Sender},
     email_formatter::EmlFormatter,
     email_transmission::Client,
     helper::format_green,
@@ -18,31 +18,19 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let dry_run = matches.is_present(arg::DRY_RUN);
     let is_archived = matches.is_present(arg::ARCHIVE);
     let sender = Sender::from_args(matches)?;
-    let receiver_column_name = Receiver::column_name(matches)?;
-    let df_receiver = Receiver::dataframe(matches)?;
-    let default_message = Message::from_args(matches)?;
+    let receivers = BulkReceiver::from_args(matches)?;
+    let message = Message::from_args(matches)?;
     let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
+
     let bulk_email = if matches.is_present(arg::PERSONALIZE) {
         if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
-            BulkEmail::personalize(
-                sender,
-                receiver_column_name,
-                &df_receiver,
-                &default_message,
-                personalized_columns,
-                attachment,
-            )?
+            let columns = personalized_columns.collect::<Vec<&str>>();
+            BulkEmail::personalize(sender, &receivers, &message, &columns, attachment)?
         } else {
             return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE));
         }
     } else {
-        BulkEmail::new(
-            sender,
-            receiver_column_name,
-            &df_receiver,
-            &default_message,
-            attachment,
-        )?
+        BulkEmail::new(sender, &receivers, &message, attachment)?
     };
     let client = Client::from_args(matches)?;
     let eml_formatter = EmlFormatter::from_args(matches)?;

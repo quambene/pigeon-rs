@@ -2,7 +2,7 @@ use crate::arg;
 use anyhow::anyhow;
 use clap::ArgMatches;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Sender<'a>(pub &'a str);
 
 impl<'a> Sender<'a> {

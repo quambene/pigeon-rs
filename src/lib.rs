@@ -1,6 +1,5 @@
 pub mod arg;
 pub mod cmd;
-mod data_loader;
 mod data_sources;
 mod email_builder;
 mod email_formatter;

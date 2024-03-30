@@ -1,7 +1,6 @@
-use crate::{arg, data_loader::TabularData};
+use crate::arg;
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
-use polars::prelude::DataFrame;
 use std::{fs, path::Path};
 
 use super::MessageTemplate;
@@ -83,21 +82,7 @@ impl Message {
         }
     }
 
-    pub fn personalize(
-        &mut self,
-        index: usize,
-        df_receiver: &DataFrame,
-        columns: &[&str],
-    ) -> Result<(), anyhow::Error> {
-        for &col_name in columns.iter() {
-            let col_value = TabularData::row(index, col_name, df_receiver)?;
-            self.replace(col_name, col_value);
-        }
-
-        Ok(())
-    }
-
-    fn replace(&mut self, col_name: &str, col_value: &str) {
+    pub fn personalize(&mut self, col_name: &str, col_value: &str) {
         self.subject = self
             .subject
             .replace(&format!("{{{}}}", col_name), col_value);

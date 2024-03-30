@@ -1,3 +1,6 @@
+use anyhow::anyhow;
+use clap::ArgMatches;
+
 // args for command
 pub const VERBOSE: &str = "verbose";
 
@@ -35,4 +38,11 @@ pub mod val {
     // possible values for argument CONNECTION and subcommand CONNECT
     pub const SMTP: &str = "smtp";
     pub const AWS: &str = "aws";
+}
+
+pub fn value<'a>(name: &str, matches: &'a ArgMatches<'a>) -> Result<&'a str, anyhow::Error> {
+    match matches.value_of(name) {
+        Some(query) => Ok(query),
+        None => Err(anyhow!("Missing value for argument '{}'", name)),
+    }
 }

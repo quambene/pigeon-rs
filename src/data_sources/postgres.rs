@@ -1,6 +1,5 @@
-use crate::{arg, data_sources::SshTunnel};
+use super::SshTunnel;
 use anyhow::{Context, Result};
-use clap::ArgMatches;
 use connectorx::{
     destinations::arrow2::Arrow2Destination,
     prelude::{Dispatcher, PostgresArrow2Transport},
@@ -61,29 +60,44 @@ impl ConnVars {
         Ok(conn_vars)
     }
 
-    pub fn connection_url(&self) -> String {
-        format!(
+    pub fn connection_url(&self) -> Result<Url, anyhow::Error> {
+        let connection_url = format!(
             "postgresql://{}:{}@{}:{}/{}",
             &self.db_user, &self.db_password.0, &self.db_host, &self.db_port, &self.db_name
-        )
+        );
+        let url = Url::parse(&connection_url)?;
+        Ok(url)
     }
 }
 
-pub fn query_postgres(matches: &ArgMatches, query: &str) -> Result<DataFrame, anyhow::Error> {
-    let conn_vars = ConnVars::from_env()?;
+pub struct DbConnection {
+    /// The connection url of the DB.
+    url: Url,
+    /// Connection via ssh tunnel.
+    ssh_tunnel: Option<SshTunnel>,
+}
 
-    let ssh_tunnel = if matches.is_present(arg::SSH_TUNNEL) {
-        Some(SshTunnel::new(matches, &conn_vars)?)
-    } else {
-        None
-    };
+impl DbConnection {
+    pub fn new(conn_vars: &ConnVars, ssh_tunnel: Option<&str>) -> Result<Self, anyhow::Error> {
+        let connection = if let Some(tunnel) = ssh_tunnel {
+            let ssh_tunnel = SshTunnel::new(tunnel, conn_vars)?;
+            Self {
+                url: ssh_tunnel.connection_url().to_owned(),
+                ssh_tunnel: Some(ssh_tunnel),
+            }
+        } else {
+            let connection_url = conn_vars.connection_url()?;
+            Self {
+                url: connection_url,
+                ssh_tunnel: None,
+            }
+        };
+        Ok(connection)
+    }
+}
 
-    let connection_url = match &ssh_tunnel {
-        Some(tunnel) => Url::parse(&tunnel.connection_url)?,
-        None => Url::parse(&conn_vars.connection_url())?,
-    };
-
-    let (config, _tls) = rewrite_tls_args(&connection_url)?;
+pub fn query_postgres(connection: &DbConnection, query: &str) -> Result<DataFrame, anyhow::Error> {
+    let (config, _tls) = rewrite_tls_args(&connection.url)?;
     let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 3)?;
     let mut destination = Arrow2Destination::new();
     let queries = &[CXQuery::naked(query)];
@@ -96,9 +110,8 @@ pub fn query_postgres(matches: &ArgMatches, query: &str) -> Result<DataFrame, an
     dispatcher.run()?;
     let df = destination.polars()?;
 
-    match &ssh_tunnel {
-        Some(tunnel) => tunnel.kill()?,
-        None => (),
+    if let Some(tunnel) = &connection.ssh_tunnel {
+        tunnel.kill()?;
     }
 
     Ok(df)
