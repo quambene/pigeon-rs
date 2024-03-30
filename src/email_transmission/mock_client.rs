@@ -1,6 +1,7 @@
 use super::{SendEmail, SentEmail, Status};
 use crate::email_builder::Email;
 
+#[derive(PartialEq)]
 pub struct MockClient;
 
 impl<'a> SendEmail<'a> for MockClient {
