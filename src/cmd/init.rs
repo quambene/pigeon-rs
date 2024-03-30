@@ -1,4 +1,4 @@
-use crate::{arg, email_builder::MessageTemplate};
+use crate::{arg, email_builder::Message};
 use anyhow::Context;
 use clap::ArgMatches;
 use std::{env, io};
@@ -9,7 +9,7 @@ pub fn init(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     let current_dir = env::current_dir().context("Can't get current directory")?;
-    let file_name = MessageTemplate::file_name();
+    let file_name = Message::template_name();
     let template_path = current_dir.join(file_name);
 
     match template_path.exists() {
@@ -26,7 +26,7 @@ pub fn init(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                             "Overwriting message template in current directory '{}' ...",
                             template_path.display()
                         );
-                        MessageTemplate::write(&template_path)?;
+                        Message::write_template(&template_path)?;
                         break;
                     }
                     "n" | "no" | "No" => {
@@ -45,7 +45,7 @@ pub fn init(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 "Creating message template in current directory: {} ...",
                 template_path.display()
             );
-            MessageTemplate::write(&template_path)?;
+            Message::write_template(&template_path)?;
         }
     }
 

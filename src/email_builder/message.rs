@@ -1,10 +1,27 @@
-use super::MessageTemplate;
-use crate::arg;
-use anyhow::{anyhow, Result};
+use crate::{arg, helper};
+use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
-use std::{fs, path::Path};
+use serde::Deserialize;
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::Path,
+};
 
-#[derive(Debug, Clone, PartialEq)]
+const TEMPLATE_FILE_NAME: &str = "message.yaml";
+
+static MESSAGE_TEMPLATE: &str = r##"# Specify the subject, plaintext and html version of your email.
+# Personalize message by wrapping variables in curly brackets, eg. {first_name}.
+
+# The subject of your email
+subject: ""
+# The plaintext version
+text: ""
+# The html version
+html: ""
+"##;
+
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub struct Message {
     pub subject: String,
     pub text: Option<String>,
@@ -24,60 +41,58 @@ impl Message {
     }
 
     pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        let message = if matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT) {
-            Message::from_cmd(matches)?
+        if matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT) {
+            match (
+                matches.value_of(arg::SUBJECT),
+                matches.value_of(arg::CONTENT),
+            ) {
+                (Some(subject), Some(content)) => {
+                    let message = Message::new(subject, Some(content), None);
+                    Ok(message)
+                }
+                (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::CONTENT)),
+                (None, Some(_)) => Err(anyhow!("Missing value for argument '{}'", arg::SUBJECT)),
+                (None, None) => Err(anyhow!(
+                    "Missing values for '{}' and '{}'",
+                    arg::SUBJECT,
+                    arg::CONTENT
+                )),
+            }
         } else if matches.is_present(arg::MESSAGE_FILE) {
-            Message::from_template(matches)?
+            let message_file = arg::value(arg::MESSAGE_FILE, matches)?;
+            let message_path = Path::new(message_file);
+            let message = Message::read(message_path)?;
+
+            if matches.is_present(arg::DISPLAY) {
+                println!("Display message file: {:#?}", message);
+            }
+
+            Ok(message)
         } else if matches.is_present(arg::SUBJECT)
             && (matches.is_present(arg::TEXT_FILE) || matches.is_present(arg::HTML_FILE))
         {
-            Message::from_file(matches)?
+            let subject = arg::value(arg::SUBJECT, matches)?;
+            let text_path = matches.value_of(arg::TEXT_FILE).map(Path::new);
+            let html_path = matches.value_of(arg::HTML_FILE).map(Path::new);
+            let text = if let Some(path) = text_path {
+                Some(helper::read_file(path)?)
+            } else {
+                None
+            };
+            let html = if let Some(path) = html_path {
+                Some(helper::read_file(path)?)
+            } else {
+                None
+            };
+            let message = Message::new(subject, text.as_deref(), html.as_deref());
+            Ok(message)
         } else {
-            return Err(anyhow!(
+            Err(anyhow!(
                 "Missing arguments. Please provide {} and {} or {}",
                 arg::SUBJECT,
                 arg::CONTENT,
                 arg::MESSAGE_FILE,
-            ));
-        };
-
-        Ok(message)
-    }
-
-    pub fn from_file(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        let subject = Message::subject(matches)?.to_string();
-        let text = Self::read(matches, arg::TEXT_FILE)?;
-        let html = Self::read(matches, arg::HTML_FILE)?;
-        let message = Message::new(subject, text, html);
-        Ok(message)
-    }
-
-    pub fn from_template(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        let message_template = MessageTemplate::read(matches)?;
-        let message = Message::new(
-            message_template.subject,
-            message_template.text,
-            message_template.html,
-        );
-        Ok(message)
-    }
-
-    pub fn from_cmd(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        match (
-            matches.value_of(arg::SUBJECT),
-            matches.value_of(arg::CONTENT),
-        ) {
-            (Some(subject), Some(content)) => {
-                let message = Message::new(subject, Some(content), None);
-                Ok(message)
-            }
-            (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::CONTENT)),
-            (None, Some(_)) => Err(anyhow!("Missing value for argument '{}'", arg::SUBJECT)),
-            (None, None) => Err(anyhow!(
-                "Missing values for '{}' and '{}'",
-                arg::SUBJECT,
-                arg::CONTENT
-            )),
+            ))
         }
     }
 
@@ -95,36 +110,21 @@ impl Message {
             .map(|html| html.replace(&format!("{{{}}}", col_name), col_value));
     }
 
-    fn subject<'a>(matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
-        if matches.is_present(arg::SUBJECT) {
-            match matches.value_of(arg::SUBJECT) {
-                Some(subject) => Ok(subject),
-                None => Err(anyhow!("Missing value for argument '{}'", arg::SUBJECT)),
-            }
-        } else {
-            Err(anyhow!("Missing argument '{}'", arg::SUBJECT))
-        }
+    fn read(path: &Path) -> Result<Self, anyhow::Error> {
+        println!("Reading message file '{}' ...", path.display());
+        let yaml = fs::read_to_string(&path)?;
+        let message = serde_yaml::from_str(&yaml)?;
+        Ok(message)
     }
 
-    fn read(matches: &ArgMatches, arg: &str) -> Result<Option<String>, anyhow::Error> {
-        if matches.is_present(arg) {
-            match matches.value_of(arg) {
-                Some(text_file) => {
-                    let path = Path::new(text_file);
-                    println!("Reading text file '{}' ...", path.display());
-                    let message = fs::read_to_string(path)?;
+    pub fn template_name() -> &'static str {
+        TEMPLATE_FILE_NAME
+    }
 
-                    if matches.is_present(arg::DISPLAY) {
-                        println!("Display message file: {:#?}", message);
-                    }
-
-                    Ok(Some(message))
-                }
-                None => Err(anyhow!("Missing value for argument '{}'", arg)),
-            }
-        } else {
-            Ok(None)
-        }
+    pub fn write_template(path: &Path) -> Result<(), anyhow::Error> {
+        let mut message_file = File::create(path).context("Unable to create message template.")?;
+        message_file.write_all(MESSAGE_TEMPLATE.as_bytes())?;
+        Ok(())
     }
 }
 
