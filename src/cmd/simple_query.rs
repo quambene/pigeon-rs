@@ -1,4 +1,4 @@
-use crate::{arg, cmd, data_sources::ConnVars};
+use crate::{arg, cmd, sources::ConnVars};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 use postgres::{Client, NoTls, SimpleQueryMessage};

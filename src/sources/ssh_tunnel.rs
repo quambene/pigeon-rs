@@ -1,4 +1,4 @@
-use crate::data_sources::postgres::ConnVars;
+use crate::sources::postgres::ConnVars;
 use anyhow::{anyhow, Context, Result};
 use std::{
     env,

@@ -1,6 +1,6 @@
 use crate::{
     arg, cmd,
-    data_sources::{self, ConnVars, DbConnection},
+    sources::{self, ConnVars, DbConnection},
 };
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
@@ -34,7 +34,7 @@ impl BulkReceiver {
                 let conn_vars = ConnVars::from_env()?;
                 let ssh_tunnel = matches.value_of(arg::SSH_TUNNEL);
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
-                let df_receiver = data_sources::query_postgres(&connection, query)?;
+                let df_receiver = sources::query_postgres(&connection, query)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display query result: {}", df_receiver);
@@ -46,7 +46,7 @@ impl BulkReceiver {
                 ))
             },
             (None, Some(path)) => {
-                let df_receiver = data_sources::read_csv(path)?;
+                let df_receiver = sources::read_csv(path)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display csv file: {}", df_receiver);

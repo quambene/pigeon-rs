@@ -283,4 +283,9 @@ mod tests {
             }
         );
     }
+
+    #[test]
+    fn test_message_personalize() {
+        todo!()
+    }
 }

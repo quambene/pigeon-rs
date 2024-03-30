@@ -2,7 +2,7 @@ use std::path::Path;
 
 use crate::{
     arg, cmd,
-    data_sources::{self, ConnVars, DbConnection},
+    sources::{self, ConnVars, DbConnection},
 };
 use anyhow::{anyhow, Result};
 use chrono::Utc;
@@ -21,7 +21,7 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 let ssh_tunnel = matches.value_of(arg::SSH_TUNNEL);
 
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
-                let mut df_query = data_sources::query_postgres(&connection, query)?;
+                let mut df_query = sources::query_postgres(&connection, query)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display query result: {}", df_query);
@@ -33,10 +33,10 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                         Some(file_type) => match file_type {
                             "csv" => {
                                 let save_dir = Path::new(arg::value(arg::SAVE_DIR, matches)?);
-                                data_sources::write_csv(&mut df_query, save_dir, now)?;
+                                sources::write_csv(&mut df_query, save_dir, now)?;
                             }
-                            x if x == "jpg" => data_sources::write_image(matches, df_query, x)?,
-                            x if x == "png" => data_sources::write_image(matches, df_query, x)?,
+                            x if x == "jpg" => sources::write_image(matches, df_query, x)?,
+                            x if x == "png" => sources::write_image(matches, df_query, x)?,
                             _ => {
                                 return Err(anyhow!(
                                     "Value '{}' not supported for argument '{}'",

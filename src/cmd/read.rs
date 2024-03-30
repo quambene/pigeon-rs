@@ -1,4 +1,4 @@
-use crate::{arg, cmd, data_sources};
+use crate::{arg, cmd, sources};
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 use std::path::PathBuf;
@@ -12,7 +12,7 @@ pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         match matches.value_of(cmd::READ) {
             Some(csv_file) => {
                 let path = PathBuf::from(csv_file);
-                let csv = data_sources::read_csv(&path)?;
+                let csv = sources::read_csv(&path)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display csv file: {}", csv);
