@@ -1,6 +1,5 @@
 use super::{BulkReceiver, Receiver, Sender};
-use super::{Receiver, Sender};
-use crate::email_builder::{Email, Message, Message, MimeFormat, MimeFormat};
+use crate::email_builder::{Message, MimeFormat};
 use anyhow::Result;
 use std::{path::Path, time::SystemTime};
 
