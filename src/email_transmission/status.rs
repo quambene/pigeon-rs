@@ -1,4 +1,4 @@
-use crate::helper::{format_green, format_red};
+use crate::utils::{format_green, format_red};
 use std::fmt;
 
 #[derive(Debug, Clone)]

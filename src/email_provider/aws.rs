@@ -2,7 +2,7 @@ use crate::{
     arg,
     email_builder::Email,
     email_transmission::{SendEmail, SentEmail, Status},
-    helper::format_green,
+    utils::format_green,
 };
 use anyhow::{Context, Result};
 use bytes::Bytes;

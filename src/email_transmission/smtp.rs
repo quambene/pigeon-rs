@@ -1,7 +1,7 @@
 use super::{SendEmail, SentEmail, Status};
 use crate::{
     email_builder::Email,
-    helper::{format_green, format_red},
+    utils::{format_green, format_red},
 };
 use anyhow::Context;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};

@@ -1,4 +1,4 @@
-use crate::{arg, helper};
+use crate::{arg, utils};
 use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use serde::Deserialize;
@@ -75,12 +75,12 @@ impl Message {
             let text_path = matches.value_of(arg::TEXT_FILE).map(Path::new);
             let html_path = matches.value_of(arg::HTML_FILE).map(Path::new);
             let text = if let Some(path) = text_path {
-                Some(helper::read_file(path)?)
+                Some(utils::read_file(path)?)
             } else {
                 None
             };
             let html = if let Some(path) = html_path {
-                Some(helper::read_file(path)?)
+                Some(utils::read_file(path)?)
             } else {
                 None
             };

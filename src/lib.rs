@@ -4,8 +4,8 @@ mod email_builder;
 mod email_formatter;
 mod email_provider;
 mod email_transmission;
-mod helper;
 mod sources;
+mod utils;
 
 use arg::val;
 use clap::{crate_name, crate_version, App, Arg, SubCommand};

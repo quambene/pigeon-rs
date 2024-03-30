@@ -3,7 +3,7 @@ use crate::{
     email_builder::{Confirmed, Email, Message, MimeFormat, Receiver, Sender},
     email_formatter::EmlFormatter,
     email_transmission::Client,
-    helper::format_green,
+    utils::format_green,
 };
 use anyhow::Context;
 use chrono::Utc;
