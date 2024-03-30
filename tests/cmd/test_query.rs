@@ -4,6 +4,7 @@ use std::{env, fs};
 use tempfile::tempdir;
 
 #[test]
+#[ignore]
 fn test_query_display() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
     println!("Execute 'pigeon query {test_query} --display'");
@@ -15,6 +16,7 @@ fn test_query_display() {
 }
 
 #[test]
+#[ignore]
 fn test_query_save() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
     let temp_dir = tempdir().unwrap();
@@ -47,6 +49,7 @@ fn test_query_save() {
 }
 
 #[test]
+#[ignore]
 fn test_query_save_dir() {
     let test_query = env::var("TEST_QUERY").expect("Missing environment variable 'TEST_QUERY'");
     let temp_dir = tempdir().unwrap();

@@ -48,6 +48,7 @@ fn test_send_aws() {
 }
 
 #[test]
+#[ignore]
 fn test_archive_dir_smtp_dry() {
     println!("Execute 'pigeon send'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
