@@ -60,7 +60,7 @@ mod tests {
             Row::new(
                 ["Marie", "Curie", "marie@curie.com"]
                     .into_iter()
-                    .map(|s| AnyValue::Utf8(s))
+                    .map(AnyValue::Utf8)
                     .collect()
             )
         );
@@ -69,7 +69,7 @@ mod tests {
             Row::new(
                 ["Alexandre", "Grothendieck", "alexandre@grothendieck.com"]
                     .into_iter()
-                    .map(|s| AnyValue::Utf8(s))
+                    .map(AnyValue::Utf8)
                     .collect()
             )
         );
@@ -107,7 +107,7 @@ mod tests {
             Row::new(
                 ["Marie", "Curie", "marie@curie.com"]
                     .into_iter()
-                    .map(|s| AnyValue::Utf8(s))
+                    .map(AnyValue::Utf8)
                     .collect()
             )
         );
@@ -116,7 +116,7 @@ mod tests {
             Row::new(
                 ["Alexandre", "Grothendieck", "alexandre@grothendieck.com"]
                     .into_iter()
-                    .map(|s| AnyValue::Utf8(s))
+                    .map(AnyValue::Utf8)
                     .collect()
             )
         );

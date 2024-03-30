@@ -112,7 +112,7 @@ impl Message {
 
     fn read_yaml(path: &Path) -> Result<Self, anyhow::Error> {
         println!("Reading message file '{}' ...", path.display());
-        let yaml = fs::read_to_string(&path)?;
+        let yaml = fs::read_to_string(path)?;
         let message = serde_yaml::from_str(&yaml)?;
         Ok(message)
     }
