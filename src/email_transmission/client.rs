@@ -1,5 +1,3 @@
-use std::fmt;
-
 use super::{MockClient, SendEmail, SentEmail, SmtpClient};
 use crate::{
     arg::{self, val},
@@ -8,6 +6,7 @@ use crate::{
 };
 use anyhow::anyhow;
 use clap::ArgMatches;
+use std::fmt;
 
 #[derive(Debug, PartialEq)]
 pub enum TransmissionType {

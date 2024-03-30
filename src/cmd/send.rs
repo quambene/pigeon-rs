@@ -63,9 +63,9 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     if matches.is_present(arg::DRY_RUN) {
-        println!("Email sent (dry run).");
+        println!("Email sent (dry run)");
     } else {
-        println!("Email sent.");
+        println!("Email sent");
     }
 
     Ok(())

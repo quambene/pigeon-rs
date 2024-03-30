@@ -127,7 +127,6 @@ This is a test message (html)."#;
             .iter()
             .map(|email| email.message.html.as_ref().unwrap().as_str())
             .collect::<Vec<_>>();
-        dbg!(&html_messages);
         assert!(html_messages
             .contains(&"Dear Marie Curie,\n<br>\n<br>\nThis is a test message (html)."));
         assert!(html_messages

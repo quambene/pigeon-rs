@@ -1,6 +1,6 @@
 use assert_cmd::Command;
 use predicates::{boolean::PredicateBooleanExt, str};
-use std::env;
+use std::{env, fs};
 use tempfile::tempdir;
 
 /// This test requires the following environment variables:
@@ -12,12 +12,15 @@ use tempfile::tempdir;
 #[test]
 #[ignore]
 fn test_send_smtp() {
+    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
     let temp_dir = tempdir().unwrap();
     let temp_path = temp_dir.path();
     assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
 
-    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
-    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+    fs::copy("./test_data/message.yaml", temp_path.join("message.yaml")).unwrap();
+    fs::copy("./test_data/test.pdf", temp_path.join("test.pdf")).unwrap();
 
     println!("Execute 'pigeon send --connection smtp'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
@@ -27,9 +30,9 @@ fn test_send_smtp() {
         &sender,
         &receiver,
         "--message-file",
-        "./test_data/message.yaml",
+        "./message.yaml",
         "--attachment",
-        "./test_data/test.pdf",
+        "./test.pdf",
         "--archive",
         "--archive-dir",
         "./my-sent-emails",
@@ -39,7 +42,7 @@ fn test_send_smtp() {
         "smtp",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './test_data/receiver.csv' ...")
+        str::contains("Reading csv file './receiver.csv' ...")
             .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
     );
 
@@ -55,12 +58,15 @@ fn test_send_smtp() {
 #[test]
 #[ignore]
 fn test_send_aws() {
+    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
+    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+
     let temp_dir = tempdir().unwrap();
     let temp_path = temp_dir.path();
     assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
 
-    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
-    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+    fs::copy("./test_data/message.yaml", temp_path.join("message.yaml")).unwrap();
+    fs::copy("./test_data/test.pdf", temp_path.join("test.pdf")).unwrap();
 
     println!("Execute 'pigeon send --connection aws ...'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
@@ -70,21 +76,20 @@ fn test_send_aws() {
         &sender,
         &receiver,
         "--message-file",
-        "./test_data/message.yaml",
+        "./message.yaml",
         "--attachment",
-        "./test_data/test.pdf",
+        "./test.pdf",
         "--archive",
         "--archive-dir",
         "./my-sent-emails",
         "--display",
         "--assume-yes",
-        "--archive",
         "--connection",
         "aws",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './test_data/receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+        str::contains("Reading csv file './receiver.csv' ...")
+            .and(str::contains("Display csv file:").and(str::contains("Display email:"))),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());
@@ -96,20 +101,20 @@ fn test_send_smtp_dry() {
     let temp_path = temp_dir.path();
     assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
 
-    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
-    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+    fs::copy("./test_data/message.yaml", temp_path.join("message.yaml")).unwrap();
+    fs::copy("./test_data/test.pdf", temp_path.join("test.pdf")).unwrap();
 
     println!("Execute 'pigeon send --connection smtp'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
     cmd.current_dir(temp_path);
     cmd.args([
         "send",
-        &sender,
-        &receiver,
+        "albert@einstein.com",
+        "marie@curie.com",
         "--message-file",
-        "./test_data/message.yaml",
+        "./message.yaml",
         "--attachment",
-        "./test_data/test.pdf",
+        "./test.pdf",
         "--archive",
         "--archive-dir",
         "./my-sent-emails",
@@ -120,8 +125,16 @@ fn test_send_smtp_dry() {
         "--dry-run",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './test_data/receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+        str::contains("Reading message file './message.yaml' ...")
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display email:"))
+            .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
+            .and(str::contains("Sending email to 1 recipient ..."))
+            .and(str::contains(
+                "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
+            ))
+            .and(str::contains("Archiving './my-sent-emails"))
+            .and(str::contains("Email sent (dry run)")),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());
@@ -133,33 +146,40 @@ fn test_send_aws_dry() {
     let temp_path = temp_dir.path();
     assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
 
-    let sender = env::var("TEST_SENDER").expect("Missing environment variable 'TEST_SENDER'");
-    let receiver = env::var("TEST_RECEIVER").expect("Missing environment variable 'TEST_RECEIVER'");
+    fs::copy("./test_data/message.yaml", temp_path.join("message.yaml")).unwrap();
+    fs::copy("./test_data/test.pdf", temp_path.join("test.pdf")).unwrap();
 
     println!("Execute 'pigeon send --connection aws ...'");
     let mut cmd = Command::cargo_bin("pigeon").unwrap();
     cmd.current_dir(temp_path);
     cmd.args([
         "send",
-        &sender,
-        &receiver,
+        "albert@einstein.com",
+        "marie@curie.com",
         "--message-file",
-        "./test_data/message.yaml",
+        "./message.yaml",
         "--attachment",
-        "./test_data/test.pdf",
+        "./test.pdf",
         "--archive",
         "--archive-dir",
         "./my-sent-emails",
         "--display",
         "--assume-yes",
-        "--archive",
         "--connection",
         "aws",
-        "dry-run",
+        "--dry-run",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './test_data/receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+        str::contains("Reading message file './message.yaml' ...")
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display email:"))
+            .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
+            .and(str::contains("Sending email to 1 recipient ..."))
+            .and(str::contains(
+                "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
+            ))
+            .and(str::contains("Archiving './my-sent-emails"))
+            .and(str::contains("Email sent (dry run)")),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());

@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use crate::{
     arg, cmd,
     sources::{self, ConnVars, DbConnection},
@@ -7,6 +5,7 @@ use crate::{
 use anyhow::{anyhow, Result};
 use chrono::Utc;
 use clap::ArgMatches;
+use std::path::Path;
 
 pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
