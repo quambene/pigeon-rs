@@ -1,9 +1,8 @@
+use super::MessageTemplate;
 use crate::arg;
 use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 use std::{fs, path::Path};
-
-use super::MessageTemplate;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Message {

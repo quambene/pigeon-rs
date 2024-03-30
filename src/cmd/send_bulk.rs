@@ -5,8 +5,7 @@ use crate::{
     email_transmission::Client,
     helper::format_green,
 };
-use anyhow::Result;
-use anyhow::{anyhow, Context};
+use anyhow::{anyhow, Context, Result};
 use clap::ArgMatches;
 use std::{io, path::Path};
 

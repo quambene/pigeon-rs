@@ -63,9 +63,8 @@ impl<'a> BulkEmail<'a> {
 
 #[cfg(test)]
 mod tests {
-    use polars::{frame::DataFrame, prelude::NamedFrom, series::Series};
-
     use super::*;
+    use polars::{frame::DataFrame, prelude::NamedFrom, series::Series};
 
     #[test]
     fn test_bulk_email() {

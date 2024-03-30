@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use crate::{
     arg, cmd,
     data_sources::{self, ConnVars, DbConnection},
@@ -11,6 +9,7 @@ use polars::{
     datatypes::Utf8Type,
     frame::DataFrame,
 };
+use std::path::Path;
 
 pub struct BulkReceiver {
     pub column_name: String,
