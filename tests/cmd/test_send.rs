@@ -129,7 +129,7 @@ fn test_send_smtp_dry() {
             .and(str::contains("Display message file:"))
             .and(str::contains("Display email:"))
             .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
-            .and(str::contains("Sending email to 1 recipient ..."))
+            .and(str::contains("Sending email to 1 receiver ..."))
             .and(str::contains(
                 "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
             ))
@@ -174,7 +174,7 @@ fn test_send_aws_dry() {
             .and(str::contains("Display message file:"))
             .and(str::contains("Display email:"))
             .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
-            .and(str::contains("Sending email to 1 recipient ..."))
+            .and(str::contains("Sending email to 1 receiver ..."))
             .and(str::contains(
                 "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
             ))

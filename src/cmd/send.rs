@@ -38,7 +38,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let client = Client::from_args(matches)?;
     let eml_formatter = EmlFormatter::new(archive_dir)?;
 
-    println!("Sending email to 1 recipient ...");
+    println!("Sending email to 1 receiver ...");
 
     if matches.is_present(arg::ASSUME_YES) {
         let sent_email = client.send(&email)?;

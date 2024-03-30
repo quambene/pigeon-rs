@@ -34,7 +34,17 @@ fn test_send_bulk_smtp_dry() {
     ]);
     cmd.assert().success().stdout(
         str::contains("Reading csv file './receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+            .and(str::contains("Display csv file:"))
+            .and(str::contains("Reading message file './message.yaml' ..."))
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display emails:"))
+            .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
+            .and(str::contains("Sending email to 2 receivers ..."))
+            .and(str::contains(
+                "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
+            ))
+            .and(str::contains("Archiving './my-sent-emails"))
+            .and(str::contains("All emails sent (dry run)")),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());
@@ -73,7 +83,17 @@ fn test_send_bulk_aws_dry() {
     ]);
     cmd.assert().success().stdout(
         str::contains("Reading csv file './receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+            .and(str::contains("Display csv file:"))
+            .and(str::contains("Reading message file './message.yaml' ..."))
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display emails:"))
+            .and(str::contains("Dry run: \u{1b}[32mactivated\u{1b}[0m"))
+            .and(str::contains("Sending email to 2 receivers ..."))
+            .and(str::contains(
+                "marie@curie.com ... \u{1b}[32mdry run\u{1b}[0m",
+            ))
+            .and(str::contains("Archiving './my-sent-emails"))
+            .and(str::contains("All emails sent (dry run)")),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());

@@ -75,9 +75,9 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     if dry_run {
-        println!("All emails sent (dry run).");
+        println!("All emails sent (dry run)");
     } else {
-        println!("All emails sent.");
+        println!("All emails sent");
     }
 
     Ok(())
