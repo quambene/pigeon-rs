@@ -18,8 +18,8 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let dry_run = matches.is_present(arg::DRY_RUN);
     let is_archived = matches.is_present(arg::ARCHIVE);
     let now = SystemTime::now();
-    let sender = Sender::from_args(matches)?;
-    let receiver = Receiver::from_args(matches)?;
+    let sender = Sender(arg::value(arg::SENDER, matches)?);
+    let receiver = Receiver(arg::value(arg::RECEIVER, matches)?);
     let message = Message::from_args(matches)?;
     let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
     let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;

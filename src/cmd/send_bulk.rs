@@ -17,7 +17,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     let dry_run = matches.is_present(arg::DRY_RUN);
     let is_archived = matches.is_present(arg::ARCHIVE);
-    let sender = Sender::from_args(matches)?;
+    let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receivers = BulkReceiver::from_args(matches)?;
     let message = Message::from_args(matches)?;
     let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
@@ -103,7 +103,7 @@ pub fn confirm_emails(emails: &[Email]) -> Result<Confirmed, anyhow::Error> {
     let email_count = emails.len();
     let receivers = emails
         .iter()
-        .map(|email| email.receiver.as_str())
+        .map(|email| email.receiver.as_ref())
         .collect::<Vec<_>>();
     println!(
         "Preparing to send an email to {} recipients: {:#?}",
