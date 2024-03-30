@@ -17,6 +17,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     let dry_run = matches.is_present(arg::DRY_RUN);
     let is_archived = matches.is_present(arg::ARCHIVE);
+    let archive_dir = Path::new(arg::value(arg::ARCHIVE_DIR, matches)?);
     let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receivers = BulkReceiver::from_args(matches)?;
     let message = Message::from_args(matches)?;
@@ -39,7 +40,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         BulkEmail::new(sender, &receivers, &message, attachment, &[])?
     };
     let client = Client::from_args(matches)?;
-    let eml_formatter = EmlFormatter::from_args(matches)?;
+    let eml_formatter = EmlFormatter::new(archive_dir)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);
@@ -73,6 +74,12 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         }
     }
 
+    if dry_run {
+        println!("All emails sent (dry run).");
+    } else {
+        println!("All emails sent.");
+    }
+
     Ok(())
 }
 
@@ -93,12 +100,6 @@ pub fn process_emails<'a>(
             let now = Utc::now();
             eml_formatter.archive(email, now, dry_run)?;
         }
-    }
-
-    if dry_run {
-        println!("All emails sent (dry run).");
-    } else {
-        println!("All emails sent.");
     }
 
     Ok(())

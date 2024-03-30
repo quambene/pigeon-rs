@@ -1,3 +1,12 @@
+/* These tests requires the following environment variables:
+     - DB_HOST
+     - DB_PORT
+     - DB_USER
+     - DB_PASSWORD
+     - DB_NAME
+     - TEST_QUERY
+*/
+
 use assert_cmd::Command;
 use predicates::str;
 use std::{env, fs};

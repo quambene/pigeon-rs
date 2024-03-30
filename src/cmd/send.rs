@@ -15,9 +15,10 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("matches: {:#?}", matches);
     }
 
+    let now = SystemTime::now();
     let dry_run = matches.is_present(arg::DRY_RUN);
     let is_archived = matches.is_present(arg::ARCHIVE);
-    let now = SystemTime::now();
+    let archive_dir = Path::new(arg::value(arg::ARCHIVE_DIR, matches)?);
     let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receiver = Receiver(arg::value(arg::RECEIVER, matches)?);
     let message = Message::from_args(matches)?;
@@ -35,7 +36,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     let now = Utc::now();
     let client = Client::from_args(matches)?;
-    let eml_formatter = EmlFormatter::from_args(matches)?;
+    let eml_formatter = EmlFormatter::new(archive_dir)?;
 
     println!("Sending email to 1 recipient ...");
 
