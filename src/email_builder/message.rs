@@ -61,7 +61,7 @@ impl Message {
         } else if matches.is_present(arg::MESSAGE_FILE) {
             let message_file = arg::value(arg::MESSAGE_FILE, matches)?;
             let message_path = Path::new(message_file);
-            let message = Message::read(message_path)?;
+            let message = Message::read_yaml(message_path)?;
 
             if matches.is_present(arg::DISPLAY) {
                 println!("Display message file: {:#?}", message);
@@ -110,7 +110,7 @@ impl Message {
             .map(|html| html.replace(&format!("{{{}}}", col_name), col_value));
     }
 
-    fn read(path: &Path) -> Result<Self, anyhow::Error> {
+    fn read_yaml(path: &Path) -> Result<Self, anyhow::Error> {
         println!("Reading message file '{}' ...", path.display());
         let yaml = fs::read_to_string(&path)?;
         let message = serde_yaml::from_str(&yaml)?;
@@ -132,6 +132,84 @@ impl Message {
 mod tests {
     use super::*;
     use crate::app;
+
+    #[test]
+    fn test_read_yaml() {
+        let yaml_path = Path::new("./test_data/message.yaml");
+        let res = Message::read_yaml(yaml_path);
+        assert!(res.is_ok());
+
+        let message = res.unwrap();
+        assert_eq!(
+            message,
+            Message {
+                subject: "Test subject".to_owned(),
+                text: Some("This is a test message (plaintext).".to_owned()),
+                html: Some("<p>This is a test message (html).</p>".to_owned())
+            }
+        )
+    }
+
+    #[test]
+    fn test_read_yaml_empty() {
+        let yaml_path = Path::new("./test_data/message_empty.yaml");
+        let res = Message::read_yaml(yaml_path);
+        assert!(res.is_ok());
+
+        let message = res.unwrap();
+        assert_eq!(
+            message,
+            Message {
+                subject: "Test subject".to_owned(),
+                text: Some("".to_owned()),
+                html: Some("".to_owned())
+            }
+        )
+    }
+
+    #[test]
+    fn test_read_yaml_none() {
+        let yaml_path = Path::new("./test_data/message_none.yaml");
+        let res = Message::read_yaml(yaml_path);
+        assert!(res.is_ok());
+
+        let message = res.unwrap();
+        assert_eq!(
+            message,
+            Message {
+                subject: "Test subject".to_owned(),
+                text: None,
+                html: None,
+            }
+        )
+    }
+
+    #[test]
+    fn test_personalize() {
+        let text = r#"Dear {first_name} {last_name},
+This is a test message (plaintext)."#;
+        let html = r#"Dear {first_name} {last_name},
+<br>
+<br>
+This is a test message (html)."#;
+        let mut message = Message::new(
+            "Test subject".to_owned(),
+            Some(text.to_owned()),
+            Some(html.to_owned()),
+        );
+        message.personalize("first_name", "Marie");
+        message.personalize("last_name", "Curie");
+        assert_eq!(
+            message,
+            Message {
+                subject: "Test subject".to_owned(),
+                text: Some("Dear Marie Curie,\nThis is a test message (plaintext).".to_owned()),
+                html: Some(
+                    "Dear Marie Curie,\n<br>\n<br>\nThis is a test message (html).".to_owned()
+                )
+            }
+        );
+    }
 
     #[test]
     fn test_message_from_args_subject_content() {
@@ -226,66 +304,5 @@ mod tests {
                 html: Some("<p>This is a test message (html).</p>".to_owned()),
             }
         );
-    }
-
-    #[test]
-    fn test_message_from_args_message_file_empty() {
-        let args = vec![
-            "pigeon",
-            "send",
-            "albert@einstein.com",
-            "marie@curie.com",
-            "--message-file",
-            "./test_data/message_empty.yaml",
-        ];
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches("send").unwrap();
-
-        let res = Message::from_args(subcommand_matches);
-        assert!(res.is_ok(), "{}", res.unwrap_err());
-
-        let message = res.unwrap();
-        assert_eq!(
-            message,
-            Message {
-                subject: "Test subject".to_owned(),
-                text: Some("".to_owned()),
-                html: Some("".to_owned()),
-            }
-        );
-    }
-
-    #[test]
-    fn test_message_from_args_message_none() {
-        let args = vec![
-            "pigeon",
-            "send",
-            "albert@einstein.com",
-            "marie@curie.com",
-            "--message-file",
-            "./test_data/message_none.yaml",
-        ];
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches("send").unwrap();
-
-        let res = Message::from_args(subcommand_matches);
-        assert!(res.is_ok(), "{}", res.unwrap_err());
-
-        let message = res.unwrap();
-        assert_eq!(
-            message,
-            Message {
-                subject: "Test subject".to_owned(),
-                text: None,
-                html: None,
-            }
-        );
-    }
-
-    #[test]
-    fn test_message_personalize() {
-        todo!()
     }
 }
