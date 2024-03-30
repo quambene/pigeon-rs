@@ -19,13 +19,11 @@ impl<'a> BulkEmail<'a> {
         let mut emails: Vec<Email> = vec![];
         let receivers = bulk_receiver.receiver_column()?;
 
-        for receiver in receivers {
-            if let Some(receiver) = receiver {
-                let mime_format =
-                    MimeFormat::new(sender, Receiver(receiver), message, attachment, now)?;
-                let email = Email::new(sender, Receiver(receiver), message, &mime_format)?;
-                emails.push(email);
-            }
+        for receiver in receivers.into_iter().flatten() {
+            let mime_format =
+                MimeFormat::new(sender, Receiver(receiver), message, attachment, now)?;
+            let email = Email::new(sender, Receiver(receiver), message, &mime_format)?;
+            emails.push(email);
         }
 
         Ok(BulkEmail { emails })

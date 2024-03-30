@@ -46,7 +46,7 @@ impl BulkReceiver {
                 ))
             },
             (None, Some(path)) => {
-                let df_receiver = data_sources::read_csv(&path)?;
+                let df_receiver = data_sources::read_csv(path)?;
 
                 if matches.is_present(arg::DISPLAY) {
                     println!("Display csv file: {}", df_receiver);
@@ -82,11 +82,11 @@ impl BulkReceiver {
         self.df_receiver.height()
     }
 
-    pub fn receiver_column<'a>(&'a self) -> Result<&'a ChunkedArray<Utf8Type>, anyhow::Error> {
+    pub fn receiver_column(&self) -> Result<&ChunkedArray<Utf8Type>, anyhow::Error> {
         self.column(&self.column_name)
     }
 
-    pub fn receiver_row<'a>(&'a self, index: usize) -> Result<&'a str, anyhow::Error> {
+    pub fn receiver_row(&self, index: usize) -> Result<&str, anyhow::Error> {
         self.row(index, &self.column_name)
     }
 
