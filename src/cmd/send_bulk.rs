@@ -24,13 +24,19 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     let bulk_email = if matches.is_present(arg::PERSONALIZE) {
         if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
-            let columns = personalized_columns.collect::<Vec<&str>>();
-            BulkEmail::personalize(sender, &receivers, &message, &columns, attachment)?
+            let personalized_columns = personalized_columns.collect::<Vec<&str>>();
+            BulkEmail::new(
+                sender,
+                &receivers,
+                &message,
+                attachment,
+                &personalized_columns,
+            )?
         } else {
             return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE));
         }
     } else {
-        BulkEmail::new(sender, &receivers, &message, attachment)?
+        BulkEmail::new(sender, &receivers, &message, attachment, &[])?
     };
     let client = Client::from_args(matches)?;
     let eml_formatter = EmlFormatter::from_args(matches)?;
