@@ -1,20 +1,20 @@
-use crate::{arg, data_sources::postgres::ConnVars};
+use crate::sources::postgres::ConnVars;
 use anyhow::{anyhow, Context, Result};
-use clap::ArgMatches;
 use std::{
     env,
     process::{Child, Command},
 };
+use url::Url;
 
 pub struct SshTunnel {
     process: Child,
-    pub connection_url: String,
+    connection_url: Url,
 }
 
 const LOCALHOST: &str = "127.0.0.1";
 
 impl SshTunnel {
-    pub fn new(matches: &ArgMatches, conn_vars: &ConnVars) -> Result<Self, anyhow::Error> {
+    pub fn new(ssh_tunnel: &str, conn_vars: &ConnVars) -> Result<Self, anyhow::Error> {
         println!("Opening ssh tunnel ...");
 
         let server_host = env::var("SERVER_HOST")
@@ -22,10 +22,7 @@ impl SshTunnel {
         let server_user = env::var("SERVER_USER")
             .context("Missing environment variable 'SERVER_USER'. Needed for ssh tunnel.")?;
 
-        let local_port = match matches.value_of(arg::SSH_TUNNEL) {
-            Some(port) => port,
-            None => return Err(anyhow!("Missing value for argument '{}'", arg::SSH_TUNNEL)),
-        };
+        let local_port = ssh_tunnel;
         let local_url = &(LOCALHOST.to_string() + ":" + local_port) as &str;
         let db_url = format!("{}:{}", conn_vars.db_host, &conn_vars.db_port);
 
@@ -36,7 +33,12 @@ impl SshTunnel {
             .args(["-N", "-T", "-L", &port_fwd, &ssh_connection])
             .spawn()?;
 
-        let connection_url = SshTunnel::connection_url(conn_vars, local_url);
+        let connection_url = format!(
+            "postgresql://{}:{}@{}/{}",
+            &conn_vars.db_user, &conn_vars.db_password.0, local_url, &conn_vars.db_name
+        );
+        let connection_url = Url::parse(&connection_url)?;
+
         let ssh_tunnel = SshTunnel {
             process,
             connection_url,
@@ -47,6 +49,10 @@ impl SshTunnel {
             local_url, db_url, server_user, server_host
         );
         Ok(ssh_tunnel)
+    }
+
+    pub fn connection_url(&self) -> &Url {
+        &self.connection_url
     }
 
     pub fn kill(&self) -> Result<(), anyhow::Error> {
@@ -75,12 +81,5 @@ impl SshTunnel {
                 pid
             ))),
         }
-    }
-
-    fn connection_url(conn_vars: &ConnVars, tunnel_url: &str) -> String {
-        format!(
-            "postgresql://{}:{}@{}/{}",
-            &conn_vars.db_user, &conn_vars.db_password.0, tunnel_url, &conn_vars.db_name
-        )
     }
 }

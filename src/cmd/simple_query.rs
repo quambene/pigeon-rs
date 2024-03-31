@@ -1,21 +1,7 @@
-use crate::{arg, cmd, data_sources::ConnVars};
+use crate::{arg, cmd, sources::ConnVars};
 use anyhow::{anyhow, Result};
-use clap::{Arg, ArgMatches};
+use clap::ArgMatches;
 use postgres::{Client, NoTls, SimpleQueryMessage};
-
-pub fn simple_query_args() -> [Arg<'static, 'static>; 2] {
-    [
-        Arg::with_name(cmd::SIMPLE_QUERY)
-            .index(1)
-            .required(true)
-            .takes_value(true)
-            .help("Takes a sql query"),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-    ]
-}
 
 pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {

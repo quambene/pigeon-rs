@@ -12,6 +12,14 @@ categories = ["command-line-utilities", "email"]
 readme = "README.md"
 license = "Apache-2.0"
 
+[[bin]]
+name = "pigeon"
+path = "src/main.rs"
+
+[[test]]
+name = "integration_tests"
+path = "tests/cmd/lib.rs"
+
 [dependencies]
 anyhow = "1.0.40"
 rusoto_ses = { version = "0.47.0", default-features = false, features = ["rustls"] }
@@ -34,6 +42,7 @@ infer = "0.5.0"
 bytes = "1.1.0"
 base64 = "0.13.0"
 
-[[bin]]
-name = "pigeon"
-path = "src/main.rs"
+[dev-dependencies]
+assert_cmd = "2.0.14"
+predicates = "3.1.0"
+tempfile = "3.10.1"

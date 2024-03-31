@@ -1,470 +1,143 @@
 use crate::{
-    arg::{self, val},
-    email_builder::{BulkEmail, Confirmed, Message, Receiver, Sender},
-    helper::format_green,
+    arg,
+    email_builder::{BulkEmail, BulkReceiver, Confirmed, Email, Message, Sender},
+    email_formatter::EmlFormatter,
+    email_transmission::Client,
+    utils::format_green,
 };
-use anyhow::Result;
-use clap::{Arg, ArgMatches};
-
-pub fn send_bulk_args() -> [Arg<'static, 'static>; 19] {
-    [
-        Arg::with_name(arg::SENDER)
-            .index(1)
-            .required(true)
-            .takes_value(true)
-            .help("Email address of the sender"),
-        Arg::with_name(arg::RECEIVER_FILE)
-            .long(arg::RECEIVER_FILE)
-            .required_unless(arg::RECEIVER_QUERY)
-            .takes_value(true)
-            .help("Email addresses of multiple receivers fetched from provided csv file"),
-        Arg::with_name(arg::RECEIVER_QUERY)
-            .long(arg::RECEIVER_QUERY)
-            .required_unless(arg::RECEIVER_FILE)
-            .takes_value(true)
-            .help("Email addresses of multiple receivers fetched from provided query"),
-        Arg::with_name(arg::SUBJECT)
-            .long(arg::SUBJECT)
-            .takes_value(true)
-            .required_unless_one(&[arg::MESSAGE_FILE])
-            .help("Subject of the email"),
-        Arg::with_name(arg::CONTENT)
-            .long(arg::CONTENT)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .required_unless_one(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-            .conflicts_with_all(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-            .help("Content of the email"),
-        Arg::with_name(arg::MESSAGE_FILE)
-            .long(arg::MESSAGE_FILE)
-            .takes_value(true)
-            .required_unless_one(&[arg::SUBJECT, arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
-            .conflicts_with_all(&[arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
-            .help("Path of the message file"),
-        Arg::with_name(arg::TEXT_FILE)
-            .long(arg::TEXT_FILE)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
-            .help("Path of text file"),
-        Arg::with_name(arg::HTML_FILE)
-            .long(arg::HTML_FILE)
-            .takes_value(true)
-            .requires(arg::SUBJECT)
-            .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
-            .help("Path of html file"),
-        Arg::with_name(arg::ATTACHMENT)
-            .long(arg::ATTACHMENT)
-            .takes_value(true)
-            .help("Path of attachment"),
-        Arg::with_name(arg::ARCHIVE)
-            .long(arg::ARCHIVE)
-            .takes_value(false)
-            .help("Archive sent emails"),
-        Arg::with_name(arg::ARCHIVE_DIR)
-            .long(arg::ARCHIVE_DIR)
-            .takes_value(true)
-            .default_value("./sent_emails")
-            .help("Path of sent emails"),
-        Arg::with_name(arg::RECEIVER_COLUMN)
-            .long(arg::RECEIVER_COLUMN)
-            .takes_value(true)
-            .default_value(val::EMAIL)
-            .help("Specifies the column in which to look for email addresses"),
-        Arg::with_name(arg::PERSONALIZE)
-            .long(arg::PERSONALIZE)
-            .takes_value(true)
-            .multiple(true)
-            .max_values(100)
-            .help("Personalizes email for variables defined in the message template"),
-        Arg::with_name(arg::DISPLAY)
-            .long(arg::DISPLAY)
-            .takes_value(false)
-            .help("Print emails to terminal"),
-        Arg::with_name(arg::DRY_RUN)
-            .long(arg::DRY_RUN)
-            .takes_value(false)
-            .help("Prepare emails but do not send emails"),
-        Arg::with_name(arg::ASSUME_YES)
-            .long(arg::ASSUME_YES)
-            .takes_value(false)
-            .help("Send emails without confirmation"),
-        Arg::with_name(arg::SSH_TUNNEL)
-            .long(arg::SSH_TUNNEL)
-            .value_name("port")
-            .takes_value(true)
-            .help("Query db through ssh tunnel"),
-        Arg::with_name(arg::CONNECTION)
-            .long(arg::CONNECTION)
-            .takes_value(true)
-            .possible_values(&[val::SMTP, val::AWS])
-            .default_value(val::SMTP)
-            .help("Send emails via SMTP or AWS API"),
-        Arg::with_name(arg::VERBOSE)
-            .long(arg::VERBOSE)
-            .takes_value(false)
-            .help("Shows what is going on for subcommand"),
-    ]
-}
+use anyhow::{anyhow, Context, Result};
+use chrono::Utc;
+use clap::ArgMatches;
+use std::{io, path::Path};
 
 pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     if matches.is_present(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    let sender = Sender::init(matches)?;
-    let df_receiver = Receiver::dataframe(matches)?;
-    let default_message = Message::build(matches)?;
-    let bulk_email = BulkEmail::build(matches, sender, &df_receiver, &default_message)?;
+    let dry_run = matches.is_present(arg::DRY_RUN);
+    let is_archived = matches.is_present(arg::ARCHIVE);
+    let archive_dir = Path::new(arg::value(arg::ARCHIVE_DIR, matches)?);
+    let sender = Sender(arg::value(arg::SENDER, matches)?);
+    let receivers = BulkReceiver::from_args(matches)?;
+    let message = Message::from_args(matches)?;
+    let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
+
+    let bulk_email = if matches.is_present(arg::PERSONALIZE) {
+        if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
+            let personalized_columns = personalized_columns.collect::<Vec<&str>>();
+            BulkEmail::new(
+                sender,
+                &receivers,
+                &message,
+                attachment,
+                &personalized_columns,
+            )?
+        } else {
+            return Err(anyhow!("Missing value for argument '{}'", arg::PERSONALIZE));
+        }
+    } else {
+        BulkEmail::new(sender, &receivers, &message, attachment, &[])?
+    };
+    let client = Client::from_args(matches)?;
+    let eml_formatter = EmlFormatter::new(archive_dir)?;
 
     if matches.is_present(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);
     }
 
-    if matches.is_present(arg::DRY_RUN) {
+    if dry_run {
         println!("Dry run: {}", format_green("activated"));
     }
 
     if matches.is_present(arg::ASSUME_YES) {
-        bulk_email.process(matches)?;
+        process_emails(
+            &client,
+            &eml_formatter,
+            &bulk_email.emails,
+            dry_run,
+            is_archived,
+        )?;
     } else {
-        let confirmation = bulk_email.confirm()?;
+        let confirmation = confirm_emails(&bulk_email.emails)?;
         match confirmation {
             Confirmed::Yes => {
-                bulk_email.process(matches)?;
+                process_emails(
+                    &client,
+                    &eml_formatter,
+                    &bulk_email.emails,
+                    dry_run,
+                    is_archived,
+                )?;
             }
             Confirmed::No => (),
+        }
+    }
+
+    if dry_run {
+        println!("All emails sent (dry run)");
+    } else {
+        println!("All emails sent");
+    }
+
+    Ok(())
+}
+
+pub fn process_emails<'a>(
+    client: &Client<'a>,
+    eml_formatter: &EmlFormatter,
+    emails: &'a [Email],
+    dry_run: bool,
+    is_archived: bool,
+) -> Result<(), anyhow::Error> {
+    println!("Sending email to {} receivers ...", emails.len());
+
+    for email in emails {
+        let sent_email = client.send(email)?;
+        sent_email.display_status();
+
+        if is_archived {
+            let now = Utc::now();
+            eml_formatter.archive(email, now, dry_run)?;
         }
     }
 
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::{app, cmd};
+pub fn confirm_emails(emails: &[Email]) -> Result<Confirmed, anyhow::Error> {
+    let mut input = String::new();
+    let email_count = emails.len();
+    let receivers = emails
+        .iter()
+        .map(|email| email.receiver.as_ref())
+        .collect::<Vec<_>>();
+    println!(
+        "Preparing to send an email to {} recipients: {:#?}",
+        email_count, receivers
+    );
 
-    #[test]
-    #[ignore]
-    fn test_send_bulk_subject_content_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--subject",
-            "Test Subject",
-            "--content",
-            "This is a test message (plaintext).",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_send_bulk_text_file_html_file_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--subject",
-            "Test Subject",
-            "--text-file",
-            "./test_data/message.txt",
-            "--html-file",
-            "./test_data/message.html",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_send_bulk_message_file_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_send_bulk_receiver_column_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/contacts.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--receiver-column",
-            "contact",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_send_bulk_personalize_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message_personalized.yaml",
-            "--personalize",
-            "first_name",
-            "last_name",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_archive_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--archive",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_archive_dir_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--archive",
-            "--archive-dir",
-            "./my-sent-emails",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_attachment_pdf_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--archive",
-            "--attachment",
-            "./test_data/test.pdf",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_attachment_png_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--archive",
-            "--attachment",
-            "./test_data/test.png",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_attachment_odt_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--archive",
-            "--attachment",
-            "./test_data/test.odt",
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
-
-    #[test]
-    #[ignore]
-    fn test_send_bulk_aws_dry() {
-        let args = vec![
-            cmd::BIN,
-            cmd::SEND_BULK,
-            "albert@einstein.com",
-            "--receiver-file",
-            "./test_data/receiver.csv",
-            "--message-file",
-            "./test_data/message.yaml",
-            "--dry-run",
-            "--display",
-            "--assume-yes",
-            "--connection",
-            val::AWS,
-        ];
-
-        let app = app();
-        let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches(cmd::SEND_BULK).unwrap();
-        println!("subcommand matches: {:#?}", subcommand_matches);
-
-        let res = send_bulk(subcommand_matches);
-        println!("res: {:#?}", res);
-
-        assert!(res.is_ok())
-    }
+    println!(
+        "Should an email be sent to {} recipients? Yes (y) or no (n)",
+        email_count
+    );
+    let confirmation = loop {
+        io::stdin()
+            .read_line(&mut input)
+            .context("Can't read input")?;
+        match input.trim() {
+            "y" | "yes" | "Yes" => {
+                break Confirmed::Yes;
+            }
+            "n" | "no" | "No" => {
+                println!("Aborted ...");
+                break Confirmed::No;
+            }
+            _ => {
+                println!("Choose yes (y) or no (n). Try again.");
+                continue;
+            }
+        }
+    };
+    Ok(confirmation)
 }

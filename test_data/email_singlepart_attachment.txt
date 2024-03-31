@@ -1,0 +1,10 @@
+From: albert@einstein.com
+To: marie@curie.com
+Subject: Test Subject
+Date: Mon, 01 Jan 2024 14:00:00 +0000
+MIME-Version: 1.0
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: 7bit
+
+This is a test attachment.

@@ -2,6 +2,11 @@
 
 # Pigeon
 
+[![Latest Version](https://img.shields.io/crates/v/bogrep.svg)](https://crates.io/crates/bogrep)
+[![Build
+Status](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml)
+[![codecov](https://codecov.io/gh/quambene/pigeon-rs/graph/badge.svg)](https://app.codecov.io/gh/quambene/pigeon-rs)
+
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
 
 For example, query the subscribers of your newsletter, create a plaintext and html email from a template file, and send it to all of them:
@@ -54,6 +59,7 @@ elie@cartan.com ... ok
   - [Third-party APIs](#third-party-apis)
   - [Data sources](#data-sources)
 - [Comparison with Mailchimp, Sendgrid, and ConvertKit](#comparison-with-mailchimp-sendgrid-and-convertkit)
+- [Testing](#testing)
 
 ## Install Pigeon
 
@@ -436,3 +442,34 @@ provider | daily limit
 Pigeon+AWS | 50,000
 Mailchimp | equals monthly limit
 Sendgrid | equals monthly limit
+
+## Testing
+
+Integration tests require a locally running database, and an AWS SES account.
+Specify the following environment variables:
+
+- SMTP
+  - `SMTP_SERVER`
+  - `SMTP_USERNAME`
+  - `SMTP_PASSWORD`
+- AWS SES
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_REGION`
+- Postgres
+  - `DB_HOST`
+  - `DB_PORT`
+  - `DB_USER`
+  - `DB_PASSWORD`
+  - `DB_NAME`
+
+``` bash
+# Run unit tests and integration tests
+cargo test
+
+# Run unit tests
+cargo test --lib
+
+# Run integration tests
+cargo test --test '*'
+```

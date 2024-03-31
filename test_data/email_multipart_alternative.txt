@@ -1,0 +1,19 @@
+From: albert@einstein.com
+To: marie@curie.com
+Subject: Test Subject
+Date: Mon, 01 Jan 2024 14:00:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt"
+
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+This is a test message (plaintext).
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<p>This is a test message (html).</p>
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt--

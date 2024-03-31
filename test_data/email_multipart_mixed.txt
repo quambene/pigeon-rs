@@ -1,0 +1,20 @@
+From: albert@einstein.com
+To: marie@curie.com
+Subject: Test Subject
+Date: Mon, 01 Jan 2024 14:00:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt"
+
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+This is a test message (plaintext).
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: 7bit
+
+This is a test attachment.
+--RZcCpBhV4GEzm8ETTVblOuzZ8bwGzGVyjkQfGTMt--

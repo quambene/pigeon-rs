@@ -1,0 +1,30 @@
+From: albert@einstein.com
+To: marie@curie.com
+Subject: Test Subject
+Date: Mon, 01 Jan 2024 14:00:00 +0000
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="OTi56O3hPypBNfzLsCk053S1timfKY03AexmLpxU"
+
+--OTi56O3hPypBNfzLsCk053S1timfKY03AexmLpxU
+Content-Type: multipart/alternative;
+ boundary="HDKQ1fKhhPf7wLdMpdLSlteF05Rxv6VCIqIQf82I"
+
+--HDKQ1fKhhPf7wLdMpdLSlteF05Rxv6VCIqIQf82I
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+This is a test message (plaintext).
+--HDKQ1fKhhPf7wLdMpdLSlteF05Rxv6VCIqIQf82I
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<p>This is a test message (html).</p>
+--HDKQ1fKhhPf7wLdMpdLSlteF05Rxv6VCIqIQf82I--
+--OTi56O3hPypBNfzLsCk053S1timfKY03AexmLpxU
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: 7bit
+
+This is a test attachment.
+--OTi56O3hPypBNfzLsCk053S1timfKY03AexmLpxU--

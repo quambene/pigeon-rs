@@ -2,7 +2,7 @@ use crate::{
     arg,
     email_builder::Email,
     email_transmission::{SendEmail, SentEmail, Status},
-    helper::format_green,
+    utils::format_green,
 };
 use anyhow::{Context, Result};
 use bytes::Bytes;
@@ -57,29 +57,20 @@ impl AwsSesClient {
 
 impl<'a> SendEmail<'a> for AwsSesClient {
     #[tokio::main]
-    async fn send(
-        &self,
-        matches: &ArgMatches,
-        email: &'a Email<'a>,
-    ) -> Result<SentEmail<'a>, anyhow::Error> {
-        let sent_email = if matches.is_present(arg::DRY_RUN) {
-            let status = Status::DryRun;
-            SentEmail::new(email, status)
-        } else {
-            let raw_message = RawMessage {
-                data: Bytes::from(base64::encode(email.mime_format.message.formatted())),
-            };
-            let request = SendRawEmailRequest {
-                raw_message,
-                ..Default::default()
-            };
-            let response = self.client.send_raw_email(request).await;
-            let status = match response {
-                Ok(response) => Status::SentOk(response.message_id),
-                Err(err) => Status::SentError(err.to_string()),
-            };
-            SentEmail::new(email, status)
+    async fn send(&self, email: &'a Email<'a>) -> Result<SentEmail<'a>, anyhow::Error> {
+        let raw_message = RawMessage {
+            data: Bytes::from(base64::encode(email.mime_format.message.formatted())),
         };
+        let request = SendRawEmailRequest {
+            raw_message,
+            ..Default::default()
+        };
+        let response = self.client.send_raw_email(request).await;
+        let status = match response {
+            Ok(response) => Status::SentOk(response.message_id),
+            Err(err) => Status::SentError(err.to_string()),
+        };
+        let sent_email = SentEmail::new(email, status);
 
         Ok(sent_email)
     }

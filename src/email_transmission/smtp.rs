@@ -1,11 +1,9 @@
-use super::{client::SendEmail, SentEmail, Status};
+use super::{SendEmail, SentEmail, Status};
 use crate::{
-    arg,
     email_builder::Email,
-    helper::{format_green, format_red},
+    utils::{format_green, format_red},
 };
 use anyhow::Context;
-use clap::ArgMatches;
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transport};
 use std::env;
 
@@ -48,30 +46,21 @@ impl SmtpClient {
 }
 
 impl<'a> SendEmail<'a> for SmtpClient {
-    fn send(
-        &self,
-        matches: &ArgMatches,
-        email: &'a Email<'a>,
-    ) -> Result<SentEmail<'a>, anyhow::Error> {
-        let sent_email = if matches.is_present(arg::DRY_RUN) {
-            let status = Status::DryRun;
-            SentEmail::new(email, status)
-        } else {
-            let response = self
-                .transport
-                .send(&email.mime_format.message)
-                .context("Can't sent email via SMTP");
-            let status = match response {
-                Ok(response) => {
-                    let response_string = response.message().collect::<String>();
-                    let messages: Vec<&str> = response_string.split(' ').collect();
-                    let message_id = messages[1];
-                    Status::SentOk(message_id.to_string())
-                }
-                Err(err) => Status::SentError(err.to_string()),
-            };
-            SentEmail::new(email, status)
+    fn send(&self, email: &'a Email<'a>) -> Result<SentEmail<'a>, anyhow::Error> {
+        let response = self
+            .transport
+            .send(&email.mime_format.message)
+            .context("Can't sent email via SMTP");
+        let status = match response {
+            Ok(response) => {
+                let response_string = response.message().collect::<String>();
+                let messages: Vec<&str> = response_string.split(' ').collect();
+                let message_id = messages[1];
+                Status::SentOk(message_id.to_string())
+            }
+            Err(err) => Status::SentError(err.to_string()),
         };
+        let sent_email = SentEmail::new(email, status);
 
         Ok(sent_email)
     }

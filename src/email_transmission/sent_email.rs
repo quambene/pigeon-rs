@@ -1,10 +1,10 @@
 use super::Status;
-use crate::email_builder::{Email, Message};
+use crate::email_builder::{Email, Message, Receiver, Sender};
 
 #[derive(Debug)]
 pub struct SentEmail<'a> {
-    pub sender: &'a str,
-    pub receiver: &'a str,
+    pub sender: Sender<'a>,
+    pub receiver: Receiver<'a>,
     pub message: &'a Message,
     pub status: Status,
 }
@@ -20,6 +20,6 @@ impl<'a> SentEmail<'a> {
     }
 
     pub fn display_status(&self) {
-        println!("{} ... {}", self.receiver, self.status);
+        println!("{} ... {}", self.receiver.0, self.status);
     }
 }

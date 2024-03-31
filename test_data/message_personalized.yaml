@@ -5,7 +5,7 @@
 subject: "Test subject"
 # The plaintext version
 text: "Dear {first_name} {last_name},
-      \nThis is a test message (plaintext)."
+      This is a test message (plaintext)."
 # The html version
 html: "Dear {first_name} {last_name},
       <br>
