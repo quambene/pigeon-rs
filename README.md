@@ -2,9 +2,9 @@
 
 # Pigeon
 
-[![Latest Version](https://img.shields.io/crates/v/bogrep.svg)](https://crates.io/crates/bogrep)
+[![Latest Version](https://img.shields.io/crates/v/pigeon-rs.svg)](https://crates.io/crates/pigeon-rs)
 [![Build
-Status](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/quambene/bogrep/actions/workflows/rust-ci.yml)
+Status](https://github.com/quambene/pigeon-rs/actions/workflows/rust-ci.yml/badge.svg)](https://github.com/quambene/pigeon-rs/actions/workflows/rust-ci.yml)
 [![codecov](https://codecov.io/gh/quambene/pigeon-rs/graph/badge.svg)](https://app.codecov.io/gh/quambene/pigeon-rs)
 
 Pigeon is a command line tool for automating your email workflow in a cheap and efficient way. Utilize your most efficient dev tools you are already familiar with.
