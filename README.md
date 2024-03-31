@@ -445,7 +445,7 @@ Sendgrid | equals monthly limit
 
 ## Testing
 
-Integration tests require a locally running database, and an AWS SES account.
+Some integration tests require a locally running database, and an AWS SES account.
 Specify the following environment variables:
 
 - SMTP
