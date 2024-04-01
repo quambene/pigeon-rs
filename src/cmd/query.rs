@@ -27,15 +27,25 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 }
 
                 if matches.is_present(arg::SAVE) {
+                    let save_dir = Path::new(arg::value(arg::SAVE_DIR, matches)?);
+
                     // If argument 'FILE_TYPE' is not present the default value 'csv' will be used
                     match matches.value_of(arg::FILE_TYPE) {
                         Some(file_type) => match file_type {
                             "csv" => {
-                                let save_dir = Path::new(arg::value(arg::SAVE_DIR, matches)?);
                                 sources::write_csv(&mut df_query, save_dir, now)?;
                             }
-                            x if x == "jpg" => sources::write_image(matches, df_query, x)?,
-                            x if x == "png" => sources::write_image(matches, df_query, x)?,
+                            "jpg" | "png" => {
+                                let image_column = arg::value(arg::IMAGE_COLUMN, matches)?;
+                                let image_name = arg::value(arg::IMAGE_NAME, matches)?;
+                                sources::write_image(
+                                    save_dir,
+                                    image_column,
+                                    image_name,
+                                    df_query,
+                                    file_type,
+                                )?;
+                            }
                             _ => {
                                 return Err(anyhow!(
                                     "Value '{}' not supported for argument '{}'",
