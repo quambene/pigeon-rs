@@ -14,12 +14,11 @@ pub fn write_image(
     df: DataFrame,
     file_type: &str,
 ) -> Result<(), anyhow::Error> {
-    match target_dir.exists() {
-        true => (),
-        false => fs::create_dir(&target_dir).context(format!(
+    if !target_dir.exists() {
+        fs::create_dir(&target_dir).context(format!(
             "Can't create directory: '{}'",
             target_dir.display()
-        ))?,
+        ))?;
     }
 
     for i in 0..df.height() {
