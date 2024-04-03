@@ -36,17 +36,17 @@ impl BulkReceiver {
 
     pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         let column_name = arg::value(arg::RECEIVER_COLUMN, matches)?;
-        let receiver_query = matches.value_of(arg::RECEIVER_QUERY);
-        let receiver_path = matches.value_of(arg::RECEIVER_FILE).map(Path::new);
+        let receiver_query = matches.get_one::<&str>(arg::RECEIVER_QUERY);
+        let receiver_path = matches.get_one::<&str>(arg::RECEIVER_FILE).map(Path::new);
 
         match (receiver_query, receiver_path) {
             (Some(query), None) => {
                 let conn_vars = ConnVars::from_env()?;
-                let ssh_tunnel = matches.value_of(arg::SSH_TUNNEL);
+                let ssh_tunnel = matches.get_one::<&str>(arg::SSH_TUNNEL).map(|arg| *arg);
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
                 let df_receiver = sources::query_postgres(&connection, query)?;
 
-                if matches.is_present(arg::DISPLAY) {
+                if matches.contains_id(arg::DISPLAY) {
                     println!("Display query result: {}", df_receiver);
                 }
 
@@ -58,7 +58,7 @@ impl BulkReceiver {
             (None, Some(path)) => {
                 let df_receiver = sources::read_csv(path)?;
 
-                if matches.is_present(arg::DISPLAY) {
+                if matches.contains_id(arg::DISPLAY) {
                     println!("Display csv file: {}", df_receiver);
                 }
 

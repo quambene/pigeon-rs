@@ -5,7 +5,7 @@ fn main() -> Result<(), anyhow::Error> {
     let app = app();
     let matches = app.get_matches();
 
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 

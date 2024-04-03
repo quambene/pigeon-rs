@@ -4,17 +4,17 @@ use clap::ArgMatches;
 use std::path::PathBuf;
 
 pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    if matches.is_present(cmd::READ) {
-        match matches.value_of(cmd::READ) {
+    if matches.contains_id(cmd::READ) {
+        match matches.get_one::<&str>(cmd::READ) {
             Some(csv_file) => {
                 let path = PathBuf::from(csv_file);
                 let csv = sources::read_csv(&path)?;
 
-                if matches.is_present(arg::DISPLAY) {
+                if matches.contains_id(arg::DISPLAY) {
                     println!("Display csv file: {}", csv);
                 }
 

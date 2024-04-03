@@ -42,7 +42,7 @@ impl<'a> Client<'a> {
     }
 
     pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        if matches.is_present(arg::DRY_RUN) {
+        if matches.contains_id(arg::DRY_RUN) {
             let client = MockClient;
             return Ok(Client::new(TransmissionType::Dry, Box::new(client)));
         }

@@ -41,13 +41,13 @@ impl Message {
     }
 
     pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
-        if matches.is_present(arg::SUBJECT) && matches.is_present(arg::CONTENT) {
+        if matches.contains_id(arg::SUBJECT) && matches.contains_id(arg::CONTENT) {
             match (
-                matches.value_of(arg::SUBJECT),
-                matches.value_of(arg::CONTENT),
+                matches.get_one::<&str>(arg::SUBJECT),
+                matches.get_one::<&str>(arg::CONTENT),
             ) {
                 (Some(subject), Some(content)) => {
-                    let message = Message::new(subject, Some(content), None);
+                    let message = Message::new(*subject, Some(content), None);
                     Ok(message)
                 }
                 (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::CONTENT)),
@@ -58,22 +58,22 @@ impl Message {
                     arg::CONTENT
                 )),
             }
-        } else if matches.is_present(arg::MESSAGE_FILE) {
+        } else if matches.contains_id(arg::MESSAGE_FILE) {
             let message_file = arg::value(arg::MESSAGE_FILE, matches)?;
             let message_path = Path::new(message_file);
             let message = Message::read_yaml(message_path)?;
 
-            if matches.is_present(arg::DISPLAY) {
+            if matches.contains_id(arg::DISPLAY) {
                 println!("Display message file: {:#?}", message);
             }
 
             Ok(message)
-        } else if matches.is_present(arg::SUBJECT)
-            && (matches.is_present(arg::TEXT_FILE) || matches.is_present(arg::HTML_FILE))
+        } else if matches.contains_id(arg::SUBJECT)
+            && (matches.contains_id(arg::TEXT_FILE) || matches.contains_id(arg::HTML_FILE))
         {
             let subject = arg::value(arg::SUBJECT, matches)?;
-            let text_path = matches.value_of(arg::TEXT_FILE).map(Path::new);
-            let html_path = matches.value_of(arg::HTML_FILE).map(Path::new);
+            let text_path = matches.get_one::<&str>(arg::TEXT_FILE).map(Path::new);
+            let html_path = matches.get_one::<&str>(arg::HTML_FILE).map(Path::new);
             let text = if let Some(path) = text_path {
                 Some(utils::read_file(path)?)
             } else {

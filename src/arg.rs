@@ -40,8 +40,8 @@ pub mod val {
     pub const AWS: &str = "aws";
 }
 
-pub fn value<'a>(name: &str, matches: &'a ArgMatches<'a>) -> Result<&'a str, anyhow::Error> {
-    match matches.value_of(name) {
+pub fn value<'a>(name: &str, matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
+    match matches.get_one::<&str>(name) {
         Some(query) => Ok(query),
         None => Err(anyhow!("Missing value for argument '{}'", name)),
     }

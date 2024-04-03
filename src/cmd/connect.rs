@@ -8,12 +8,12 @@ use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 
 pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    if matches.is_present(cmd::CONNECT) {
-        match matches.value_of(cmd::CONNECT) {
+    if matches.contains_id(cmd::CONNECT) {
+        match matches.get_one::<&str>(cmd::CONNECT) {
             Some(connection) => match connection.to_lowercase().as_str() {
                 val::SMTP => {
                     let _client = SmtpClient::new()?;
