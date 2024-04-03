@@ -25,6 +25,9 @@ rust-toolchain
 # Config files
 **/*.yaml
 
+# Allow docker-compose.yaml
+!docker-compose.yaml
+
 # Data
 **/*.csv
 **/*.jpg
@@ -37,6 +40,3 @@ rust-toolchain
 
 # VS Code
 **/.vscode
-
-# Docker
-docker-compose.yaml
