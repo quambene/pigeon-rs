@@ -1,4 +1,10 @@
+/*
+    Pigeon is a command line tool for automating your email workflow.
+*/
+
+/// The supported arguments.
 pub mod arg;
+/// The supported subcommands.
 pub mod cmd;
 mod email_builder;
 mod email_formatter;
@@ -10,6 +16,7 @@ mod utils;
 use arg::val;
 use clap::{crate_name, crate_version, App, Arg, SubCommand};
 
+/// Create the CLI app to get the matches.
 pub fn app() -> App<'static, 'static> {
     App::new(crate_name!())
         .version(crate_version!())
