@@ -17,32 +17,26 @@ rust-toolchain
 # Environment
 **/.env
 
-### Keys
+# Keys
 **/*.jks
 **/*.p8
 **/*.pem
 
-### Config files
+# Config files
 **/*.yaml
 
-### Releases
-releases
+# Allow docker-compose.yaml
+!docker-compose.yaml
 
-### Data
-sent_emails
-my-sent-emails
-saved_queries
-my-saved-queries
+# Data
 **/*.csv
 **/*.jpg
 **/*.png
 **/*.pdf
 **/*.odt
 
-### Allow test data
+# Allow test data
 !test_data/*
-
-### IDEs
 
 # VS Code
 **/.vscode

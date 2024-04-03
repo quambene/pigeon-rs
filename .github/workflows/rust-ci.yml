@@ -5,6 +5,11 @@ on:
     pull_request:
 env:
   CARGO_TERM_COLOR: always
+  DB_HOST: 127.0.0.1
+  DB_PORT: 5432
+  DB_USER: pigeon
+  DB_PASSWORD: pigeon-pw
+  DB_NAME: pigeon-db
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -55,8 +60,12 @@ jobs:
     steps:
         - uses: actions/checkout@v4
         - uses: dtolnay/rust-toolchain@stable
+        - name: Start container
+          run: docker compose up -d
         - name: cargo test --test '*'
           run: cargo test --test '*' --locked
+        - name: Stop container
+          run: docker compose down -v
   os-test:
     runs-on: ${{ matrix.os }}
     name: os-test / ${{ matrix.os }}
@@ -69,8 +78,6 @@ jobs:
         - uses: dtolnay/rust-toolchain@stable
         - name: cargo test --lib
           run: cargo test --lib --locked
-        - name: cargo test --test '*'
-          run: cargo test --test '*' --locked
   doc-test:
     runs-on: ubuntu-latest
     steps:
@@ -90,8 +97,12 @@ jobs:
       - name: cargo generate-lockfile
         if: hashFiles('Cargo.lock') == ''
         run: cargo generate-lockfile
+      - name: Start container
+        run: docker compose up -d
       - name: cargo llvm-cov
         run: cargo llvm-cov --locked --all-features --lcov --output-path lcov.info
+      - name: Stop container
+        run: docker compose down -v
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v3
         with:
