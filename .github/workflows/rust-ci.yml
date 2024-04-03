@@ -51,26 +51,34 @@ jobs:
         - name: cargo test --lib
           run: cargo test --lib --locked
   integration-test:
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: pigeon
+      DB_PASSWORD: pigeon-pw
+      DB_NAME: pigeon-db
     runs-on: ubuntu-latest
     steps:
         - uses: actions/checkout@v4
         - uses: dtolnay/rust-toolchain@stable
+        - name: Start container
+          run: docker compose up -d
         - name: cargo test --test '*'
           run: cargo test --test '*' --locked
+        - name: Stop container
+          run: docker compose down -v
   os-test:
     runs-on: ${{ matrix.os }}
     name: os-test / ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
     steps:
         - uses: actions/checkout@v4
         - uses: dtolnay/rust-toolchain@stable
         - name: cargo test --lib
           run: cargo test --lib --locked
-        - name: cargo test --test '*'
-          run: cargo test --test '*' --locked
   doc-test:
     runs-on: ubuntu-latest
     steps:
