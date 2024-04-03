@@ -446,24 +446,14 @@ Sendgrid | equals monthly limit
 
 ## Testing
 
-Some integration tests require a locally running database, and an AWS SES
-account:
+Some integration tests require a locally running postgres database:
 
 1. Specify the following environment variables:
-   - SMTP
-     - `SMTP_SERVER`
-     - `SMTP_USERNAME`
-     - `SMTP_PASSWORD`
-   - AWS SES
-     - `AWS_ACCESS_KEY_ID`
-     - `AWS_SECRET_ACCESS_KEY`
-     - `AWS_REGION`
-   - Postgres
-     - `DB_HOST`
-     - `DB_PORT`
-     - `DB_USER`
-     - `DB_PASSWORD`
-     - `DB_NAME`
+    - `DB_HOST`
+    - `DB_PORT`
+    - `DB_USER`
+    - `DB_PASSWORD`
+    - `DB_NAME`
 2. Set up a temporary postgres db: `docker-compose run --rm --service-ports postgres`
 
 ``` bash
