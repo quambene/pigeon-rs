@@ -9,7 +9,7 @@ pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     if matches.contains_id(cmd::READ) {
-        match matches.get_one::<&str>(cmd::READ) {
+        match matches.get_one::<String>(cmd::READ) {
             Some(csv_file) => {
                 let path = PathBuf::from(csv_file);
                 let csv = sources::read_csv(&path)?;

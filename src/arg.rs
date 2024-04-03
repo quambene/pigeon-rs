@@ -41,7 +41,7 @@ pub mod val {
 }
 
 pub fn value<'a>(name: &str, matches: &'a ArgMatches) -> Result<&'a str, anyhow::Error> {
-    match matches.get_one::<&str>(name) {
+    match matches.get_one::<String>(name) {
         Some(query) => Ok(query),
         None => Err(anyhow!("Missing value for argument '{}'", name)),
     }

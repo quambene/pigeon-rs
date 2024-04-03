@@ -43,11 +43,11 @@ impl Message {
     pub fn from_args(matches: &ArgMatches) -> Result<Self, anyhow::Error> {
         if matches.contains_id(arg::SUBJECT) && matches.contains_id(arg::CONTENT) {
             match (
-                matches.get_one::<&str>(arg::SUBJECT),
-                matches.get_one::<&str>(arg::CONTENT),
+                matches.get_one::<String>(arg::SUBJECT),
+                matches.get_one::<String>(arg::CONTENT),
             ) {
                 (Some(subject), Some(content)) => {
-                    let message = Message::new(*subject, Some(content), None);
+                    let message = Message::new(subject, Some(content), None);
                     Ok(message)
                 }
                 (Some(_), None) => Err(anyhow!("Missing value for argument '{}'", arg::CONTENT)),
@@ -72,8 +72,8 @@ impl Message {
             && (matches.contains_id(arg::TEXT_FILE) || matches.contains_id(arg::HTML_FILE))
         {
             let subject = arg::value(arg::SUBJECT, matches)?;
-            let text_path = matches.get_one::<&str>(arg::TEXT_FILE).map(Path::new);
-            let html_path = matches.get_one::<&str>(arg::HTML_FILE).map(Path::new);
+            let text_path = matches.get_one::<String>(arg::TEXT_FILE).map(Path::new);
+            let html_path = matches.get_one::<String>(arg::HTML_FILE).map(Path::new);
             let text = if let Some(path) = text_path {
                 Some(utils::read_file(path)?)
             } else {

@@ -13,7 +13,7 @@ pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     }
 
     if matches.contains_id(cmd::CONNECT) {
-        match matches.get_one::<&str>(cmd::CONNECT) {
+        match matches.get_one::<String>(cmd::CONNECT) {
             Some(connection) => match connection.to_lowercase().as_str() {
                 val::SMTP => {
                     let _client = SmtpClient::new()?;

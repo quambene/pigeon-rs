@@ -21,11 +21,13 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receivers = BulkReceiver::from_args(matches)?;
     let message = Message::from_args(matches)?;
-    let attachment = matches.get_one::<&str>(arg::ATTACHMENT).map(Path::new);
+    let attachment = matches.get_one::<String>(arg::ATTACHMENT).map(Path::new);
 
     let bulk_email = if matches.contains_id(arg::PERSONALIZE) {
-        if let Some(personalized_columns) = matches.get_many::<&str>(arg::PERSONALIZE) {
-            let personalized_columns = personalized_columns.copied().collect::<Vec<_>>();
+        if let Some(personalized_columns) = matches.get_many::<String>(arg::PERSONALIZE) {
+            let personalized_columns = personalized_columns
+                .map(|arg| arg.as_ref())
+                .collect::<Vec<_>>();
             BulkEmail::new(
                 sender,
                 &receivers,
