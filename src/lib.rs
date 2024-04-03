@@ -372,3 +372,62 @@ pub fn app() -> Command {
                 ]),
         )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_send_args_subject_content() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test subject",
+            "--content",
+            "This is a test message (plaintext).",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
+
+    #[test]
+    fn test_send_args_text_file_html_file() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test subject",
+            "--text-file",
+            "./test_data/message.txt",
+            "--html-file",
+            "./test_data/message.html",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
+
+    #[test]
+    fn test_send_args_message_file() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
+}
