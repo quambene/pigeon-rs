@@ -18,7 +18,6 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 let now = Utc::now();
                 let conn_vars = ConnVars::from_env()?;
                 let ssh_tunnel = matches.value_of(arg::SSH_TUNNEL);
-
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
                 let mut df_query = sources::query_postgres(&connection, query)?;
 
