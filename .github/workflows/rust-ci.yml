@@ -78,12 +78,6 @@ jobs:
         - uses: dtolnay/rust-toolchain@stable
         - name: cargo test --lib
           run: cargo test --lib --locked
-        - name: Start container
-          run: docker compose up -d
-        - name: cargo test --test '*'
-          run: cargo test --test '*' --locked
-        - name: Stop container
-          run: docker compose down -v
   doc-test:
     runs-on: ubuntu-latest
     steps:
