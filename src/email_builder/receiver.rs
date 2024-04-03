@@ -42,7 +42,7 @@ impl BulkReceiver {
         match (receiver_query, receiver_path) {
             (Some(query), None) => {
                 let conn_vars = ConnVars::from_env()?;
-                let ssh_tunnel = matches.get_one::<&str>(arg::SSH_TUNNEL).map(|arg| *arg);
+                let ssh_tunnel = matches.get_one::<&str>(arg::SSH_TUNNEL).copied();
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
                 let df_receiver = sources::query_postgres(&connection, query)?;
 

@@ -25,7 +25,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     let bulk_email = if matches.contains_id(arg::PERSONALIZE) {
         if let Some(personalized_columns) = matches.get_many::<&str>(arg::PERSONALIZE) {
-            let personalized_columns = personalized_columns.map(|arg| *arg).collect::<Vec<_>>();
+            let personalized_columns = personalized_columns.copied().collect::<Vec<_>>();
             BulkEmail::new(
                 sender,
                 &receivers,
