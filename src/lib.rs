@@ -156,7 +156,7 @@ pub fn app() -> Command {
                     Arg::new(arg::SUBJECT)
                         .long(arg::SUBJECT)
                         .num_args(1)
-                        .required(true)
+                        .required(false)
                         .required_unless_present(arg::MESSAGE_FILE)
                         .help("Subject of the email"),
                     Arg::new(arg::CONTENT)
@@ -164,7 +164,7 @@ pub fn app() -> Command {
                         .num_args(1)
                         .required(false)
                         .requires(arg::SUBJECT)
-                        .required_unless_present_all([
+                        .required_unless_present_any([
                             arg::MESSAGE_FILE,
                             arg::TEXT_FILE,
                             arg::HTML_FILE,
@@ -175,7 +175,7 @@ pub fn app() -> Command {
                         .long(arg::MESSAGE_FILE)
                         .num_args(1)
                         .required(false)
-                        .required_unless_present_all([
+                        .required_unless_present_any([
                             arg::SUBJECT,
                             arg::CONTENT,
                             arg::TEXT_FILE,
