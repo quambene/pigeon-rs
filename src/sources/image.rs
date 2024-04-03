@@ -15,7 +15,7 @@ pub fn write_image(
     file_type: &str,
 ) -> Result<(), anyhow::Error> {
     if !target_dir.exists() {
-        fs::create_dir(&target_dir).context(format!(
+        fs::create_dir(target_dir).context(format!(
             "Can't create directory: '{}'",
             target_dir.display()
         ))?;
