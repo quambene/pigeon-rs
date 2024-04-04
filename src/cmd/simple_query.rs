@@ -4,13 +4,13 @@ use clap::ArgMatches;
 use postgres::{Client, NoTls, SimpleQueryMessage};
 
 pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    if matches.is_present(cmd::SIMPLE_QUERY) {
+    if matches.contains_id(cmd::SIMPLE_QUERY) {
         let conn_vars = ConnVars::from_env()?;
-        let simple_query = match matches.value_of(cmd::SIMPLE_QUERY) {
+        let simple_query = match matches.get_one::<String>(cmd::SIMPLE_QUERY) {
             Some(query) => query,
             None => {
                 return Err(anyhow!(

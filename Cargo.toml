@@ -30,7 +30,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.34"
 tokio = "1.37"
 csv = "1.3"
-clap = "2.33"
+clap = { version = "4.5.4", features = ["cargo"] }
 chrono = "0.4"
 polars = { version = "0.32", features = ["dtype-u8"] }
 connectorx = { version = "0.3.2", features = ["src_postgres", "dst_arrow2"] }

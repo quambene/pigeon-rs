@@ -11,21 +11,23 @@ use clap::ArgMatches;
 use std::{io, path::Path};
 
 pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
-    let dry_run = matches.is_present(arg::DRY_RUN);
-    let is_archived = matches.is_present(arg::ARCHIVE);
+    let dry_run = matches.contains_id(arg::DRY_RUN);
+    let is_archived = matches.contains_id(arg::ARCHIVE);
     let archive_dir = Path::new(arg::value(arg::ARCHIVE_DIR, matches)?);
     let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receivers = BulkReceiver::from_args(matches)?;
     let message = Message::from_args(matches)?;
-    let attachment = matches.value_of(arg::ATTACHMENT).map(Path::new);
+    let attachment = matches.get_one::<String>(arg::ATTACHMENT).map(Path::new);
 
-    let bulk_email = if matches.is_present(arg::PERSONALIZE) {
-        if let Some(personalized_columns) = matches.values_of(arg::PERSONALIZE) {
-            let personalized_columns = personalized_columns.collect::<Vec<&str>>();
+    let bulk_email = if matches.contains_id(arg::PERSONALIZE) {
+        if let Some(personalized_columns) = matches.get_many::<String>(arg::PERSONALIZE) {
+            let personalized_columns = personalized_columns
+                .map(|arg| arg.as_ref())
+                .collect::<Vec<_>>();
             BulkEmail::new(
                 sender,
                 &receivers,
@@ -42,7 +44,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let client = Client::from_args(matches)?;
     let eml_formatter = EmlFormatter::new(archive_dir)?;
 
-    if matches.is_present(arg::DISPLAY) {
+    if matches.contains_id(arg::DISPLAY) {
         println!("Display emails: {:#?}", bulk_email);
     }
 
@@ -50,7 +52,7 @@ pub fn send_bulk(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         println!("Dry run: {}", format_green("activated"));
     }
 
-    if matches.is_present(arg::ASSUME_YES) {
+    if matches.contains_id(arg::ASSUME_YES) {
         process_emails(
             &client,
             &eml_formatter,

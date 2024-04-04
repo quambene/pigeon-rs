@@ -14,315 +14,420 @@ mod sources;
 mod utils;
 
 use arg::val;
-use clap::{crate_name, crate_version, App, Arg, SubCommand};
+use clap::{crate_name, crate_version, Arg, Command};
 
 /// Create the CLI app to get the matches.
-pub fn app() -> App<'static, 'static> {
-    App::new(crate_name!())
+pub fn app() -> Command {
+    Command::new(crate_name!())
         .version(crate_version!())
         .arg(
-            clap::Arg::with_name(arg::VERBOSE)
+            clap::Arg::new(arg::VERBOSE)
                 .long(arg::VERBOSE)
-                .takes_value(false)
+                .required(false)
                 .help("Shows what is going on"),
         )
         .subcommand(
-            SubCommand::with_name(cmd::INIT)
+            Command::new(cmd::INIT)
                 .about("Create template files in current directory")
-                .args(&[Arg::with_name(arg::VERBOSE)
+                .args(&[Arg::new(arg::VERBOSE)
                     .long(arg::VERBOSE)
-                    .takes_value(false)
+                    .required(false)
                     .help("Shows what is going on for subcommand")]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::CONNECT)
+            Command::new(cmd::CONNECT)
                 .about("Check connection to SMTP server or email provider")
                 .args(&[
-                    Arg::with_name(cmd::CONNECT)
-                        .takes_value(true)
-                        .possible_values(&[val::SMTP, val::AWS])
+                    Arg::new(cmd::CONNECT)
+                        .required(true)
+                        .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Check connection to SMTP server."),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
                 ]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::QUERY)
+            Command::new(cmd::QUERY)
                 .about("Query database and display results in terminal (select statements only)")
                 .args(&[
-                    Arg::with_name(cmd::QUERY)
+                    Arg::new(cmd::QUERY)
                         .index(1)
+                        .num_args(1)
                         .required(true)
-                        .takes_value(true)
                         .help("Takes a sql query"),
-                    Arg::with_name(arg::SSH_TUNNEL)
+                    Arg::new(arg::SSH_TUNNEL)
                         .long(arg::SSH_TUNNEL)
                         .value_name("port")
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .help("Connect to db through ssh tunnel"),
-                    Arg::with_name(arg::SAVE)
+                    Arg::new(arg::SAVE)
                         .long(arg::SAVE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Save query result"),
-                    Arg::with_name(arg::SAVE_DIR)
+                    Arg::new(arg::SAVE_DIR)
                         .long(arg::SAVE_DIR)
-                        .takes_value(true)
+                        .num_args(1)
                         .default_value("./saved_queries")
                         .help("Specifies the output directory for saved query"),
-                    Arg::with_name(arg::FILE_TYPE)
+                    Arg::new(arg::FILE_TYPE)
                         .long(arg::FILE_TYPE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .default_value("csv")
-                        .possible_values(&["csv", "jpg", "png"])
+                        .value_parser(["csv", "jpg", "png"])
                         .help("Specifies the file type for saved query"),
-                    Arg::with_name(arg::IMAGE_COLUMN)
+                    Arg::new(arg::IMAGE_COLUMN)
                         .long(arg::IMAGE_COLUMN)
-                        .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
+                        .required_if_eq_any([(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
                         .help("Specifies the column in which to look for images"),
-                    Arg::with_name(arg::IMAGE_NAME)
+                    Arg::new(arg::IMAGE_NAME)
                         .long(arg::IMAGE_NAME)
-                        .required_ifs(&[(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
+                        .required_if_eq_any([(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
                         .help("Specifies the column used for the image name"),
-                    Arg::with_name(arg::DISPLAY)
+                    Arg::new(arg::DISPLAY)
                         .long(arg::DISPLAY)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Print query result to terminal"),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .num_args(1)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
                 ]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::SIMPLE_QUERY)
+            Command::new(cmd::SIMPLE_QUERY)
                 .about("Simple query using the simple query protocol")
                 .args(&[
-                    Arg::with_name(cmd::SIMPLE_QUERY)
+                    Arg::new(cmd::SIMPLE_QUERY)
                         .index(1)
                         .required(true)
-                        .takes_value(true)
                         .help("Takes a sql query"),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
                 ]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::READ)
+            Command::new(cmd::READ)
                 .about("Read csv file and display results in terminal")
                 .args(&[
-                    Arg::with_name(cmd::READ).required(true).takes_value(true),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(cmd::READ).num_args(1).required(true),
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
-                    Arg::with_name(arg::DISPLAY)
+                    Arg::new(arg::DISPLAY)
                         .long(arg::DISPLAY)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Display csv file in terminal"),
                 ]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::SEND)
+            Command::new(cmd::SEND)
                 .about("Send email to single recipient")
                 .args(&[
-                    Arg::with_name(arg::SENDER)
+                    Arg::new(arg::SENDER)
                         .index(1)
+                        .num_args(1)
                         .required(true)
-                        .takes_value(true)
-                        .requires_all(&[arg::RECEIVER])
+                        .requires_all([arg::RECEIVER])
                         .help("Email address of the sender"),
-                    Arg::with_name(arg::RECEIVER)
+                    Arg::new(arg::RECEIVER)
                         .index(2)
+                        .num_args(1)
                         .required(true)
-                        .takes_value(true)
-                        .requires_all(&[arg::SENDER])
+                        .requires_all([arg::SENDER])
                         .help("Email address of the receiver"),
-                    Arg::with_name(arg::SUBJECT)
+                    Arg::new(arg::SUBJECT)
                         .long(arg::SUBJECT)
-                        .takes_value(true)
-                        .required_unless_one(&[arg::MESSAGE_FILE])
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present(arg::MESSAGE_FILE)
                         .help("Subject of the email"),
-                    Arg::with_name(arg::CONTENT)
+                    Arg::new(arg::CONTENT)
                         .long(arg::CONTENT)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .required_unless_one(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-                        .conflicts_with_all(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
+                        .required_unless_present_any([
+                            arg::MESSAGE_FILE,
+                            arg::TEXT_FILE,
+                            arg::HTML_FILE,
+                        ])
+                        .conflicts_with_all([arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
                         .help("Content of the email"),
-                    Arg::with_name(arg::MESSAGE_FILE)
+                    Arg::new(arg::MESSAGE_FILE)
                         .long(arg::MESSAGE_FILE)
-                        .takes_value(true)
-                        .required_unless_one(&[
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present_any([
                             arg::SUBJECT,
                             arg::CONTENT,
                             arg::TEXT_FILE,
                             arg::HTML_FILE,
                         ])
-                        .conflicts_with_all(&[arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
                         .help("Path of the message file"),
-                    Arg::with_name(arg::TEXT_FILE)
+                    Arg::new(arg::TEXT_FILE)
                         .long(arg::TEXT_FILE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::MESSAGE_FILE])
                         .help("Path of text file"),
-                    Arg::with_name(arg::HTML_FILE)
+                    Arg::new(arg::HTML_FILE)
                         .long(arg::HTML_FILE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::MESSAGE_FILE])
                         .help("Path of html file"),
-                    Arg::with_name(arg::ATTACHMENT)
+                    Arg::new(arg::ATTACHMENT)
                         .long(arg::ATTACHMENT)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .help("Path of attachment"),
-                    Arg::with_name(arg::ARCHIVE)
+                    Arg::new(arg::ARCHIVE)
                         .long(arg::ARCHIVE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Archive sent emails"),
-                    Arg::with_name(arg::ARCHIVE_DIR)
+                    Arg::new(arg::ARCHIVE_DIR)
                         .long(arg::ARCHIVE_DIR)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .default_value("./sent_emails")
                         .help("Path of sent emails"),
-                    Arg::with_name(arg::DISPLAY)
+                    Arg::new(arg::DISPLAY)
                         .long(arg::DISPLAY)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Display email in terminal"),
-                    Arg::with_name(arg::DRY_RUN)
+                    Arg::new(arg::DRY_RUN)
                         .long(arg::DRY_RUN)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Prepare email but do not send email"),
-                    Arg::with_name(arg::ASSUME_YES)
+                    Arg::new(arg::ASSUME_YES)
                         .long(arg::ASSUME_YES)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Send email without confirmation"),
-                    Arg::with_name(arg::CONNECTION)
+                    Arg::new(arg::CONNECTION)
                         .long(arg::CONNECTION)
-                        .takes_value(true)
-                        .possible_values(&[val::SMTP, val::AWS])
+                        .num_args(1)
+                        .required(false)
+                        .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Send emails via SMTP or AWS API"),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
                 ]),
         )
         .subcommand(
-            SubCommand::with_name(cmd::SEND_BULK)
+            Command::new(cmd::SEND_BULK)
                 .about("Send email to multiple recipients")
                 .args(&[
-                    Arg::with_name(arg::SENDER)
+                    Arg::new(arg::SENDER)
                         .index(1)
+                        .num_args(1)
                         .required(true)
-                        .takes_value(true)
                         .help("Email address of the sender"),
-                    Arg::with_name(arg::RECEIVER_FILE)
+                    Arg::new(arg::RECEIVER_FILE)
                         .long(arg::RECEIVER_FILE)
-                        .required_unless(arg::RECEIVER_QUERY)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present(arg::RECEIVER_QUERY)
                         .help(
                             "Email addresses of multiple receivers fetched from provided csv file",
                         ),
-                    Arg::with_name(arg::RECEIVER_QUERY)
+                    Arg::new(arg::RECEIVER_QUERY)
                         .long(arg::RECEIVER_QUERY)
-                        .required_unless(arg::RECEIVER_FILE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present(arg::RECEIVER_FILE)
                         .help("Email addresses of multiple receivers fetched from provided query"),
-                    Arg::with_name(arg::SUBJECT)
+                    Arg::new(arg::SUBJECT)
                         .long(arg::SUBJECT)
-                        .takes_value(true)
-                        .required_unless_one(&[arg::MESSAGE_FILE])
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present(arg::MESSAGE_FILE)
                         .help("Subject of the email"),
-                    Arg::with_name(arg::CONTENT)
+                    Arg::new(arg::CONTENT)
                         .long(arg::CONTENT)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .required_unless_one(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
-                        .conflicts_with_all(&[arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
+                        .required_unless_present_any([
+                            arg::MESSAGE_FILE,
+                            arg::TEXT_FILE,
+                            arg::HTML_FILE,
+                        ])
+                        .conflicts_with_all([arg::MESSAGE_FILE, arg::TEXT_FILE, arg::HTML_FILE])
                         .help("Content of the email"),
-                    Arg::with_name(arg::MESSAGE_FILE)
+                    Arg::new(arg::MESSAGE_FILE)
                         .long(arg::MESSAGE_FILE)
-                        .takes_value(true)
-                        .required_unless_one(&[
+                        .num_args(1)
+                        .required(false)
+                        .required_unless_present_any([
                             arg::SUBJECT,
                             arg::CONTENT,
                             arg::TEXT_FILE,
                             arg::HTML_FILE,
                         ])
-                        .conflicts_with_all(&[arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::TEXT_FILE, arg::HTML_FILE])
                         .help("Path of the message file"),
-                    Arg::with_name(arg::TEXT_FILE)
+                    Arg::new(arg::TEXT_FILE)
                         .long(arg::TEXT_FILE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::MESSAGE_FILE])
                         .help("Path of text file"),
-                    Arg::with_name(arg::HTML_FILE)
+                    Arg::new(arg::HTML_FILE)
                         .long(arg::HTML_FILE)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .requires(arg::SUBJECT)
-                        .conflicts_with_all(&[arg::CONTENT, arg::MESSAGE_FILE])
+                        .conflicts_with_all([arg::CONTENT, arg::MESSAGE_FILE])
                         .help("Path of html file"),
-                    Arg::with_name(arg::ATTACHMENT)
+                    Arg::new(arg::ATTACHMENT)
                         .long(arg::ATTACHMENT)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .help("Path of attachment"),
-                    Arg::with_name(arg::ARCHIVE)
+                    Arg::new(arg::ARCHIVE)
                         .long(arg::ARCHIVE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Archive sent emails"),
-                    Arg::with_name(arg::ARCHIVE_DIR)
+                    Arg::new(arg::ARCHIVE_DIR)
                         .long(arg::ARCHIVE_DIR)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .default_value("./sent_emails")
                         .help("Path of sent emails"),
-                    Arg::with_name(arg::RECEIVER_COLUMN)
+                    Arg::new(arg::RECEIVER_COLUMN)
                         .long(arg::RECEIVER_COLUMN)
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .default_value(val::EMAIL)
                         .help("Specifies the column in which to look for email addresses"),
-                    Arg::with_name(arg::PERSONALIZE)
+                    Arg::new(arg::PERSONALIZE)
                         .long(arg::PERSONALIZE)
-                        .takes_value(true)
-                        .multiple(true)
-                        .max_values(100)
+                        .num_args(0..100)
+                        .required(false)
                         .help("Personalizes email for variables defined in the message template"),
-                    Arg::with_name(arg::DISPLAY)
+                    Arg::new(arg::DISPLAY)
                         .long(arg::DISPLAY)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Print emails to terminal"),
-                    Arg::with_name(arg::DRY_RUN)
+                    Arg::new(arg::DRY_RUN)
                         .long(arg::DRY_RUN)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Prepare emails but do not send emails"),
-                    Arg::with_name(arg::ASSUME_YES)
+                    Arg::new(arg::ASSUME_YES)
                         .long(arg::ASSUME_YES)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Send emails without confirmation"),
-                    Arg::with_name(arg::SSH_TUNNEL)
+                    Arg::new(arg::SSH_TUNNEL)
                         .long(arg::SSH_TUNNEL)
                         .value_name("port")
-                        .takes_value(true)
+                        .num_args(1)
+                        .required(false)
                         .help("Query db through ssh tunnel"),
-                    Arg::with_name(arg::CONNECTION)
+                    Arg::new(arg::CONNECTION)
                         .long(arg::CONNECTION)
-                        .takes_value(true)
-                        .possible_values(&[val::SMTP, val::AWS])
+                        .num_args(1)
+                        .required(false)
+                        .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Send emails via SMTP or AWS API"),
-                    Arg::with_name(arg::VERBOSE)
+                    Arg::new(arg::VERBOSE)
                         .long(arg::VERBOSE)
-                        .takes_value(false)
+                        .num_args(0)
+                        .required(false)
                         .help("Shows what is going on for subcommand"),
                 ]),
         )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_send_args_subject_content() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test subject",
+            "--content",
+            "This is a test message (plaintext).",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
+
+    #[test]
+    fn test_send_args_text_file_html_file() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--subject",
+            "Test subject",
+            "--text-file",
+            "./test_data/message.txt",
+            "--html-file",
+            "./test_data/message.html",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
+
+    #[test]
+    fn test_send_args_message_file() {
+        let args = vec![
+            "pigeon",
+            "send",
+            "albert@einstein.com",
+            "marie@curie.com",
+            "--message-file",
+            "./test_data/message.yaml",
+        ];
+        let app = app();
+        let matches = app.get_matches_from(args);
+        let subcommand_matches = matches.subcommand_matches("send");
+        assert!(subcommand_matches.is_some());
+    }
 }

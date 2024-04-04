@@ -4,7 +4,7 @@ use clap::ArgMatches;
 use std::{env, io};
 
 pub fn init(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.is_present(arg::VERBOSE) {
+    if matches.contains_id(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
