@@ -5,6 +5,7 @@
 - changed
   - Refactor integration tests
   - Update to rust 1.77
+  - Update dependencies
 
 ### v0.4.0 (2022-12-24)
 
