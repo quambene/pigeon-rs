@@ -7,7 +7,7 @@
 */
 
 use assert_cmd::Command;
-use predicates::str;
+use predicates::{boolean::PredicateBooleanExt, str};
 use std::fs;
 use tempfile::tempdir;
 
@@ -90,8 +90,17 @@ fn test_query_save_png() {
         "--image-name",
         image_name,
     ]);
-    cmd.assert().success().stdout(str::contains(format!(
-        "Save query result to file: {}/1.png",
-        temp_path.display()
-    )));
+    cmd.assert()
+        .success()
+        .stdout(
+            str::contains("Display query result: shape: (1, 2)").and(str::contains(format!(
+                "Save query result to file: {}/1.png",
+                temp_path.display()
+            ))),
+        );
+
+    let image_path = temp_path.join("1.png");
+    let actual = fs::read(image_path).unwrap();
+    let expected = fs::read("./test_data/test.png").unwrap();
+    assert_eq!(actual, expected);
 }
