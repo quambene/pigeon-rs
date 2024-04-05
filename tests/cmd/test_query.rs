@@ -32,7 +32,7 @@ fn test_query_display() {
 }
 
 #[test]
-fn test_query_save() {
+fn test_query_save_csv() {
     let test_query = "select email, first_name, last_name from account";
     let temp_dir = tempdir().unwrap();
     let temp_path = temp_dir.path();
@@ -60,4 +60,38 @@ fn test_query_save() {
         });
         assert!(dir_entry.is_some());
     }
+}
+
+#[test]
+fn test_query_save_png() {
+    let test_query = "select id, image from images";
+    let temp_dir = tempdir().unwrap();
+    let temp_path = temp_dir.path();
+    assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
+    let save_dir = temp_path.to_str().unwrap();
+    let file_type = "png";
+    let image_column = "image";
+    let image_name = "id";
+
+    println!(
+        "Execute 'pigeon query {test_query} --save --save-dir {save_dir} --file-type {file_type} --image-column {image_column} --image-name {image_name}'"
+    );
+    let mut cmd = Command::cargo_bin("pigeon").unwrap();
+    cmd.args([
+        "query",
+        test_query,
+        "--save",
+        "--save-dir",
+        "./",
+        "--file-type",
+        file_type,
+        "--image-column",
+        image_column,
+        "--image-name",
+        image_name,
+    ]);
+    cmd.assert().success().stdout(str::contains(format!(
+        "Save query result to file: {}/1.png",
+        temp_path.display()
+    )));
 }
