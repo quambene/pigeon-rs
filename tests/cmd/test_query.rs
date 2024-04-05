@@ -82,7 +82,7 @@ fn test_query_save_png() {
         test_query,
         "--save",
         "--save-dir",
-        "./",
+        save_dir,
         "--file-type",
         file_type,
         "--image-column",
