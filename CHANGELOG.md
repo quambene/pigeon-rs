@@ -5,6 +5,8 @@
 - changed
   - Refactor integration tests
   - Update to rust 1.77
+  - Update dependencies
+  - Fix `sources::write_image` (invalid series dtype: expected `List`, got `binary`)
 
 ### v0.4.0 (2022-12-24)
 

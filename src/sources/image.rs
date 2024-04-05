@@ -51,23 +51,15 @@ pub fn write_image(
         let image = df
             .column(image_column)
             .context("Can't find column for images")?
-            .list()
+            .binary()
             .context("Can't convert series to chunked array")?
             .get(i);
 
         println!("Save query result to file: {}", target_path.display());
 
-        if let Some(image) = image {
-            let bytes = image
-                .u8()
-                .context("Can't convert series to chunked array")?
-                .into_iter()
-                .map(|byte| byte.expect("Can't convert series to bytes"))
-                .collect::<Vec<_>>();
-
+        if let Some(bytes) = image {
             let mut file = File::create(target_path).context("Unable to create file")?;
-            file.write_all(bytes.as_slice())
-                .context("Unable to write file.")?;
+            file.write_all(bytes).context("Unable to write file.")?;
         }
     }
 
