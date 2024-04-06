@@ -2,8 +2,15 @@
 
 ### Unreleased
 
+- added
 - changed
-  - Refactor integration tests
+- removed
+
+### v0.4.1 (2024-04-06)
+
+- added
+  - Add tests
+- changed
   - Update to rust 1.77
   - Update dependencies
   - Fix `sources::write_image` (invalid series dtype: expected `List`, got `binary`)
@@ -13,7 +20,7 @@
 - added
   - Add CI pipeline
 - removed
-  - Remove unnecessary cargo feature "different-binary-name"
+  - Remove cargo feature `different-binary-name`
   - Remove nightly
 
 ### v0.3.0 (2022-07-09)
