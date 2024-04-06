@@ -44,7 +44,7 @@ pub fn write_image(
             ),
         };
 
-        let image_name = image_name.unwrap_or(Uuid::new_v4().to_hyphenated().to_string());
+        let image_name = image_name.unwrap_or(Uuid::new_v4().to_string());
         let target_file = image_name + "." + file_type;
         let target_path = target_dir.join(target_file);
 
