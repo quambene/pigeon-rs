@@ -5,6 +5,7 @@ use crate::{
     utils::format_green,
 };
 use anyhow::{Context, Result};
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
 use bytes::Bytes;
 use clap::ArgMatches;
 use rusoto_core::{HttpClient, Region};
@@ -59,7 +60,7 @@ impl<'a> SendEmail<'a> for AwsSesClient {
     #[tokio::main]
     async fn send(&self, email: &'a Email<'a>) -> Result<SentEmail<'a>, anyhow::Error> {
         let raw_message = RawMessage {
-            data: Bytes::from(base64::encode(email.mime_format.message.formatted())),
+            data: Bytes::from(BASE64.encode(email.mime_format.message.formatted())),
         };
         let request = SendRawEmailRequest {
             raw_message,
