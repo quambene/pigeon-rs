@@ -1703,7 +1703,7 @@ version = "0.4.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
- "base64 0.13.1",
+ "base64 0.22.0",
  "bytes",
  "chrono",
  "clap",
@@ -1722,7 +1722,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "url",
- "uuid 0.8.2",
+ "uuid 1.8.0",
  "yaml-rust",
 ]
 
@@ -3262,9 +3262,6 @@ name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
-dependencies = [
- "getrandom",
-]
 
 [[package]]
 name = "uuid"
