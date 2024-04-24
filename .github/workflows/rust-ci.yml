@@ -14,58 +14,58 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo check
-          run: cargo check
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo check
+        run: cargo check
   clippy:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo clippy --all-features --all-targets -- -D warnings
-          run: cargo clippy --all-features --all-targets -- -D warnings
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo clippy --all-features --all-targets -- -D warnings
+        run: cargo clippy --all-features --all-targets -- -D warnings
   doc:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo doc
-          run: cargo doc --no-deps --all-features
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo doc
+        run: cargo doc --no-deps --all-features
   fmt:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo fmt --check
-          run: cargo fmt --check
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo fmt --check
+        run: cargo fmt --check
   fmt-nightly:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@nightly
-          with:
-            components: rustfmt
-        - name: cargo +nightly fmt --check
-          run: cargo +nightly fmt --check
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - name: cargo +nightly fmt --check
+        run: cargo +nightly fmt --check
   test:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo test --lib
-          run: cargo test --lib --locked
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test --lib
+        run: cargo test --lib --locked
   integration-test:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: Start container
-          run: docker compose up -d
-        - name: cargo test --test '*'
-          run: cargo test --test '*' --locked
-        - name: Stop container
-          run: docker compose down -v
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Start container
+        run: docker compose up -d
+      - name: cargo test --test '*'
+        run: cargo test --test '*' --locked
+      - name: Stop container
+        run: docker compose down -v
   os-test:
     runs-on: ${{ matrix.os }}
     name: os-test / ${{ matrix.os }}
@@ -74,17 +74,17 @@ jobs:
       matrix:
         os: [macos-latest]
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo test --lib
-          run: cargo test --lib --locked
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test --lib
+        run: cargo test --lib --locked
   doc-test:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
-        - uses: dtolnay/rust-toolchain@stable
-        - name: cargo test --doc
-          run: cargo test --locked --doc
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo test --doc
+        run: cargo test --locked --doc
   coverage:
     runs-on: ubuntu-latest
     steps:
@@ -104,7 +104,7 @@ jobs:
       - name: Stop container
         run: docker compose down -v
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
-          files: lcov.info
           fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
