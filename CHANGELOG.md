@@ -6,6 +6,11 @@
 - changed
 - removed
 
+### v0.4.2 (2024-05-03)
+
+- changed
+  - Fix flags
+
 ### v0.4.1 (2024-04-06)
 
 - added
