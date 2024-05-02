@@ -21,18 +21,16 @@ pub fn app() -> Command {
     Command::new(crate_name!())
         .version(crate_version!())
         .arg(
-            clap::Arg::new(arg::VERBOSE)
+            Arg::new(arg::VERBOSE)
                 .long(arg::VERBOSE)
+                .num_args(0)
                 .required(false)
                 .help("Shows what is going on"),
         )
         .subcommand(
             Command::new(cmd::INIT)
                 .about("Create template files in current directory")
-                .args(&[Arg::new(arg::VERBOSE)
-                    .long(arg::VERBOSE)
-                    .required(false)
-                    .help("Shows what is going on for subcommand")]),
+                .args(&[verbose()]),
         )
         .subcommand(
             Command::new(cmd::CONNECT)
@@ -43,10 +41,7 @@ pub fn app() -> Command {
                         .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Check connection to SMTP server."),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
+                    verbose(),
                 ]),
         )
         .subcommand(
@@ -93,16 +88,8 @@ pub fn app() -> Command {
                         .required(false)
                         .required_if_eq_any([(arg::FILE_TYPE, "jpg"), (arg::FILE_TYPE, "png")])
                         .help("Specifies the column used for the image name"),
-                    Arg::new(arg::DISPLAY)
-                        .long(arg::DISPLAY)
-                        .num_args(0)
-                        .required(false)
-                        .help("Print query result to terminal"),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .num_args(1)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
+                    display().help("Print query result to terminal"),
+                    verbose(),
                 ]),
         )
         .subcommand(
@@ -113,11 +100,7 @@ pub fn app() -> Command {
                         .index(1)
                         .required(true)
                         .help("Takes a sql query"),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
+                    verbose(),
                 ]),
         )
         .subcommand(
@@ -125,16 +108,8 @@ pub fn app() -> Command {
                 .about("Read csv file and display results in terminal")
                 .args(&[
                     Arg::new(cmd::READ).num_args(1).required(true),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
-                    Arg::new(arg::DISPLAY)
-                        .long(arg::DISPLAY)
-                        .num_args(0)
-                        .required(false)
-                        .help("Display csv file in terminal"),
+                    verbose(),
+                    display().help("Display csv file in terminal"),
                 ]),
         )
         .subcommand(
@@ -202,32 +177,11 @@ pub fn app() -> Command {
                         .num_args(1)
                         .required(false)
                         .help("Path of attachment"),
-                    Arg::new(arg::ARCHIVE)
-                        .long(arg::ARCHIVE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Archive sent emails"),
-                    Arg::new(arg::ARCHIVE_DIR)
-                        .long(arg::ARCHIVE_DIR)
-                        .num_args(1)
-                        .required(false)
-                        .default_value("./sent_emails")
-                        .help("Path of sent emails"),
-                    Arg::new(arg::DISPLAY)
-                        .long(arg::DISPLAY)
-                        .num_args(0)
-                        .required(false)
-                        .help("Display email in terminal"),
-                    Arg::new(arg::DRY_RUN)
-                        .long(arg::DRY_RUN)
-                        .num_args(0)
-                        .required(false)
-                        .help("Prepare email but do not send email"),
-                    Arg::new(arg::ASSUME_YES)
-                        .long(arg::ASSUME_YES)
-                        .num_args(0)
-                        .required(false)
-                        .help("Send email without confirmation"),
+                    archive(),
+                    archive_dir(),
+                    display().help("Display email in terminal"),
+                    dry_run().help("Prepare email but do not send email"),
+                    assume_yes().help("Send email without confirmation"),
                     Arg::new(arg::CONNECTION)
                         .long(arg::CONNECTION)
                         .num_args(1)
@@ -235,11 +189,7 @@ pub fn app() -> Command {
                         .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Send emails via SMTP or AWS API"),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
+                    verbose(),
                 ]),
         )
         .subcommand(
@@ -314,17 +264,8 @@ pub fn app() -> Command {
                         .num_args(1)
                         .required(false)
                         .help("Path of attachment"),
-                    Arg::new(arg::ARCHIVE)
-                        .long(arg::ARCHIVE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Archive sent emails"),
-                    Arg::new(arg::ARCHIVE_DIR)
-                        .long(arg::ARCHIVE_DIR)
-                        .num_args(1)
-                        .required(false)
-                        .default_value("./sent_emails")
-                        .help("Path of sent emails"),
+                    archive(),
+                    archive_dir(),
                     Arg::new(arg::RECEIVER_COLUMN)
                         .long(arg::RECEIVER_COLUMN)
                         .num_args(1)
@@ -336,21 +277,9 @@ pub fn app() -> Command {
                         .num_args(0..100)
                         .required(false)
                         .help("Personalizes email for variables defined in the message template"),
-                    Arg::new(arg::DISPLAY)
-                        .long(arg::DISPLAY)
-                        .num_args(0)
-                        .required(false)
-                        .help("Print emails to terminal"),
-                    Arg::new(arg::DRY_RUN)
-                        .long(arg::DRY_RUN)
-                        .num_args(0)
-                        .required(false)
-                        .help("Prepare emails but do not send emails"),
-                    Arg::new(arg::ASSUME_YES)
-                        .long(arg::ASSUME_YES)
-                        .num_args(0)
-                        .required(false)
-                        .help("Send emails without confirmation"),
+                    display().help("Print emails to terminal"),
+                    dry_run().help("Prepare emails but do not send emails"),
+                    assume_yes().help("Send emails without confirmation"),
                     Arg::new(arg::SSH_TUNNEL)
                         .long(arg::SSH_TUNNEL)
                         .value_name("port")
@@ -364,13 +293,55 @@ pub fn app() -> Command {
                         .value_parser([val::SMTP, val::AWS])
                         .default_value(val::SMTP)
                         .help("Send emails via SMTP or AWS API"),
-                    Arg::new(arg::VERBOSE)
-                        .long(arg::VERBOSE)
-                        .num_args(0)
-                        .required(false)
-                        .help("Shows what is going on for subcommand"),
+                    verbose(),
                 ]),
         )
+}
+
+fn verbose() -> Arg {
+    Arg::new(arg::VERBOSE)
+        .long(arg::VERBOSE)
+        .num_args(0)
+        .required(false)
+        .help("Shows what is going on for subcommand")
+}
+
+fn display() -> Arg {
+    Arg::new(arg::DISPLAY)
+        .long(arg::DISPLAY)
+        .num_args(0)
+        .required(false)
+}
+
+fn dry_run() -> Arg {
+    Arg::new(arg::DRY_RUN)
+        .long(arg::DRY_RUN)
+        .num_args(0)
+        .required(false)
+}
+
+fn assume_yes() -> Arg {
+    Arg::new(arg::ASSUME_YES)
+        .long(arg::ASSUME_YES)
+        .num_args(0)
+        .required(false)
+}
+
+fn archive() -> Arg {
+    Arg::new(arg::ARCHIVE)
+        .long(arg::ARCHIVE)
+        .num_args(0)
+        .required(false)
+        .help("Archive sent emails")
+}
+
+fn archive_dir() -> Arg {
+    Arg::new(arg::ARCHIVE_DIR)
+        .long(arg::ARCHIVE_DIR)
+        .num_args(1)
+        .required(false)
+        .default_value("./sent_emails")
+        .help("Path of sent emails")
 }
 
 #[cfg(test)]
@@ -391,8 +362,26 @@ mod tests {
         ];
         let app = app();
         let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches("send");
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND);
+        dbg!(&subcommand_matches);
         assert!(subcommand_matches.is_some());
+
+        let subcommand_matches = subcommand_matches.unwrap();
+        assert!(subcommand_matches.contains_id(arg::SUBJECT));
+        assert!(subcommand_matches.contains_id(arg::CONTENT));
+        assert!(!subcommand_matches.contains_id(arg::ATTACHMENT));
+        assert!(!subcommand_matches.get_flag(arg::VERBOSE));
+        assert!(!subcommand_matches.get_flag(arg::DRY_RUN));
+        assert!(!subcommand_matches.get_flag(arg::DISPLAY));
+        assert!(!subcommand_matches.get_flag(arg::ASSUME_YES));
+        assert!(!subcommand_matches.get_flag(arg::ARCHIVE));
+        assert!(subcommand_matches.contains_id(arg::ARCHIVE_DIR));
+        assert_eq!(
+            subcommand_matches
+                .get_one::<String>(arg::ARCHIVE_DIR)
+                .unwrap(),
+            "./sent_emails"
+        );
     }
 
     #[test]
@@ -411,8 +400,26 @@ mod tests {
         ];
         let app = app();
         let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches("send");
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND);
         assert!(subcommand_matches.is_some());
+
+        let subcommand_matches = subcommand_matches.unwrap();
+        assert!(subcommand_matches.contains_id(arg::SUBJECT));
+        assert!(subcommand_matches.contains_id(arg::TEXT_FILE));
+        assert!(subcommand_matches.contains_id(arg::HTML_FILE));
+        assert!(!subcommand_matches.contains_id(arg::ATTACHMENT));
+        assert!(!subcommand_matches.get_flag(arg::VERBOSE));
+        assert!(!subcommand_matches.get_flag(arg::DRY_RUN));
+        assert!(!subcommand_matches.get_flag(arg::DISPLAY));
+        assert!(!subcommand_matches.get_flag(arg::ASSUME_YES));
+        assert!(!subcommand_matches.get_flag(arg::ARCHIVE));
+        assert!(subcommand_matches.contains_id(arg::ARCHIVE_DIR));
+        assert_eq!(
+            subcommand_matches
+                .get_one::<String>(arg::ARCHIVE_DIR)
+                .unwrap(),
+            "./sent_emails"
+        );
     }
 
     #[test]
@@ -427,7 +434,23 @@ mod tests {
         ];
         let app = app();
         let matches = app.get_matches_from(args);
-        let subcommand_matches = matches.subcommand_matches("send");
+        let subcommand_matches = matches.subcommand_matches(cmd::SEND);
         assert!(subcommand_matches.is_some());
+
+        let subcommand_matches = subcommand_matches.unwrap();
+        assert!(subcommand_matches.contains_id(arg::MESSAGE_FILE));
+        assert!(!subcommand_matches.contains_id(arg::ATTACHMENT));
+        assert!(!subcommand_matches.get_flag(arg::VERBOSE));
+        assert!(!subcommand_matches.get_flag(arg::DRY_RUN));
+        assert!(!subcommand_matches.get_flag(arg::DISPLAY));
+        assert!(!subcommand_matches.get_flag(arg::ASSUME_YES));
+        assert!(!subcommand_matches.get_flag(arg::ARCHIVE));
+        assert!(subcommand_matches.contains_id(arg::ARCHIVE_DIR));
+        assert_eq!(
+            subcommand_matches
+                .get_one::<String>(arg::ARCHIVE_DIR)
+                .unwrap(),
+            "./sent_emails"
+        );
     }
 }
