@@ -42,8 +42,13 @@ fn test_send_smtp() {
         "smtp",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display emails:"))),
+        str::contains("Reading message file './message.yaml' ...")
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display email:"))
+            .and(str::contains("Sending email to 1 receiver ..."))
+            .and(str::contains("Email sent"))
+            .and(str::contains("Archiving"))
+            .and(str::contains("Dry run:").not()),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());
@@ -88,8 +93,13 @@ fn test_send_aws() {
         "aws",
     ]);
     cmd.assert().success().stdout(
-        str::contains("Reading csv file './receiver.csv' ...")
-            .and(str::contains("Display csv file:").and(str::contains("Display email:"))),
+        str::contains("Reading message file './message.yaml' ...")
+            .and(str::contains("Display message file:"))
+            .and(str::contains("Display email:"))
+            .and(str::contains("Sending email to 1 receiver ..."))
+            .and(str::contains("Email sent"))
+            .and(str::contains("Archiving"))
+            .and(str::contains("Dry run:").not()),
     );
 
     assert!(temp_path.join("my-sent-emails").exists());

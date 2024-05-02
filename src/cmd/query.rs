@@ -8,7 +8,7 @@ use clap::ArgMatches;
 use std::path::Path;
 
 pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.contains_id(arg::VERBOSE) {
+    if matches.get_flag(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
@@ -23,11 +23,11 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
                 let mut df_query = sources::query_postgres(&connection, query)?;
 
-                if matches.contains_id(arg::DISPLAY) {
+                if matches.get_flag(arg::DISPLAY) {
                     println!("Display query result: {}", df_query);
                 }
 
-                if matches.contains_id(arg::SAVE) {
+                if matches.get_flag(arg::SAVE) {
                     let save_dir = Path::new(arg::value(arg::SAVE_DIR, matches)?);
 
                     // If argument 'FILE_TYPE' is not present the default value 'csv' will be used

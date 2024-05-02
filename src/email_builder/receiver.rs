@@ -46,7 +46,7 @@ impl BulkReceiver {
                 let connection = DbConnection::new(&conn_vars, ssh_tunnel)?;
                 let df_receiver = sources::query_postgres(&connection, query)?;
 
-                if matches.contains_id(arg::DISPLAY) {
+                if matches.get_flag(arg::DISPLAY) {
                     println!("Display query result: {}", df_receiver);
                 }
 
@@ -58,7 +58,7 @@ impl BulkReceiver {
             (None, Some(path)) => {
                 let df_receiver = sources::read_csv(path)?;
 
-                if matches.contains_id(arg::DISPLAY) {
+                if matches.get_flag(arg::DISPLAY) {
                     println!("Display csv file: {}", df_receiver);
                 }
 

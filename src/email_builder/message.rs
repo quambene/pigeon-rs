@@ -63,7 +63,7 @@ impl Message {
             let message_path = Path::new(message_file);
             let message = Message::read_yaml(message_path)?;
 
-            if matches.contains_id(arg::DISPLAY) {
+            if matches.get_flag(arg::DISPLAY) {
                 println!("Display message file: {:#?}", message);
             }
 

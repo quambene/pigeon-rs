@@ -8,7 +8,7 @@ use anyhow::{anyhow, Result};
 use clap::ArgMatches;
 
 pub fn connect(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.contains_id(arg::VERBOSE) {
+    if matches.get_flag(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 

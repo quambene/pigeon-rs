@@ -4,7 +4,7 @@ use clap::ArgMatches;
 use postgres::{Client, NoTls, SimpleQueryMessage};
 
 pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.contains_id(arg::VERBOSE) {
+    if matches.get_flag(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 

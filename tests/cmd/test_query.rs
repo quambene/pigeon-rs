@@ -80,6 +80,7 @@ fn test_query_save_png() {
     cmd.args([
         "query",
         test_query,
+        "--display",
         "--save",
         "--save-dir",
         save_dir,

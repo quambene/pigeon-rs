@@ -4,7 +4,7 @@ use clap::ArgMatches;
 use std::path::PathBuf;
 
 pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.contains_id(arg::VERBOSE) {
+    if matches.get_flag(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
@@ -14,7 +14,7 @@ pub fn read(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                 let path = PathBuf::from(csv_file);
                 let csv = sources::read_csv(&path)?;
 
-                if matches.contains_id(arg::DISPLAY) {
+                if matches.get_flag(arg::DISPLAY) {
                     println!("Display csv file: {}", csv);
                 }
 
