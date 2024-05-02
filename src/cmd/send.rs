@@ -11,13 +11,13 @@ use clap::ArgMatches;
 use std::{io, path::Path, time::SystemTime};
 
 pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
-    if matches.contains_id(arg::VERBOSE) {
+    if matches.get_flag(arg::VERBOSE) {
         println!("matches: {:#?}", matches);
     }
 
     let now = SystemTime::now();
-    let dry_run = matches.contains_id(arg::DRY_RUN);
-    let is_archived = matches.contains_id(arg::ARCHIVE);
+    let dry_run = matches.get_flag(arg::DRY_RUN);
+    let is_archived = matches.get_flag(arg::ARCHIVE);
     let archive_dir = Path::new(arg::value(arg::ARCHIVE_DIR, matches)?);
     let sender = Sender(arg::value(arg::SENDER, matches)?);
     let receiver = Receiver(arg::value(arg::RECEIVER, matches)?);
@@ -26,7 +26,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
     let mime_format = MimeFormat::new(sender, receiver, &message, attachment, now)?;
     let email = Email::new(sender, receiver, &message, &mime_format)?;
 
-    if matches.contains_id(arg::DISPLAY) {
+    if matches.get_flag(arg::DISPLAY) {
         println!("Display email: {:#?}", email);
     }
 
@@ -40,7 +40,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
 
     println!("Sending email to 1 receiver ...");
 
-    if matches.contains_id(arg::ASSUME_YES) {
+    if matches.get_flag(arg::ASSUME_YES) {
         let sent_email = client.send(&email)?;
         sent_email.display_status();
 
@@ -62,7 +62,7 @@ pub fn send(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         }
     }
 
-    if matches.contains_id(arg::DRY_RUN) {
+    if matches.get_flag(arg::DRY_RUN) {
         println!("Email sent (dry run)");
     } else {
         println!("Email sent");

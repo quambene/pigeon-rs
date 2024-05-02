@@ -29,7 +29,7 @@ impl AwsSesClient {
         let region_name = region.name().to_string();
 
         // Check if AWS access keys are set in environment
-        if matches.contains_id(arg::DRY_RUN) {
+        if matches.get_flag(arg::DRY_RUN) {
             AwsSesClient::get_credentials(&provider).context(
                 "Missing environment variable 'AWS_ACCESS_KEY_ID' and/or 'AWS_SECRET_ACCESS_KEY'",
             )?;
