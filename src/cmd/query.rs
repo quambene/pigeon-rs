@@ -27,7 +27,7 @@ pub fn query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
                     println!("Display query result: {}", df_query);
                 }
 
-                if matches.contains_id(arg::SAVE) {
+                if matches.get_flag(arg::SAVE) {
                     let save_dir = Path::new(arg::value(arg::SAVE_DIR, matches)?);
 
                     // If argument 'FILE_TYPE' is not present the default value 'csv' will be used
