@@ -6,6 +6,11 @@
 - changed
 - removed
 
+### v0.4.3 (unreleased)
+
+- changed
+  - Update dependencies
+
 ### v0.4.2 (2024-05-03)
 
 - changed
