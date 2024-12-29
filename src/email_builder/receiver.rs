@@ -14,7 +14,7 @@ use std::path::Path;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Receiver<'a>(pub &'a str);
 
-impl<'a> AsRef<str> for Receiver<'a> {
+impl AsRef<str> for Receiver<'_> {
     fn as_ref(&self) -> &str {
         self.0
     }
