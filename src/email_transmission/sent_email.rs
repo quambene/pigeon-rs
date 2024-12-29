@@ -3,8 +3,10 @@ use crate::email_builder::{Email, Message, Receiver, Sender};
 
 #[derive(Debug)]
 pub struct SentEmail<'a> {
+    #[allow(dead_code)]
     pub sender: Sender<'a>,
     pub receiver: Receiver<'a>,
+    #[allow(dead_code)]
     pub message: &'a Message,
     pub status: Status,
 }

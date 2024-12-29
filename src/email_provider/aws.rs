@@ -14,6 +14,7 @@ use rusoto_ses::{RawMessage, SendRawEmailRequest, Ses, SesClient};
 use std::{env, str::FromStr};
 
 pub struct AwsSesClient {
+    #[allow(dead_code)]
     pub region_name: String,
     pub client: SesClient,
 }
