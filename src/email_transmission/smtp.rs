@@ -8,6 +8,7 @@ use lettre::{transport::smtp::authentication::Credentials, SmtpTransport, Transp
 use std::env;
 
 pub struct SmtpClient {
+    #[allow(dead_code)]
     pub endpoint: String,
     pub transport: SmtpTransport,
 }
