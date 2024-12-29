@@ -38,7 +38,7 @@ postgres = "0.19.2"
 url = "2.5"
 uuid = { version = "1.8", features = ["v4"] }
 lettre = { version = "0.11", default-features = false, features = ["builder", "pool", "smtp-transport", "file-transport", "rustls-tls"] }
-infer = "0.15"
+infer = "0.16"
 bytes = "1.6"
 base64 = "0.22"
 
