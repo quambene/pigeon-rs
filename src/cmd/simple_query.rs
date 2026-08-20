@@ -22,7 +22,7 @@ pub fn simple_query(matches: &ArgMatches) -> Result<(), anyhow::Error> {
         let mut client = Client::connect(
             &format!(
                 "host={} port={} user={} password={}",
-                &conn_vars.db_host, &conn_vars.db_port, &conn_vars.db_user, &conn_vars.db_password
+                conn_vars.db_host, conn_vars.db_port, conn_vars.db_user, conn_vars.db_password
             ),
             NoTls,
         )?;

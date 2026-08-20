@@ -16,7 +16,7 @@ pub struct Password(pub String);
 impl fmt::Debug for Password {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let len = self.0.len();
-        write!(f, "{}", &("*".repeat(len - 3) + &self.0[(len - 3)..]))
+        write!(f, "{}", ("*".repeat(len - 3) + &self.0[(len - 3)..]))
     }
 }
 
@@ -55,7 +55,7 @@ impl ConnVars {
             db_password,
         };
 
-        println!("Using these environment variables: {:#?}", &conn_vars);
+        println!("Using these environment variables: {:#?}", conn_vars);
 
         Ok(conn_vars)
     }
@@ -63,7 +63,7 @@ impl ConnVars {
     pub fn connection_url(&self) -> Result<Url, anyhow::Error> {
         let connection_url = format!(
             "postgresql://{}:{}@{}:{}/{}",
-            &self.db_user, &self.db_password.0, &self.db_host, &self.db_port, &self.db_name
+            self.db_user, self.db_password.0, self.db_host, self.db_port, self.db_name
         );
         let url = Url::parse(&connection_url)?;
         Ok(url)

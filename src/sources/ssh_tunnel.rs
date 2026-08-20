@@ -24,10 +24,10 @@ impl SshTunnel {
 
         let local_port = ssh_tunnel;
         let local_url = &(LOCALHOST.to_string() + ":" + local_port) as &str;
-        let db_url = format!("{}:{}", conn_vars.db_host, &conn_vars.db_port);
+        let db_url = format!("{}:{}", conn_vars.db_host, conn_vars.db_port);
 
-        let port_fwd = format!("{}:{}", local_url, &db_url);
-        let ssh_connection = format!("{}@{}", server_user, &server_host);
+        let port_fwd = format!("{}:{}", local_url, db_url);
+        let ssh_connection = format!("{}@{}", server_user, server_host);
 
         let process = Command::new("ssh")
             .args(["-N", "-T", "-L", &port_fwd, &ssh_connection])
@@ -35,7 +35,7 @@ impl SshTunnel {
 
         let connection_url = format!(
             "postgresql://{}:{}@{}/{}",
-            &conn_vars.db_user, &conn_vars.db_password.0, local_url, &conn_vars.db_name
+            conn_vars.db_user, conn_vars.db_password.0, local_url, conn_vars.db_name
         );
         let connection_url = Url::parse(&connection_url)?;
 
