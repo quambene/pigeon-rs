@@ -10,6 +10,7 @@
 
 - changed
   - Update dependencies
+  - Update rust to 1.97
 
 ### v0.4.2 (2024-05-03)
 
