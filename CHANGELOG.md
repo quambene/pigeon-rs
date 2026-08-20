@@ -8,6 +8,8 @@
 
 ### v0.4.3 (unreleased)
 
+- added
+  - Add `cargo audit` to CI
 - changed
   - Update dependencies
   - Update rust to 1.97
