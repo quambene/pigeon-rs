@@ -1,0 +1,30 @@
+[advisories]
+ignore = [
+    # vulnerabilities
+    "RUSTSEC-2025-0038", # arrow2: Out of bounds access in public safe API
+    "RUSTSEC-2025-0003", # fast-float: Segmentation fault due to lack of bound check
+    "RUSTSEC-2026-0258", # h2: h2 unbounded empty DATA frames
+    "RUSTSEC-2024-0421", # idna: `idna` accepts Punycode labels that do not produce any non-ASCII when decoded
+    "RUSTSEC-2026-0141", # lettre: TLS hostname verification disabled when using Boring TLS backend
+    "RUSTSEC-2022-0040", # owning_ref: Multiple soundness issues in `owning_ref`
+    "RUSTSEC-2025-0009", # ring: Some AES functions may panic when overflow checking is enabled.
+    "RUSTSEC-2026-0235", # rkyv: Insufficient archive validation can cause out-of-bounds reads in archives containing Rc/Arc
+    "RUSTSEC-2024-0336", # rustls: `rustls::ConnectionCommon::complete_io` could fall into an infinite loop based on network input
+    "RUSTSEC-2026-0098", # rustls-webpki: Name constraints for URI names were incorrectly accepted
+    "RUSTSEC-2026-0104", # rustls-webpki: Reachable panic in certificate revocation list parsing
+    "RUSTSEC-2026-0099", # rustls-webpki: Name constraints were accepted for certificates asserting a wildcard name
+
+    # unmaintained
+    "RUSTSEC-2023-0067", # fehler: `fehler` is unmaintained; use `culpa` instead
+    "RUSTSEC-2025-0010", # ring: Versions of *ring* prior to 0.17 are unmaintained.
+    "RUSTSEC-2022-0071", # rusoto_credential: Rusoto is unmaintained
+    "RUSTSEC-2025-0134", # rustls-pemfile: rustls-pemfile is unmaintained
+    "RUSTSEC-2026-0249", # smartstring: smartstring is unmaintained
+    "RUSTSEC-2024-0320", # yaml-rust: yaml-rust is unmaintained.
+
+    # unsound
+    "RUSTSEC-2024-0379", # fast-float: Multiple soundness issues
+    "RUSTSEC-2023-0055", # lexical: Multiple soundness issues
+    "RUSTSEC-2023-0086", # lexical-core: Multiple soundness issues
+    "RUSTSEC-2026-0186", # memmap2: Unchecked pointer offset in crate `memmap2`
+]

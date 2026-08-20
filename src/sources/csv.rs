@@ -17,7 +17,7 @@ pub fn write_csv(
 ) -> Result<(), anyhow::Error> {
     let current_time = now.to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
 
-    let target_file = format!("query_{}.csv", &current_time);
+    let target_file = format!("query_{}.csv", current_time);
 
     match save_dir.exists() {
         true => (),
