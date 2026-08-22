@@ -5,7 +5,6 @@ ignore = [
     "RUSTSEC-2025-0003", # fast-float: Segmentation fault due to lack of bound check
     "RUSTSEC-2026-0258", # h2: h2 unbounded empty DATA frames
     "RUSTSEC-2024-0421", # idna: `idna` accepts Punycode labels that do not produce any non-ASCII when decoded
-    "RUSTSEC-2026-0141", # lettre: TLS hostname verification disabled when using Boring TLS backend
     "RUSTSEC-2022-0040", # owning_ref: Multiple soundness issues in `owning_ref`
     "RUSTSEC-2025-0009", # ring: Some AES functions may panic when overflow checking is enabled.
     "RUSTSEC-2026-0235", # rkyv: Insufficient archive validation can cause out-of-bounds reads in archives containing Rc/Arc
