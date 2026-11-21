@@ -10,7 +10,6 @@ ignore = [
     "RUSTSEC-2026-0235", # rkyv: Insufficient archive validation can cause out-of-bounds reads in archives containing Rc/Arc
     "RUSTSEC-2024-0336", # rustls: `rustls::ConnectionCommon::complete_io` could fall into an infinite loop based on network input
     "RUSTSEC-2026-0098", # rustls-webpki: Name constraints for URI names were incorrectly accepted
-    "RUSTSEC-2026-0104", # rustls-webpki: Reachable panic in certificate revocation list parsing
     "RUSTSEC-2026-0099", # rustls-webpki: Name constraints were accepted for certificates asserting a wildcard name
 
     # unmaintained
