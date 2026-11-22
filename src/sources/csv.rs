@@ -1,11 +1,13 @@
 use anyhow::Context;
 use chrono::{DateTime, Utc};
-use polars::prelude::{CsvReader, CsvWriter, DataFrame, SerReader, SerWriter};
+use polars::prelude::{CsvReadOptions, CsvWriter, DataFrame, SerReader, SerWriter};
 use std::{fs, path::Path};
 
 pub fn read_csv(csv_file: &Path) -> Result<DataFrame, anyhow::Error> {
     println!("Reading csv file '{}' ...", csv_file.display());
-    let reader = CsvReader::from_path(csv_file)?.has_header(true);
+    let reader = CsvReadOptions::default()
+        .with_has_header(true)
+        .try_into_reader_with_file_path(Some(csv_file.to_path_buf()))?;
     let df = reader.finish()?;
     Ok(df)
 }
@@ -41,7 +43,7 @@ pub fn write_csv(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use polars::{datatypes::AnyValue, frame::row::Row, prelude::NamedFrom, series::Series};
+    use polars::{datatypes::AnyValue, frame::row::Row, prelude::Column};
     use tempfile::tempdir;
 
     #[test]
@@ -60,7 +62,7 @@ mod tests {
             Row::new(
                 ["Marie", "Curie", "marie@curie.com"]
                     .into_iter()
-                    .map(AnyValue::Utf8)
+                    .map(AnyValue::String)
                     .collect()
             )
         );
@@ -69,7 +71,7 @@ mod tests {
             Row::new(
                 ["Alexandre", "Grothendieck", "alexandre@grothendieck.com"]
                     .into_iter()
-                    .map(AnyValue::Utf8)
+                    .map(AnyValue::String)
                     .collect()
             )
         );
@@ -82,9 +84,12 @@ mod tests {
         let temp_path = temp_dir.path();
         assert!(temp_path.exists(), "Missing path: {}", temp_path.display());
 
-        let first_name_column = Series::new("first_name", &["Marie", "Alexandre"]);
-        let last_name_column = Series::new("last_name", &["Curie", "Grothendieck"]);
-        let email_column = Series::new("email", &["marie@curie.com", "alexandre@grothendieck.com"]);
+        let first_name_column = Column::new("first_name".into(), &["Marie", "Alexandre"]);
+        let last_name_column = Column::new("last_name".into(), &["Curie", "Grothendieck"]);
+        let email_column = Column::new(
+            "email".into(),
+            &["marie@curie.com", "alexandre@grothendieck.com"],
+        );
         let mut df_receiver =
             DataFrame::new(vec![first_name_column, last_name_column, email_column]).unwrap();
 
@@ -107,7 +112,7 @@ mod tests {
             Row::new(
                 ["Marie", "Curie", "marie@curie.com"]
                     .into_iter()
-                    .map(AnyValue::Utf8)
+                    .map(AnyValue::String)
                     .collect()
             )
         );
@@ -116,7 +121,7 @@ mod tests {
             Row::new(
                 ["Alexandre", "Grothendieck", "alexandre@grothendieck.com"]
                     .into_iter()
-                    .map(AnyValue::Utf8)
+                    .map(AnyValue::String)
                     .collect()
             )
         );

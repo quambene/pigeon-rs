@@ -77,7 +77,7 @@ impl<'a> BulkEmail<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use polars::{frame::DataFrame, prelude::NamedFrom, series::Series};
+    use polars::{frame::DataFrame, prelude::Column};
 
     #[test]
     fn test_bulk_email() {
@@ -87,7 +87,8 @@ mod tests {
         let html = "<p>This is a test message (html).</p>";
         let message = Message::new(subject, Some(text), Some(html));
         let column_name = "email";
-        let receiver_column = Series::new(column_name, &["marie@curie.com", "emmy@noether.com"]);
+        let receiver_column =
+            Column::new(column_name.into(), &["marie@curie.com", "emmy@noether.com"]);
         let df_receiver = DataFrame::new(vec![receiver_column]).unwrap();
         let receivers = BulkReceiver::new(column_name.to_owned(), df_receiver);
 
@@ -117,9 +118,9 @@ This is a test message (plaintext)."#;
 <br>
 This is a test message (html)."#;
         let message = Message::new(subject, Some(text), Some(html));
-        let first_name_column = Series::new("first_name", &["Marie", "Emmy"]);
-        let last_name_column = Series::new("last_name", &["Curie", "Noether"]);
-        let email_column = Series::new("email", &["marie@curie.com", "emmy@noether.com"]);
+        let first_name_column = Column::new("first_name".into(), &["Marie", "Emmy"]);
+        let last_name_column = Column::new("last_name".into(), &["Curie", "Noether"]);
+        let email_column = Column::new("email".into(), &["marie@curie.com", "emmy@noether.com"]);
         let df_receiver =
             DataFrame::new(vec![first_name_column, last_name_column, email_column]).unwrap();
         let receivers = BulkReceiver::new("email".to_owned(), df_receiver);

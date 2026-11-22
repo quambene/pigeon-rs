@@ -1,8 +1,7 @@
 use super::SshTunnel;
 use anyhow::{Context, Result};
 use connectorx::{
-    destinations::arrow2::Arrow2Destination,
-    prelude::{Dispatcher, PostgresArrow2Transport},
+    prelude::{ArrowDestination, Dispatcher, PostgresArrowTransport},
     sources::postgres::{rewrite_tls_args, BinaryProtocol, PostgresSource},
     sql::CXQuery,
 };
@@ -99,9 +98,9 @@ impl DbConnection {
 pub fn query_postgres(connection: &DbConnection, query: &str) -> Result<DataFrame, anyhow::Error> {
     let (config, _tls) = rewrite_tls_args(&connection.url)?;
     let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 3)?;
-    let mut destination = Arrow2Destination::new();
+    let mut destination = ArrowDestination::new();
     let queries = &[CXQuery::naked(query)];
-    let dispatcher = Dispatcher::<_, _, PostgresArrow2Transport<BinaryProtocol, NoTls>>::new(
+    let dispatcher = Dispatcher::<_, _, PostgresArrowTransport<BinaryProtocol, NoTls>>::new(
         source,
         &mut destination,
         queries,

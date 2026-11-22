@@ -4,11 +4,7 @@ use crate::{
 };
 use anyhow::{anyhow, Context};
 use clap::ArgMatches;
-use polars::{
-    chunked_array::{ops::TakeRandom, ChunkedArray},
-    datatypes::Utf8Type,
-    frame::DataFrame,
-};
+use polars::{chunked_array::ChunkedArray, datatypes::StringType, frame::DataFrame};
 use std::path::Path;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -92,7 +88,7 @@ impl BulkReceiver {
         self.df_receiver.height()
     }
 
-    pub fn receiver_column(&self) -> Result<&ChunkedArray<Utf8Type>, anyhow::Error> {
+    pub fn receiver_column(&self) -> Result<&ChunkedArray<StringType>, anyhow::Error> {
         self.column(&self.column_name)
     }
 
@@ -105,7 +101,7 @@ impl BulkReceiver {
             .df_receiver
             .column(column_name)
             .context(format!("Missing column '{}'", column_name))?
-            .utf8()
+            .str()
             .context("Can't convert series to chunked array")?
             .get(index);
 
@@ -122,12 +118,12 @@ impl BulkReceiver {
     pub fn column<'a>(
         &'a self,
         column_name: &str,
-    ) -> Result<&'a ChunkedArray<Utf8Type>, anyhow::Error> {
+    ) -> Result<&'a ChunkedArray<StringType>, anyhow::Error> {
         let column = self
             .df_receiver
             .column(column_name)
             .context(format!("Missing column '{column_name}'"))?
-            .utf8()
+            .str()
             .context("Can't convert series to chunked array")?;
 
         Ok(column)
@@ -138,7 +134,7 @@ impl BulkReceiver {
 mod tests {
     use super::*;
     use crate::app;
-    use polars::{prelude::NamedFrom, series::Series};
+    use polars::prelude::Column;
 
     #[test]
     fn test_bulk_receiver_from_args_receiver_file() {
@@ -159,9 +155,12 @@ mod tests {
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let actual = res.unwrap();
-        let first_name_column = Series::new("first_name", &["Marie", "Alexandre"]);
-        let last_name_column = Series::new("last_name", &["Curie", "Grothendieck"]);
-        let email_column = Series::new("email", &["marie@curie.com", "alexandre@grothendieck.com"]);
+        let first_name_column = Column::new("first_name".into(), &["Marie", "Alexandre"]);
+        let last_name_column = Column::new("last_name".into(), &["Curie", "Grothendieck"]);
+        let email_column = Column::new(
+            "email".into(),
+            &["marie@curie.com", "alexandre@grothendieck.com"],
+        );
         let expected =
             DataFrame::new(vec![first_name_column, last_name_column, email_column]).unwrap();
         assert_eq!(
@@ -194,10 +193,10 @@ mod tests {
         assert!(res.is_ok(), "{}", res.unwrap_err());
 
         let actual = res.unwrap();
-        let first_name_column = Series::new("first_name", &["Marie", "Alexandre"]);
-        let last_name_column = Series::new("last_name", &["Curie", "Grothendieck"]);
-        let email_column = Series::new(
-            "contact",
+        let first_name_column = Column::new("first_name".into(), &["Marie", "Alexandre"]);
+        let last_name_column = Column::new("last_name".into(), &["Curie", "Grothendieck"]);
+        let email_column = Column::new(
+            "contact".into(),
             &["marie@curie.com", "alexandre@grothendieck.com"],
         );
         let expected =

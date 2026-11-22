@@ -1,5 +1,5 @@
 use anyhow::Context;
-use polars::prelude::{DataFrame, DataType, TakeRandom};
+use polars::prelude::{DataFrame, DataType};
 use std::{
     fs::{self, File},
     io::Write,
@@ -28,10 +28,10 @@ pub fn write_image(
             .dtype();
 
         let image_name = match data_type {
-            DataType::Utf8 => df
+            DataType::String => df
                 .column(image_name)
                 .context("Can't find column for image name")?
-                .utf8()
+                .str()
                 .context("Can't convert series to chunked array")?
                 .get(i)
                 .map(|str| str.to_string()),
