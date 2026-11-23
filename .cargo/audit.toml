@@ -2,17 +2,12 @@
 ignore = [
     # vulnerabilities
     "RUSTSEC-2026-0258", # h2: h2 unbounded empty DATA frames
-    "RUSTSEC-2022-0040", # owning_ref: Multiple soundness issues in `owning_ref`
+    # quick-xml is only listed in Cargo.lock (optional dep of polars-error via a weak feature), it is not compiled
     "RUSTSEC-2026-0194", # quick-xml: Quadratic run time when checking a start tag for duplicate attribute names
     "RUSTSEC-2026-0195", # quick-xml: Unbounded namespace-declaration allocation in `NsReader` enables memory-exhaustion denial of service
     "RUSTSEC-2025-0009", # ring: Some AES functions may panic when overflow checking is enabled.
     "RUSTSEC-2024-0336", # rustls: `rustls::ConnectionCommon::complete_io` could fall into an infinite loop based on network input
-    "RUSTSEC-2026-0346", # rustls: `Debug` impls for client session values expose TLS secrets
     "RUSTSEC-2026-0349", # rustls: Unauthenticated ServerHello can downgrade later connections to classical key exchange
-    "RUSTSEC-2026-0098", # rustls-webpki: Name constraints for URI names were incorrectly accepted
-    "RUSTSEC-2026-0099", # rustls-webpki: Name constraints were accepted for certificates asserting a wildcard name
-    "RUSTSEC-2026-0104", # rustls-webpki: Reachable panic in certificate revocation list parsing
-    "RUSTSEC-2026-0382", # rustls-webpki: Certificate verification may accept distrusted intermediates
     "RUSTSEC-2026-0300", # skiplist: Use-after-free in `clear` and `retain` when an element's `Drop` panics
     "RUSTSEC-2026-0409", # skiplist: Use-after-free from a comparator that answers inconsistently
 
@@ -20,7 +15,6 @@ ignore = [
     "RUSTSEC-2025-0141", # bincode: Bincode is unmaintained
     "RUSTSEC-2026-0543", # chrono: chrono is unmaintained
     "RUSTSEC-2026-0555", # chrono-tz: chrono-tz is unmaintained
-    "RUSTSEC-2023-0067", # fehler: `fehler` is unmaintained; use `culpa` instead
     "RUSTSEC-2026-0542", # humantime: humantime is unmaintained
     "RUSTSEC-2025-0010", # ring: Versions of *ring* prior to 0.17 are unmaintained.
     "RUSTSEC-2022-0071", # rusoto_credential: Rusoto is unmaintained
@@ -29,6 +23,5 @@ ignore = [
     "RUSTSEC-2024-0320", # yaml-rust: yaml-rust is unmaintained.
 
     # unsound
-    "RUSTSEC-2026-0442", # arrow-data: Apache Arrow Rust: Improper validation of RunEndEncoded arrays allows out of bounds reads
     "RUSTSEC-2026-0408", # skiplist: Aliasing violations in splice, mutable iteration and cursors
 ]

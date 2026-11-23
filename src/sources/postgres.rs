@@ -1,12 +1,14 @@
 use super::SshTunnel;
-use anyhow::{Context, Result};
-use connectorx::{
-    prelude::{ArrowDestination, Dispatcher, PostgresArrowTransport},
-    sources::postgres::{rewrite_tls_args, BinaryProtocol, PostgresSource},
-    sql::CXQuery,
+use anyhow::{anyhow, Context, Result};
+use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use polars::{
+    frame::DataFrame,
+    prelude::{Column, DataType, TimeUnit},
 };
-use polars::frame::DataFrame;
-use postgres::NoTls;
+use postgres::{
+    types::{FromSql, Type},
+    Client, NoTls, Row,
+};
 use std::{env, fmt};
 use url::Url;
 
@@ -96,22 +98,93 @@ impl DbConnection {
 }
 
 pub fn query_postgres(connection: &DbConnection, query: &str) -> Result<DataFrame, anyhow::Error> {
-    let (config, _tls) = rewrite_tls_args(&connection.url)?;
-    let source = PostgresSource::<BinaryProtocol, NoTls>::new(config, NoTls, 3)?;
-    let mut destination = ArrowDestination::new();
-    let queries = &[CXQuery::naked(query)];
-    let dispatcher = Dispatcher::<_, _, PostgresArrowTransport<BinaryProtocol, NoTls>>::new(
-        source,
-        &mut destination,
-        queries,
-        None,
-    );
-    dispatcher.run()?;
-    let df = destination.polars()?;
+    let df = run_query(&connection.url, query);
 
     if let Some(tunnel) = &connection.ssh_tunnel {
         tunnel.kill()?;
     }
 
+    df
+}
+
+fn run_query(url: &Url, query: &str) -> Result<DataFrame, anyhow::Error> {
+    let mut client = Client::connect(url.as_str(), NoTls).context("Can't connect to database")?;
+    let statement = client.prepare(query).context("Can't prepare query")?;
+    let rows = client
+        .query(&statement, &[])
+        .context("Can't execute query")?;
+
+    let columns = statement
+        .columns()
+        .iter()
+        .enumerate()
+        .map(|(index, column)| to_column(column.name(), column.type_(), &rows, index))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let df = DataFrame::new(columns)?;
     Ok(df)
+}
+
+/// Convert the values of the column at `index` into a polars column.
+fn to_column(name: &str, ty: &Type, rows: &[Row], index: usize) -> Result<Column, anyhow::Error> {
+    let column = match *ty {
+        Type::BOOL => Column::new(name.into(), values::<bool>(rows, index)?),
+        Type::INT2 => Column::new(
+            name.into(),
+            map_values(values::<i16>(rows, index)?, i32::from),
+        ),
+        Type::INT4 => Column::new(name.into(), values::<i32>(rows, index)?),
+        Type::INT8 => Column::new(name.into(), values::<i64>(rows, index)?),
+        Type::OID => Column::new(name.into(), values::<u32>(rows, index)?),
+        Type::FLOAT4 => Column::new(name.into(), values::<f32>(rows, index)?),
+        Type::FLOAT8 => Column::new(name.into(), values::<f64>(rows, index)?),
+        Type::BYTEA => Column::new(name.into(), values::<&[u8]>(rows, index)?),
+        Type::DATE => Column::new(name.into(), values::<NaiveDate>(rows, index)?),
+        Type::TIMESTAMP => datetime_column(
+            name,
+            map_values(values::<NaiveDateTime>(rows, index)?, |value| value.and_utc()),
+        )?,
+        Type::TIMESTAMPTZ => datetime_column(name, values::<DateTime<Utc>>(rows, index)?)?,
+        Type::UUID => Column::new(
+            name.into(),
+            map_values(values::<uuid::Uuid>(rows, index)?, |value| {
+                value.to_string()
+            }),
+        ),
+        ref ty if <&str as FromSql>::accepts(ty) => {
+            Column::new(name.into(), values::<&str>(rows, index)?)
+        }
+        ref ty => {
+            return Err(anyhow!(
+                "Unsupported type '{ty}' for column '{name}'. Cast the column in your query, e.g. '{name}::text'"
+            ))
+        }
+    };
+
+    Ok(column)
+}
+
+fn values<'a, T>(rows: &'a [Row], index: usize) -> Result<Vec<Option<T>>, anyhow::Error>
+where
+    T: FromSql<'a>,
+{
+    rows.iter()
+        .map(|row| row.try_get::<_, Option<T>>(index))
+        .collect::<Result<Vec<_>, _>>()
+        .context("Can't read column value")
+}
+
+fn map_values<T, U>(values: Vec<Option<T>>, f: impl Fn(T) -> U) -> Vec<Option<U>> {
+    values.into_iter().map(|value| value.map(&f)).collect()
+}
+
+/// Create a datetime column with microsecond precision (as stored by Postgres).
+fn datetime_column(
+    name: &str,
+    values: Vec<Option<DateTime<Utc>>>,
+) -> Result<Column, anyhow::Error> {
+    let micros = map_values(values, |value| value.timestamp_micros());
+    let column =
+        Column::new(name.into(), micros).cast(&DataType::Datetime(TimeUnit::Microseconds, None))?;
+    Ok(column)
 }

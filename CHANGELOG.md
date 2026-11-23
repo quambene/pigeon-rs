@@ -13,6 +13,8 @@
 - changed
   - Update dependencies
   - Update rust to 1.97
+- removed
+  - Removed `connectorx` dependency
 
 ### v0.4.2 (2024-05-03)
 
