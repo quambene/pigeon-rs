@@ -13,8 +13,12 @@
 - changed
   - Update dependencies
   - Update rust to 1.97
+  - Update `polars` to 0.49
+  - Query Postgres via the `postgres` crate; unsupported column types (e.g. `numeric`, `json`) need a cast in the query (e.g. `::text`)
 - removed
   - Removed `connectorx` dependency
+- fixed
+  - Fix hour in datetime format of saved query results (`2024-01-02_03:04:05` instead of `2024-01-02_H:04:05`)
 
 ### v0.4.2 (2024-05-03)
 

@@ -31,7 +31,7 @@ pub fn write_csv(
     println!("Save query result to file: {}", target_path.display());
 
     let csv_file = &mut fs::File::create(target_path)?;
-    let timestamp_format = "%F_H:%M:%S";
+    let timestamp_format = "%F_%H:%M:%S";
 
     CsvWriter::new(csv_file)
         .with_datetime_format(Some(timestamp_format.to_string()))
@@ -125,5 +125,28 @@ mod tests {
                     .collect()
             )
         );
+    }
+
+    #[test]
+    fn test_write_csv_datetime_format() {
+        let timestamp = chrono::DateTime::parse_from_rfc3339("2024-01-01T14:00:00Z").unwrap();
+        let temp_dir = tempdir().unwrap();
+        let temp_path = temp_dir.path();
+
+        let datetime = chrono::NaiveDate::from_ymd_opt(2024, 1, 2)
+            .unwrap()
+            .and_hms_opt(3, 4, 5)
+            .unwrap();
+        let datetime_column = Column::new("created_at".into(), &[datetime]);
+        let mut df = DataFrame::new(vec![datetime_column]).unwrap();
+
+        write_csv(&mut df, temp_path, timestamp.naive_utc().and_utc()).unwrap();
+
+        let csv_file = temp_path.join(format!(
+            "query_{}.csv",
+            timestamp.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        ));
+        let content = fs::read_to_string(csv_file).unwrap();
+        assert_eq!(content, "created_at\n2024-01-02_03:04:05\n");
     }
 }
